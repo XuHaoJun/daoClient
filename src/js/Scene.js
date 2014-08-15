@@ -17,6 +17,7 @@ var Scene = module.exports = function (world, config) {
   this.focusObj = null;
   this.camera = null;
   this.renderer = null;
+  this.requestId = null;
   this.clock = new THREE.Clock();
   this.cpSpace = new cp.Space();
   this.cpSpace.iterations = 10;
@@ -205,6 +206,9 @@ Scene.prototype.attachCanvas = function(threeCanvas) {
 };
 
 Scene.prototype.run = function() {
+  if (this.isRendering && this.requestId) {
+    return;
+  }
   this.isRendering = true;
   this.attachCanvas(this.canvas);
   this.animate();
@@ -213,6 +217,9 @@ Scene.prototype.run = function() {
 Scene.prototype.destroy = function() {
   this.isRendering = false;
   this.threeResize.destroy();
+  if (this.requestId) {
+    cancelAnimationFrame(this.requestId);
+  }
 };
 
 Scene.prototype.stopRender = function() {
@@ -227,8 +234,8 @@ Scene.prototype.animate = function(time) {
   if (this.isRendering === false) {
     return;
   }
-  requestAnimationFrame(this.animate.bind(this));
   this.render(time);
+  this.requestId = requestAnimationFrame(this.animate.bind(this));
 };
 
 Scene.prototype.render = function(time) {
