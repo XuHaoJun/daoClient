@@ -54,6 +54,15 @@ var RegisterAccountModal = React.createClass({
     if (length > 3) return 'success';
     else if (length > 0) return 'error';
   },
+  handlePasswordConfirmChange: function() {
+    this.setState({passwordConfirm:
+                  this.refs.passwordConfirm.getValue().trim()});
+  },
+  handlePasswordConfirmValidationState: function() {
+    var length = this.state.passwordConfirm.length;
+    if (length > 3 && this.state.passwordConfirm == this.state.password) return 'success';
+    else if (length > 0) return 'error';
+  },
   render: function() {
     return (this.transferPropsTo(
       <Modal title="Register Account"
@@ -73,6 +82,9 @@ var RegisterAccountModal = React.createClass({
                    labelClassName="col-xs-4" wrapperClassName="col-xs-8"
                    hasFeedback required />
             <Input ref='passwordConfirm' label='Password Confirm' type='password'
+                   value={this.state.passwordConfirm}
+                   onChange={this.handlePasswordConfirmChange}
+                   bsStyle={this.handlePasswordConfirmValidationState()}
                    labelClassName="col-xs-4" wrapperClassName="col-xs-8"
                    hasFeedback required />
           </div>
