@@ -1,0 +1,15 @@
+{
+  "libs": [
+    "browser",
+    "jquery"
+  ],
+  "loadEagerly": [
+    "src/js/*.js"
+  ],
+  "plugins" : {
+    "node" : {
+      "load": "chipmunk|gulp|react|lodash|node-buzz",
+      "dontLoad": "three.*"
+    }
+  }
+}
