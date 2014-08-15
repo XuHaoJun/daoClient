@@ -12,7 +12,7 @@ var Conn = module.exports = function(wsurl, onmessage) {
 Conn.prototype.run = function() {
   this.sock = new WebSocket(this.wsurl);
   this.sock.onclose = function(evt) {
-    alert("disconnect!");
+    console.log("disconnect!");
   };
   this.sock.onopen = function() {
     console.log('successfully connect to dao server');
