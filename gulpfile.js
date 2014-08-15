@@ -22,7 +22,11 @@ gulp.task('default', ['watch']);
 
 gulp.task('watch', ['jsx:watch', 'js:watch', 'css:watch']);
 
-gulp.task('build', ['jsx:build', 'js:build', 'css:build']);
+gulp.task('build', ['js-jsx:build', 'css:build']);
+
+gulp.task('js-jsx:build', ['jsx:build'], function() {
+  scripts(false);
+});
 
 gulp.task('js:build', function() {
   scripts(false);
