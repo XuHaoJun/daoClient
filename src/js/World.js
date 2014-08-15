@@ -10,14 +10,9 @@ var World = module.exports = function (config) {
                   geometry: {}, texture: {},
                   mesh: {}};
   this.account = null;
-  this.conn = this.create.Conn("ws://" + location.hostname + ":"  +
-                               location.port + "/daows");
-  this.lastErrors = {errorLoginAccount: null,
-                     errorRegisterAccount: null};
-  this.views = {
-    selectChar: null, game: null,
-    login: null, loading: null
-  };
+  this.initConn();
+  this.initLastErrors();
+  this.initViews();
   var world = this;
   this.loader = this.create.Loader({
     onComplete: function () {
@@ -28,6 +23,23 @@ var World = module.exports = function (config) {
 
 World.prototype.run = function() {
   this.loader.run();
+};
+
+World.prototype.initConn = function() {
+  this.conn = this.create.Conn("ws://" + location.hostname + ":"  +
+                               location.port + "/daows");
+};
+
+World.prototype.initViews = function() {
+  this.views = {
+    selectChar: null, game: null,
+    login: null, loading: null
+  };
+};
+
+World.prototype.initLastErrors = function() {
+  this.lastErrors = {errorLoginAccount: null,
+                     errorRegisterAccount: null};
 };
 
 // following method for send to server
@@ -48,6 +60,10 @@ World.prototype.registerAccount = function(username, password) {
     params: [username, password]
   };
   this.conn.sendJSON(clientCall);
+};
+
+World.prototype.handleLogout = function() {
+  location.reload();
 };
 
 // following method for server call

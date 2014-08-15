@@ -69,6 +69,7 @@ Char.prototype.logout = function() {
     params: []
   };
   this.world.conn.sendJSON(clientCall);
+  this.world.handleLogout(); // should wait server response allow logout
 };
 
 Char.prototype.talkScene = function(content) {
