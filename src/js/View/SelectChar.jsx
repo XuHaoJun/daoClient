@@ -1,5 +1,10 @@
+/** @jsx React.DOM */
+
+var _ = require('lodash');
 var React = require('react');
 var BS = require('react-bootstrap');
+var Input = BS.Input;
+var Button = BS.Button;
 var Grid = BS.Grid;
 var Row = BS.Row;
 var Colm = BS.Col;
