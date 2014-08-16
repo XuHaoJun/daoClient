@@ -17,18 +17,41 @@ var BrowserDependCheck = React.createClass({
     var successTitle = (
       <h3>Support</h3>
     );
+    var urls = {
+      indexeddb: "http://en.wikipedia.org/wiki/Indexed_Database_API",
+      websockets: "http://en.wikipedia.org/wiki/WebSocket",
+      webgl: "http://en.wikipedia.org/wiki/Webgl",
+      audio: "http://en.wikipedia.org/wiki/HTML5_Audio",
+      draganddrop: "http://www.w3schools.com/html/html5_draganddrop.asp"
+    };
+    var names = {
+      indexeddb: "indexedDB",
+      websockets: "WebSocket",
+      webgl: "Webgl",
+      audio: "Html5 Audio",
+      draganddrop: "Html5 drag and drop"
+    };
     var urlGen = function(name) {
-      if (name == "indexeddb") {
-        return "http://en.wikipedia.org/wiki/Indexed_Database_API";
+      var url = urls[name];
+      if (_.isUndefined(url)) {
+        return "#"
       } else {
-        return "#";
+        return url;
+      }
+    };
+    var ageisNameGen = function(name) {
+      var aname = names[name];
+      if (_.isUndefined(aname)) {
+        return ''
+      } else {
+        return aname;
       }
     };
     var listGen = function(name) {
       return (
         <a className="list-group-item"
            href={ urlGen(name) }>
-          { name }
+          { ageisNameGen(name) }
         </a>
       );
     };
