@@ -31,7 +31,7 @@ Loader.prototype.run = function(onComplete) {
     this.clientAssetsList = syncList;
     _.each(syncList, function(val) {
       this.numTotalItem += _.size(val);
-    }.bind(this));
+    }, this);
     console.log('this.clientAssetsList: ',this.clientAssetsList);
     this.assetsStore = new IDBStore({
       dbVersion: 1,

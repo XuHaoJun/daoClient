@@ -76,7 +76,7 @@ Bio.prototype.parseConfig = function(config) {
           circle.group = shape.group;
           this.cpBody.shapes.push(circle);
         }
-      }.bind(this));
+      }, this);
       this.cpBody.setPos(cp.v(val.position.x,
                               val.position.y));
       this.cpBody.setAngle(val.angle);
@@ -88,7 +88,7 @@ Bio.prototype.parseConfig = function(config) {
       console.log("unknown bio config ", "key: ", key, "val: ", val);
       break;
     }
-  }.bind(this));
+  }, this);
   if (_.isNumber(config.bodyViewId)) {
     this.threeBody = this.world.assets.mesh[this.bodyViewId].clone();
     this.threeBody.userData = this;

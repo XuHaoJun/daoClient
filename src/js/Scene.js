@@ -98,14 +98,14 @@ Scene.prototype.parseConfig = function(config) {
           if (_.isObject(realShape)) {
             this.staticShapes.push(realShape);
           }
-        }.bind(this));
-      }.bind(this));
+        }, this);
+      }, this);
       break;
     case "run":
       run = val;
       break;
     }
-  }.bind(this));
+  }, this);
   if (this.width > 0 && this.height > 0 &&
       _.isNull(this.ground)) {
     this.setDefaultPlaneGround();
@@ -157,7 +157,7 @@ Scene.prototype.add = function(sb) {
   this.cpSpace.addBody(sb.cpBody);
   _.each(sb.cpBody.shapes, function(shape) {
     this.cpSpace.addShape(shape);
-  }.bind(this));
+  }, this);
   this.sceneObjects[sb.id] = sb;
 };
 
@@ -170,7 +170,7 @@ Scene.prototype.remove = function(sb) {
   this.cpSpace.removeBody(sb.cpBody);
   _.each(sb.cpBody.shapes, function(shape) {
     this.cpSpace.removeShape(shape);
-  }.bind(this));
+  }, this);
   delete this.sceneObjects[sb.id];
 };
 

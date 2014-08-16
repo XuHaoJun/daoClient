@@ -35,7 +35,7 @@ Char.prototype.parseConfig = function(config) {
       this[key] = val;
       break;
     }
-  }.bind(this));
+  }, this);
 };
 
 Char.prototype.run = function() {
@@ -132,7 +132,7 @@ Char.prototype.handleCanvasMousemove = function(event) {
     var foundGround = _.find(objects, function(obj) {
       var mesh = obj.object;
       return mesh == this.scene.ground;
-    }.bind(this));
+    }, this);
     if (_.isObject(foundGround)) {
       console.log("foundGround: ", foundGround);
       this.move(foundGround.point.x, foundGround.point.y);
