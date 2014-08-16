@@ -26,10 +26,14 @@ var Game2dUI = React.createClass({
     var char = this.props.world.account.usingChar;
     char.logout();
   },
+  componentDidMount: function() {
+    this.handleCharBars();
+  },
   handleCharBars: function() {
     var char = this.props.world.account.usingChar;
     if (_.isObject(char)) {
-      var hpNow = (char.hp / char.maxhp) * 100;
+      console.log(char.maxMp);
+      var hpNow = (char.hp / char.maxHp) * 100;
       var mpNow = (char.mp / char.maxMp) * 100;
       this.setState({hpNow: hpNow, mpNow: mpNow});
     }
@@ -61,7 +65,7 @@ var Game2dUI = React.createClass({
               </Colm>
               <Colm md={4} sm={4}>
                 <div className="center-block">
-                  <ProgressBar bsStyle='success' now={this.state.hpNow}
+                  <ProgressBar bsStyle='danger' now={this.state.hpNow}
                                label="%(percent)s%" style={{'margin-bottom': '5px'}}/>
                   <ProgressBar bsStyle='info' now={this.state.mpNow}
                                label="%(percent)s%" />
