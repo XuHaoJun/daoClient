@@ -9,15 +9,16 @@ var World = module.exports = function (config) {
   this.assets  = {image: {}, audio: {},
                   geometry: {}, texture: {},
                   mesh: {}};
+  this.isGaming = false;
   this.account = null;
   this.initConn();
   this.initLastErrors();
   this.initViews();
-  var world = this;
+  this.initThreeCanvas();
   this.loader = this.create.Loader({
     onComplete: function () {
-      world.conn.run();
-    }
+      this.conn.run();
+    }.bind(this)
   });
 };
 
@@ -42,6 +43,11 @@ World.prototype.initLastErrors = function() {
                      errorRegisterAccount: null};
 };
 
+World.prototype.initThreeCanvas = function() {
+  this.threeCanvas = document.createElement('canvas');
+  this.threeCanvas.id = 'threeCanvas';
+};
+
 // following method for send to server
 
 World.prototype.loginAccount = function(username, password) {
@@ -62,8 +68,22 @@ World.prototype.registerAccount = function(username, password) {
   this.conn.sendJSON(clientCall);
 };
 
-World.prototype.handleLogout = function() {
-  location.reload();
+World.prototype.handleDisconnect = function() {
+  if (_.isObject(this.account) &&
+      _.isObject(this.account.usingChar)) {
+    this.account.usingChar.destroy();
+    this.account.usingChar.scene.destroy();
+  }
+  this.initConn();
+  this.conn.run();
+  this.initLastErrors();
+  this.scenes = {};
+  React.unmountComponentAtNode(document.body);
+  this.initViews();
+  this.views.login =
+    React.renderComponent(View.Login({world: this}),
+                          document.body);
+  this.isGaming = false;
 };
 
 // following method for server call
@@ -78,12 +98,14 @@ World.prototype.handleAddScene = function(sceneConfig) {
 };
 
 World.prototype.handleSuccessLoginAcccount = function(accountConfig) {
-  this.account = this.create.Account(accountConfig);
-  React.unmountComponentAtNode(document.body);
-  this.views.login = null;
-  this.views.selectChar = React
-    .renderComponent(View.SelectChar({world: this}),
-                     document.body);
+  if (_.isObject(this.views.login)) {
+    this.account = this.create.Account(accountConfig);
+    React.unmountComponentAtNode(document.body);
+    this.views.login = null;
+    this.views.selectChar = React
+      .renderComponent(View.SelectChar({world: this}),
+                       document.body);
+  }
 };
 
 World.prototype.handleErrorLoginAccount = function(err) {
@@ -102,4 +124,5 @@ World.prototype.handleRunScene = function(sceneName) {
                        document.body);
   }
   this.scenes[sceneName].run();
+  this.isGaming = true;
 };

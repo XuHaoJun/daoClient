@@ -13,14 +13,18 @@ Conn.prototype.run = function() {
   this.sock = new WebSocket(this.wsurl);
   this.sock.onclose = function(evt) {
     console.log("disconnect!");
-  };
+    if (this.world.isGaming) {
+      this.world.handleDisconnect();
+    } else {
+      alert("Disconnect!");
+    }
+  }.bind(this);
   this.sock.onopen = function() {
     console.log('successfully connect to dao server');
   };
-  var conn = this;
   this.sock.onmessage = function(r) {
-    conn.handleOnmessage(r);
-  };
+    this.handleOnmessage(r);
+  }.bind(this);
 };
 
 Conn.prototype.handleOnmessage = function (r) {

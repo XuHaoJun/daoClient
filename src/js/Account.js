@@ -65,7 +65,6 @@ Account.prototype.logout = function() {
     params: []
   };
   this.world.conn.sendJSON(clientCall);
-  this.world.handleLogout(); // should wait server response allow logout
 };
 
 // recevie from server methods

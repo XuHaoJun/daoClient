@@ -1,3 +1,4 @@
+var $ = require('jquery/dist/jquery');
 var _ = require('lodash');
 var THREE = require('three');
 var cp = require('chipmunk');
@@ -24,7 +25,7 @@ var Scene = module.exports = function (world, config) {
   this.wallCpShapes = [];
   this.staticShapes = [];
   // this.staticCpBodys = [];
-  this.canvas = null;
+  this.canvas = world.threeCanvas;
   this.sceneObjects = {};
   if (_.isObject(config)) {
     this.parseConfig(config);
@@ -210,15 +211,19 @@ Scene.prototype.run = function() {
     return;
   }
   this.isRendering = true;
+  $('body').prepend(this.canvas);
   this.attachCanvas(this.canvas);
   this.animate();
 };
 
 Scene.prototype.destroy = function() {
-  this.isRendering = false;
-  this.threeResize.destroy();
   if (this.requestId) {
+    this.isRendering = false;
     cancelAnimationFrame(this.requestId);
+    this.threeResize.destroy();
+    this.requestId = null;
+    this.renderer.clear();
+    $('#threeCanvas').remove();
   }
 };
 
