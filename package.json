@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "dependencies": {
     "bootstrap": "^3.2.0",
+    "browsernizr": "^1.0.2",
     "chipmunk": "git://github.com/XuHaoJun/Chipmunk-js.git#master",
     "idb-wrapper": "^1.4.1",
     "jquery": "^2.1.1",

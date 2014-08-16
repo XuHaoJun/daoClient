@@ -23,7 +23,29 @@ var World = module.exports = function (config) {
 };
 
 World.prototype.run = function() {
-  this.loader.run();
+  if (this.browserDependCheck()) {
+    this.loader.run();
+  }
+};
+
+World.prototype.browserDependCheck =  function() {
+  require('browsernizr/test/websockets');
+  require('browsernizr/test/indexedDB');
+  require('browsernizr/test/webgl');
+  require('browsernizr/test/audio');
+  require('browsernizr/test/draganddrop');
+  var Modernizr = require('browsernizr');
+  var checks = ['websockets', 'indexeddb', 'webgl', 'audio', 'draganddrop'];
+  var modernizrChecks = _.map(checks, function(c) { return Modernizr[c]; });
+  var isPassed = _.all(modernizrChecks, function(c) { return c == true;});
+  if (isPassed == false) {
+    var checkResult= _.zipObject(checks, modernizrChecks);
+    this.initViews();
+    React.unmountComponentAtNode(document.body);
+    React.renderComponent(View.BrowserDependCheck({checkResult: checkResult}),
+                          document.body);
+  }
+  return isPassed;
 };
 
 World.prototype.initConn = function() {

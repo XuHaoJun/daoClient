@@ -11,5 +11,6 @@ module.exports = {
   Login: require('./Login'),
   MiniTargetInfo: require('./MiniTargetInfo'),
   RegisterAccountModal: require('./RegisterAccountModal'),
-  SelectChar: require('./SelectChar')
+  SelectChar: require('./SelectChar'),
+  BrowserDependCheck: require('./BrowserDependCheck')
 };
