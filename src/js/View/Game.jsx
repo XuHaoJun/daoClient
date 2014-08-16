@@ -7,7 +7,6 @@ var Row = BS.Row;
 var Colm = BS.Col;
 var Game2dUI = require('./Game2dUI');
 var ChatBox = require('./ChatBox');
-var ThreeCanvas = require('./ThreeCanvas');
 
 var Game = React.createClass({
   getInitialState: function() {
@@ -20,7 +19,6 @@ var Game = React.createClass({
   render: function() {
     return (
       <div>
-        <ThreeCanvas />
         <Grid fluid>
           <Row>
             <Colm md={12}>
