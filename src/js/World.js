@@ -34,8 +34,10 @@ World.prototype.browserDependCheck =  function() {
   require('browsernizr/test/webgl');
   require('browsernizr/test/audio');
   require('browsernizr/test/draganddrop');
+  require('browsernizr/test/requestanimationframe');
   var Modernizr = require('browsernizr');
-  var checks = ['websockets', 'indexeddb', 'webgl', 'audio', 'draganddrop'];
+  var checks = ['websockets', 'indexeddb', 'webgl',
+                'audio', 'draganddrop', 'requestanimationframe'];
   var modernizrChecks = _.map(checks, function(c) { return Modernizr[c]; });
   var isPassed = _.all(modernizrChecks, function(c) { return c == true;});
   if (isPassed == false) {

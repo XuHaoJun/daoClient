@@ -22,14 +22,16 @@ var BrowserDependCheck = React.createClass({
       websockets: "http://en.wikipedia.org/wiki/WebSocket",
       webgl: "http://en.wikipedia.org/wiki/Webgl",
       audio: "http://en.wikipedia.org/wiki/HTML5_Audio",
-      draganddrop: "http://www.w3schools.com/html/html5_draganddrop.asp"
+      draganddrop: "http://www.w3schools.com/html/html5_draganddrop.asp",
+      requestanimationframe: "#"
     };
     var names = {
-      indexeddb: "indexedDB",
+      indexeddb: "IndexedDB",
       websockets: "WebSocket",
       webgl: "Webgl",
       audio: "Html5 Audio",
-      draganddrop: "Html5 drag and drop"
+      draganddrop: "Html5 drag and drop",
+      requestanimationframe: "Web API requestAnimationFrame"
     };
     var urlGen = function(name) {
       var url = urls[name];
