@@ -21,41 +21,50 @@ var ChatBox = React.createClass({
     var textInputValue = (this.refs.textInput ?
                           this.refs.textInput.getDOMNode().value :
                           '');
-    if (this.state.shoTextInput === false) {
+    if (this.state.showTextInput === false) {
       this.setState({showTextInput: !this.state.showTextInput});
       $(this.refs.textInput.getDOMNode()).focus();
-    } else if (this.state.showTextInput && textnputValue === '') {
+    } else if (this.state.showTextInput && textInputValue === '') {
       this.setState({showTextInput: !this.state.showTextInput});
     }
   },
+  componentDidUpdate: function() {
+    var chatBoxMessagesDOM = this.refs.chatBoxMessages.getDOMNode();
+    chatBoxMessagesDOM.scrollTop = chatBoxMessagesDOM.scrollHeight;
+  },
   handleSendMessage: function(e) {
+    e.preventDefault();
     var textInputValue = (this.refs.textInput ?
                           this.refs.textInput.getDOMNode().value :
                           '');
-    if (_.isObject(this.props.char) && textnputValue !== '') {
+    if (_.isObject(this.props.char) && textInputValue !== '') {
       this.props.char.talkScene(this.refs.textInput.getDOMNode().value);
       this.refs.textInput.getDOMNode().value = '';
     }
-    return false;
   },
   render: function() {
     var key = 0;
     var messages = _.map(this.props.messages, function(msg) {
+      var talker = (_.isEmpty(msg.talker) ? '' :  msg.talker + ": ");
       return (
-        <h4 key={key++} style={{'font-weight': 'bolder', color: 'yellow'}}>
-          { "[" + msg.chatType + "] " + msg.talker + ": " + msg.content }
+        <h4 key={key++} style={{'font-weight': 'bolder'}}>
+          { "[" + msg.chatType + "] " + talker + msg.content }
         </h4>
       );
     });
-    var textInput = (this.state.showTextInput ?
-                     <input ref='textInput' type='text'
-                            className='form-control'/>
-                                     : null);
+    var displayTextInput = (this.state.showTextInput ?
+                            'block' : 'none');
     return (
-      <div>
-        { messages }
+      <div ref='chatBox'
+           className='chat-box'>
+        <div ref='chatBoxMessages'
+             className='chat-messages'>
+          { messages }
+        </div>
         <form onSubmit={this.handleSendMessage}>
-          { textInput }
+          <input ref='textInput' type='text'
+                 style={{display: displayTextInput}}
+                 className='form-control'/>
         </form>
       </div>
     );
