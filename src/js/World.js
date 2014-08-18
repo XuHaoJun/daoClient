@@ -70,6 +70,12 @@ World.prototype.initLastErrors = function() {
 World.prototype.initThreeCanvas = function() {
   this.threeCanvas = document.createElement('canvas');
   this.threeCanvas.id = 'threeCanvas';
+  this.threeCanvas.onselectstart = function(event) {
+    event.preventDefault();
+  };
+  this.threeCanvas.oncontextmenu = function(event) {
+    event.preventDefault();
+  };
 };
 
 // following method for send to server
