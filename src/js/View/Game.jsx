@@ -10,7 +10,12 @@ var ChatBox = require('./ChatBox');
 
 var Game = React.createClass({
   getInitialState: function() {
-    return {chatMessages: []};
+    return {chatMessages: [], miniTarget: null};
+  },
+  handleMiniTarget: function(target) {
+    if (target != this.state.miniTarget) {
+      this.setState({miniTarget: target});
+    }
   },
   handleChatMessage: function(msg) {
     this.state.chatMessages.push(msg);
@@ -18,11 +23,12 @@ var Game = React.createClass({
   },
   render: function() {
     return (
-      <div>
+      <div id="dao-game">
         <Grid fluid>
           <Row>
             <Colm md={12}>
-              <Game2dUI world={this.props.world} />
+              <Game2dUI world={this.props.world}
+                        miniTarget={this.state.miniTarget} />
             </Colm>
           </Row>
         </Grid>

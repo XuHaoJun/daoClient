@@ -1,10 +1,10 @@
 var _ = require('lodash');
 var cp = require('chipmunk');
+var parseClient = require('./util/parseClient.js');
 var SceneObject = require('./SceneObject.js');
 
 var Bio = module.exports = function (world, config) {
   SceneObject.call(this);
-  this.id = 0;
   this.name = '';
   this.world = world;
   this.cpGroup = 1;
@@ -63,23 +63,7 @@ Bio.prototype.parseConfig = function(config) {
       this[key] = val;
       break;
     case "cpBody":
-      this.cpBody = new cp.Body(val.mass,
-                                Infinity);
-      this.cpBody.shapes = [];
-      _.each(val.shapes, function(shape) {
-        if (shape.type == "circle" ||
-            shape.type == "Circle") {
-          var circle = new cp.CircleShape(this.cpBody,
-                                          shape.radius,
-                                          cp.v(shape.position.x,
-                                               shape.position.y));
-          circle.group = shape.group;
-          this.cpBody.shapes.push(circle);
-        }
-      }, this);
-      this.cpBody.setPos(cp.v(val.position.x,
-                              val.position.y));
-      this.cpBody.setAngle(val.angle);
+      this.cpBody = parseClient.cpBody(val);
       break;
     case "moveBaseVelocity":
       this.moveState.baseVelocity = cp.v(val.x, val.y);
@@ -92,11 +76,9 @@ Bio.prototype.parseConfig = function(config) {
   if (_.isNumber(config.bodyViewId)) {
     this.threeBody = this.world.assets.mesh[this.bodyViewId].clone();
     this.threeBody.userData = this;
-    console.log("bio: ", this);
-    console.log("threeBody: ", this.threeBody);
-    console.log("cpBody: ", this.cpBody);
-    console.log("world: ", this.world);
+    // this.setDefaultGlowEffect();
     this.syncCpAndThree();
+    this.syncRotation();
   }
 };
 
@@ -176,11 +158,7 @@ Bio.prototype.moveUpdate = function(delta) {
                    m * velChange.y / t);
   cpBody.setForce(force);
   this.lookAt(this.moveState.targetPos);
-  console.log("moveVect: ", moveVect);
-  console.log("pos: ", cpBody.getPos());
-  console.log("degree: ", cpBody.a * (180/Math.PI));
-  console.log("velocity: ", cpBody.getVel());
-  console.log("force: ", force);
+  console.log(this.threeBody.rotation);
 };
 
 Bio.prototype.update = function(delta) {
@@ -196,10 +174,10 @@ Bio.prototype.handleMoveStateChange = function(config) {
        this.moveState.running == true)) {
     this.moveState.baseVelocity = cp.v(config.baseVelocity.x,
                                        config.baseVelocity.y);
-    this.move(config.targetPos.x, config.targetPos.y);
-  }
-  if (config.running == false &&
-      this.moveState.running == true) {
-    this.shutDownMove();
+    Bio.prototype.move.call(this, config.targetPos.x,
+                            config.targetPos.y);
+  } else if (config.running == false &&
+             this.moveState.running == true) {
+    Bio.prototype.shutDownMove.call(this);
   }
 };

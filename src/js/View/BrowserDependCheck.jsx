@@ -23,7 +23,8 @@ var BrowserDependCheck = React.createClass({
       webgl: "http://en.wikipedia.org/wiki/Webgl",
       audio: "http://en.wikipedia.org/wiki/HTML5_Audio",
       draganddrop: "http://www.w3schools.com/html/html5_draganddrop.asp",
-      requestanimationframe: "#"
+      requestanimationframe: "#",
+      blobconstructor: "#"
     };
     var names = {
       indexeddb: "IndexedDB",
@@ -31,7 +32,8 @@ var BrowserDependCheck = React.createClass({
       webgl: "Webgl",
       audio: "Html5 Audio",
       draganddrop: "Html5 drag and drop",
-      requestanimationframe: "Web API requestAnimationFrame"
+      requestanimationframe: "Web API requestAnimationFrame",
+      blobconstructor: "Web API Blob"
     };
     var urlGen = function(name) {
       var url = urls[name];

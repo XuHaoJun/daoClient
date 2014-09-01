@@ -1,20 +1,29 @@
 var $ = require('jquery/dist/jquery');
 var _ = require('lodash');
 var THREE = require('three');
+var Items = require('./Items.js');
+var UsingEquips = require('./UsingEquips.js');
 var Bio = require('./Bio.js');
+var Account = require('./Account.js');
 
 var Char = module.exports = function (account, config) {
-  Bio.call(this);
+  Bio.call(this, account.world);
   this.account = account;
-  this.world = account.world;
   this.slotIndex = 0;
+  this.items = {useSelfItem: new Array(30),
+                equipment: new Array(30),
+                etcItem: new Array(30)};
   this.lastSceneName = '';
   this.lastX = 0;
   this.lastY = 0;
   this.lastClientX = 0;
   this.lastClientY = 0;
-  this.targetInfo = {};
-  this.buttons = {canvas: {mouse: {isDowning: false, isUping: false}}};
+  this.lastMiniTarget = null;
+  this.lastRequestId = null;
+  this.buttons = {canvas: {mouse: {isDowning: false,
+                                   isUping: false,
+                                   isHovering: true,
+                                   isMoving: false}}};
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
@@ -27,6 +36,14 @@ Char.prototype.parseConfig = function(config) {
     switch (key) {
     case "bioConfig":
       Bio.prototype.parseConfig.call(this, val);
+      break;
+    case "items":
+      this.items = new Items(this.world, val);
+      this.items.setAllOwner(this);
+      break;
+    case "usingEquips":
+      this.usingEquips = new UsingEquips(this.world, val) ;
+      this.usingEquips.setAllOwner(this);
       break;
     case "lastSceneName":
     case "lastX":
@@ -71,8 +88,21 @@ Char.prototype.logout = function() {
   this.world.conn.sendJSON(clientCall);
 };
 
+Char.prototype.equipByIndex = function(eq) {
+  var eqIndex = _.indexOf(this.items.equipment, eq);
+  if (eqIndex < 0) {
+    return;
+  }
+  var clientCall = {
+    receiver: "Char",
+    method: "EquipByIndex",
+    params: [eqIndex]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
 Char.prototype.talkScene = function(content) {
-  if (_.isString(content) == false) {
+  if (_.isString(content) === false) {
     return;
   }
   var clientCall = {
@@ -104,46 +134,55 @@ Char.prototype.attach = function() {
 Char.prototype.attachCanvas = function() {
   this.scene.focusObj = this;
   var canvas = this.scene.canvas;
-  console.log("Canvas: ", canvas);
   canvas.addEventListener("mousemove", this.handleCanvasMousemove.bind(this), false);
+  $(canvas).on("mousestop", this.handleCanvasMousestop.bind(this));
   canvas.addEventListener("mouseup", this.handleCanvasMouseup.bind(this), false);
   canvas.addEventListener("mousedown", this.handleCanvasMousedown.bind(this), false);
   canvas.addEventListener("mouseleave", this.handleCanvasMouseleave.bind(this), false);
+  canvas.addEventListener("mouseenter", this.handleCanvasMouseenter.bind(this), false);
+  canvas.addEventListener("mousehover", this.handleCanvasMousehover.bind(this), false);
   canvas.addEventListener("click", this.handleCanvasClick.bind(this), false);
 };
 
 Char.prototype.handleCanvasMousemove = function(event) {
-  if (_.isFunction(event.preventDefault)) {
-    event.preventDefault();
-  }
+  this.buttons.canvas.isMoving = true;
+  var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
+                                 - (event.clientY / window.innerHeight) * 2 + 1,
+                                 0.5);
+  var projector = this.scene.projector;
+  var ray = projector.pickingRay( vector, this.scene.camera );
+  var objects = ray.intersectObjects( this.scene.threeScene.children, true );
+  //
+  var firstBio = _.find(objects, function(obj) {
+    var mesh = obj.object;
+    return mesh.userData instanceof Bio;
+  });
+  firstBio = (_.isUndefined(firstBio) ? null : firstBio.object.userData);
+  // if (firstBio != this.lastMiniTarget) {
+  //   this.lastMiniTarget
+  // }
+  this.lastMiniTarget = firstBio;
   this.lastClientX = event.clientX;
   this.lastClientY = event.clientY;
-  if (this.buttons.canvas.mouse.isDowning) {
-    console.log("event.clientX: ", event.clientX);
-    console.log("event.clientY: ", event.clientY);
-    var mouseCoord = new THREE.Vector3(event.clientX, event.clientY, 0.5);
-    var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1,
-                                    - ( event.clientY / window.innerHeight ) * 2 + 1,
-                                    0.5 );
-    var projector = new THREE.Projector();
-    var ray = projector.pickingRay( vector, this.scene.camera );
-    var objects = ray.intersectObjects( this.scene.threeScene.children, true );
-    console.log("mousemove: ", objects);
+  this.world.views.game.handleMiniTarget(firstBio);
+  if (this.buttons.canvas.mouse.isDowning &&
+      this.buttons.canvas.mouse.isHovering) {
     var foundGround = _.find(objects, function(obj) {
       var mesh = obj.object;
-      return mesh == this.scene.ground;
-    }, this);
+      return mesh.userData.isGround;
+    });
     if (_.isObject(foundGround)) {
-      console.log("foundGround: ", foundGround);
       this.move(foundGround.point.x, foundGround.point.y);
     }
   }
 };
 
+
+Char.prototype.handleCanvasMousestop = function(event) {
+  this.buttons.canvas.isMoving = false;
+};
+
 Char.prototype.handleCanvasMouseup = function(event) {
-  if (_.isFunction(event.preventDefault)) {
-    event.preventDefault();
-  }
   this.buttons.canvas.mouse.isUping = true;
   this.buttons.canvas.mouse.isDowning = false;
   if (this.moveState.running) {
@@ -152,25 +191,34 @@ Char.prototype.handleCanvasMouseup = function(event) {
 };
 
 Char.prototype.onCameraPositionChange = function(camera) {
-  this.handleCanvasMousemove({clientX: this.lastClientX,
-                              clientY: this.lastClientY});
+  if (this.buttons.canvas.mouse.isMoving === false) {
+    this.handleCanvasMousemove({clientX: this.lastClientX,
+                                clientY: this.lastClientY});
+  }
 };
 
 Char.prototype.handleCanvasMousedown = function(event) {
-  if (_.isFunction(event.preventDefault)) {
-    event.preventDefault();
-  }
+  event.preventDefault();
   this.lastClientX = event.clientX;
   this.lastClientY = event.clientY;
   this.buttons.canvas.mouse.isUping = false;
   this.buttons.canvas.mouse.isDowning = true;
   this.handleCanvasMousemove(event);
+  if (document.activeElement != document.body) {
+    document.activeElement.blur();
+  }
 };
 
 Char.prototype.handleCanvasMouseleave = function(event) {
-  event.preventDefault();
-  this.buttons.canvas.mouse.isUping = false;
-  this.buttons.canvas.mouse.isDowning = false;
+  this.buttons.canvas.mouse.isHovering = false;
+};
+
+Char.prototype.handleCanvasMouseenter = function(event) {
+  this.buttons.canvas.mouse.isHovering = true;
+};
+
+Char.prototype.handleCanvasMousehover = function(event) {
+  this.buttons.canvas.mouse.isHovering = true;
 };
 
 Char.prototype.handleCanvasClick = function(event) {
@@ -179,9 +227,12 @@ Char.prototype.handleCanvasClick = function(event) {
 Char.prototype.destroy = function() {
   this.scene.focusObj = null;
   var canvas = this.scene.canvas;
-  canvas.removeEventListener("mousemove", this.handleCanvasMousemove);
-  canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
-  canvas.removeEventListener("mousedown", this.handleCanvasMousedown);
-  canvas.removeEventListener("mouseleave", this.handleCanvasMouseleave);
-  canvas.removeEventListener("click", this.handleCanvasClick);
+  canvas.removeEventListener("mousemove", this.handleCanvasMousemove, false);
+  $(canvas).off("mousestop", this.handleCanvasMousestop);
+  canvas.removeEventListener("mouseup", this.handleCanvasMouseup, false);
+  canvas.removeEventListener("mousedown", this.handleCanvasMousedown, false);
+  canvas.removeEventListener("mouseleave", this.handleCanvasMouseleave, false);
+  canvas.removeEventListener("mouseenter", this.handleCanvasMouseenter, false);
+  canvas.removeEventListener("mousehover", this.handleCanvasMousehover, false);
+  canvas.removeEventListener("click", this.handleCanvasClick, false);
 };

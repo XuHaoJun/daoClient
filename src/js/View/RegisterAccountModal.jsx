@@ -28,7 +28,6 @@ var RegisterAccountModal = React.createClass({
   },
   handleRegisterAccount: function(e) {
     e.preventDefault();
-    console.log(this.canRegister());
     if (this.canRegister()) {
       this.props.world.registerAccount(
         this.state.username,

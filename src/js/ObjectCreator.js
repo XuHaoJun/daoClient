@@ -4,21 +4,17 @@ var Scene = require('./Scene.js');
 var Account = require('./Account.js');
 var Char = require('./Char.js');
 
-var ObjectCreator = module.exports =  function (world) {
+var ObjectCreator = module.exports = function (world) {
   this.world = world;
 };
 
 ObjectCreator.prototype = {
-  Loader: function(option) {
-    var loader = new Loader(option);
-    loader.world = this.world;
-    return loader;
+  Loader: function() {
+    return new Loader(this.world);
   },
 
-  Conn: function(wsurl, onmessage) {
-    var conn = new Conn(wsurl, onmessage);
-    conn.world = this.world;
-    return conn;
+  Conn: function(wsurl) {
+    return new Conn(this.world, wsurl);
   },
 
   Account: function(config) {
@@ -33,3 +29,5 @@ ObjectCreator.prototype = {
     return new Scene(this.world, config);
   }
 };
+
+ObjectCreator.prototype.constructor = ObjectCreator;

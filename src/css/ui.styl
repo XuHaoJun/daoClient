@@ -16,14 +16,24 @@ body
     float none
     display inline-block
 
+.row.items-gutter
+  margin-top 10px
+  margin-left 0
+  margin-right 0
+
+.row.items-gutter [class*='col-']:not(:first-child),
+.row.items-gutter [class*='col-']:not(:last-child)
+  padding-right 5px
+  padding-left 5px
+
 .row.no-gutter
   margin-left 0
   margin-right 0
 
 .row.no-gutter [class*='col-']:not(:first-child),
 .row.no-gutter [class*='col-']:not(:last-child)
-  padding-right 0
-  padding-left 0
+  padding-right 5px
+  padding-left 5px
 
 .row.gutter-2px
   margin-left 2px
@@ -95,7 +105,8 @@ body
   z-index -1573
   position absolute
 
-.react-draggable > .panel-heading
+.react-draggable
+  .panel-heading
     cursor move
 
 .chat-box
@@ -110,3 +121,11 @@ body
     clear both
     width 100%
     bottom 0px
+
+.item-img
+  &:hover
+    cursor pointer
+
+.container-fluid.using-equips
+  .row
+    margin-top 10px

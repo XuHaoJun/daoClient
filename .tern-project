@@ -8,7 +8,7 @@
   ],
   "plugins" : {
     "node" : {
-      "load": "chipmunk|gulp|react|lodash|node-buzz",
+      "load": "chipmunk|gulp|react|lodash|node-buzz|eventemitter2",
       "dontLoad": "three.*"
     }
   }

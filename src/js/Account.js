@@ -13,7 +13,6 @@ var Account = module.exports = function (world, config) {
 };
 
 Account.prototype.parseConfig = function(config) {
-  console.log("account: ", this);
   _.each(config, function(val, key) {
     switch (key) {
     case "username":
@@ -23,7 +22,6 @@ Account.prototype.parseConfig = function(config) {
       _.each(val, function(charConfig) {
         var char = this.world.create.Char(this, charConfig);
         this.chars[char.slotIndex] = char;
-        console.log('new char:', this.chars[char.slotIndex]);
       }.bind(this));
       break;
     case "charConfig":

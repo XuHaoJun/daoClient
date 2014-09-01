@@ -2,11 +2,10 @@ var _ = require('lodash');
 var React = require('react');
 var View = require('./View');
 
-var Conn = module.exports = function(wsurl, onmessage) {
+var Conn = module.exports = function(world, wsurl) {
   this.wsurl = wsurl;
-  this.world = null;
+  this.world = world;
   this.sock = null;
-  this.onmessage = onmessage;
 };
 
 Conn.prototype.run = function() {
@@ -29,18 +28,13 @@ Conn.prototype.run = function() {
 
 Conn.prototype.handleOnmessage = function (r) {
   var conn = this;
-  console.log(r.data);
   var data = JSON.parse(r.data);
-  console.log(data);
   if (_.isArray(data)) {
     _.each(data, function(d) {
       conn.parse(d);
     });
   } else {
     conn.parse(data);
-  }
-  if (!_.isUndefined(Conn.onmessage)) {
-    conn.onmessage(r);
   }
 };
 
@@ -53,6 +47,7 @@ Conn.prototype.sendText = function(text) {
 };
 
 Conn.prototype.parse = function(data) {
+  console.log(data);
   var world = this.world;
   var account = (world? world.account : null);
   var char = (account? account.usingChar : null);
@@ -71,11 +66,13 @@ Conn.prototype.parse = function(data) {
   }
   data.receiver = LowerCaseFirstLetter(data.receiver);
   var receiver;
-  if (receiver == "bio") {
+  if (data.receiver == "bio") {
     if (_.isObject(scene)) {
       bio = scene.sceneObjects[data.params[0]];
       receiver = bio;
       data.params.shift();
+      console.log(data);
+      console.log(bio);
     }
   } else {
     receiver = receivers[data.receiver];
@@ -83,14 +80,12 @@ Conn.prototype.parse = function(data) {
   if (_.isNull(receiver) || _.isUndefined(receiver)) {
     return;
   }
-  console.log('receiver: ', receiver);
   var method = receiver[data.method];
   if (_.isUndefined(method) ||
       _.isNull(method) ||
       !_.isFunction(method)) {
     return;
   }
-  console.log('method: ', method);
   if (_.isUndefined(data.params) ||
       _.isNull(data.params) ||
       (_.isArray(data.params) && data.params.length === 0)) {

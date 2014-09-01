@@ -16,12 +16,10 @@ var SelectChar = React.createClass({
   handleSelect: function(e) {
     e.preventDefault();
     this.setState({selectedCharSlot: e.target.value});
-    console.log(e.target.value);
     return;
   },
   handleConfirm: function(e) {
     e.preventDefault();
-    console.log(this.state.selectedCharSlot);
     this.props.world.account.loginChar(parseInt(this.state.selectedCharSlot));
     return;
   },

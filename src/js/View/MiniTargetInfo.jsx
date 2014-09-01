@@ -5,24 +5,16 @@ var BS = require('react-bootstrap');
 var ProgressBar = BS.ProgressBar;
 
 var MiniTargetInfo = React.createClass({
-  getInitialState: function() {
-    return {name: '',
-            hpNow: 0
-    };
-  },
-  componentDidMount: function() {
-    var name = this.props.target.name;
-    var maxHp = this.props.target.maxHp;
-    var hp = this.props.target.hp;
-    var hpNow = (hp / maxHp) * 100;
-    this.setState({name: name, hpNow: hpNow});
-  },
   render: function() {
+    var hp = this.props.miniTarget.hp;
+    var maxHp = this.props.miniTarget.maxHp;
+    var hpNow = hp / maxHp * 100;
     return (
-      <div className='center-block'>
-        <h3 className='text-center'>{this.state.name}</h3>
-        <ProgressBar bsStyle='success' now={this.state.hpNow}
-                     label="%(percent)s%" />
+      <div className='center-block' style={{'background-color': 'gray'}}>
+        <ProgressBar bsStyle='success' now={hpNow}
+                     label={this.props.miniTarget.name}
+                     style={{'margin-bottom': '0px', 'margin-top': '0px'}}>
+        </ProgressBar>
       </div>
     );
   }

@@ -1,25 +1,36 @@
+require('browsernizr/test/websockets');
+require('browsernizr/test/indexedDB');
+require('browsernizr/test/webgl');
+require('browsernizr/test/audio');
+require('browsernizr/test/draganddrop');
+require('browsernizr/test/requestanimationframe');
+require('browsernizr/test/blob');
+
+var Modernizr = require('browsernizr');
 var _ = require('lodash');
 var React = require('react');
 var View = require('./View');
 var ObjectCreator = require('./ObjectCreator.js');
 
 var World = module.exports = function (config) {
-  this.create = new ObjectCreator(this);
   this.scenes = {};
   this.assets  = {image: {}, audio: {},
                   geometry: {}, texture: {},
-                  mesh: {}};
+                  mesh: {}, icon: {}};
   this.isGaming = false;
   this.account = null;
+  this.serverList = {
+    main: ("ws://" + location.hostname + ":"  + location.port + "/daows")
+  };
+  this.create = new ObjectCreator(this);
   this.initConn();
   this.initLastErrors();
   this.initViews();
   this.initThreeCanvas();
-  this.loader = this.create.Loader({
-    onComplete: function () {
-      this.conn.run();
-    }.bind(this)
-  });
+  this.loader = this.create.Loader();
+  this.loader.once('complete', function() {
+    this.conn.run();
+  }.bind(this));
 };
 
 World.prototype.run = function() {
@@ -29,15 +40,9 @@ World.prototype.run = function() {
 };
 
 World.prototype.browserDependCheck =  function() {
-  require('browsernizr/test/websockets');
-  require('browsernizr/test/indexedDB');
-  require('browsernizr/test/webgl');
-  require('browsernizr/test/audio');
-  require('browsernizr/test/draganddrop');
-  require('browsernizr/test/requestanimationframe');
-  var Modernizr = require('browsernizr');
   var checks = ['websockets', 'indexeddb', 'webgl',
-                'audio', 'draganddrop', 'requestanimationframe'];
+                'audio', 'draganddrop', 'requestanimationframe',
+                'blobconstructor'];
   var modernizrChecks = _.map(checks, function(c) { return Modernizr[c]; });
   var isPassed = _.all(modernizrChecks, function(c) { return c == true;});
   if (isPassed == false) {
@@ -51,8 +56,7 @@ World.prototype.browserDependCheck =  function() {
 };
 
 World.prototype.initConn = function() {
-  this.conn = this.create.Conn("ws://" + location.hostname + ":"  +
-                               location.port + "/daows");
+  this.conn = this.create.Conn(this.serverList.main);
 };
 
 World.prototype.initViews = function() {
@@ -70,6 +74,7 @@ World.prototype.initLastErrors = function() {
 World.prototype.initThreeCanvas = function() {
   this.threeCanvas = document.createElement('canvas');
   this.threeCanvas.id = 'threeCanvas';
+  this.threeCanvas.unselectable = 'on';
   this.threeCanvas.onselectstart = function(event) {
     event.preventDefault();
   };

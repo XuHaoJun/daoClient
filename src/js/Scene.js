@@ -3,6 +3,7 @@ var _ = require('lodash');
 var THREE = require('three');
 var cp = require('chipmunk');
 var SceneObject = require('./SceneObject.js');
+var parseClient = require('./util/parseClient.js');
 var THREEx = {
   WindowResize: require('threex.windowresize').WindowResize
 };
@@ -12,7 +13,7 @@ var Scene = module.exports = function (world, config) {
   this.name = '';
   this.width = 0;
   this.height = 0;
-  this.ground = null;
+  this.grounds = [];
   this.threeScene = new THREE.Scene();
   this.threeResize = null;
   this.focusObj = null;
@@ -20,6 +21,7 @@ var Scene = module.exports = function (world, config) {
   this.renderer = null;
   this.requestId = null;
   this.clock = new THREE.Clock();
+  this.projector = new THREE.Projector();
   this.cpSpace = new cp.Space();
   this.cpSpace.iterations = 10;
   this.wallCpShapes = [];
@@ -63,7 +65,6 @@ Scene.prototype.createWallCpBodys = function() {
 Scene.prototype.parseConfig = function(config) {
   var run = false;
   _.each(config, function(val, key) {
-    console.log("val key", val, key);
     switch(key) {
     case "name":
     case "width":
@@ -73,28 +74,8 @@ Scene.prototype.parseConfig = function(config) {
     case "staticBodys":
       _.each(val, function(body) {
         _.each(body.shapes, function(shape) {
-          var realShape;
-          switch (shape.type) {
-          case "circle":
-          case "Circle":
-            realShape = new cp.CircleShape(this.cpSpace.staticBody,
-                                           shape.radius,
-                                           cp.v(shape.position.x,
-                                                shape.position.y));
-            realShape.group = shape.group;
-            break;
-          case "segment":
-          case "Segment":
-            realShape = new cp.SegmentShape(this.cpSpace.staticBody,
-                                            cp.v(shape.a.x, shape.a.y),
-                                            cp.v(shape.b.x, shape.b.y),
-                                            shape.radius);
-            realShape.group = shape.group;
-            break;
-          default:
-            console.log("unknown shape.");
-            break;
-          }
+          var realShape = parseClient.cpShape(shape, this.cpSpace.staticBody);
+          this.cpSpace.addShape(realShape);
           if (_.isObject(realShape)) {
             this.staticShapes.push(realShape);
           }
@@ -107,15 +88,15 @@ Scene.prototype.parseConfig = function(config) {
     }
   }, this);
   if (this.width > 0 && this.height > 0 &&
-      _.isNull(this.ground)) {
-    this.setDefaultPlaneGround();
+      _.isEmpty(this.grounds)) {
+    this.addDefaultPlaneGround();
   }
   if (run === true) {
     this.run();
   }
 };
 
-Scene.prototype.setDefaultPlaneGround = function() {
+Scene.prototype.addDefaultPlaneGround = function() {
   var image = this.world.assets.image.grass;
   var geometry = new THREE.PlaneGeometry(this.width, this.height);
   var material;
@@ -125,12 +106,16 @@ Scene.prototype.setDefaultPlaneGround = function() {
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.x = 3;
     texture.repeat.y = 3;
-    material  = new THREE.MeshBasicMaterial({map: texture});
+    material  = new THREE.MeshPhongMaterial({map: texture});
   } else {
     material = new THREE.MeshBasicMaterial({ color: 0x0000FF });
   }
   var mesh = new THREE.Mesh(geometry, material);
-  this.ground = mesh;
+  mesh.material.side = THREE.DoubleSide;
+  mesh.castShadow = false;
+  mesh.receiveShadow = true;
+  mesh.userData = {isGround: true};
+  this.grounds.push(mesh);
   this.threeScene.add(mesh);
 };
 
@@ -144,7 +129,7 @@ Scene.prototype.setPlaneGround = function(image) {
   var geometry = new THREE.PlaneGeometry(this.width, this.height);
   var material  = new THREE.MeshPhongMaterial({map: texture});
   var mesh = new THREE.Mesh(geometry, material);
-  this.ground = mesh;
+  this.grounds.push(mesh);
   this.threeScene.add(mesh);
 };
 
@@ -159,6 +144,10 @@ Scene.prototype.add = function(sb) {
     this.cpSpace.addShape(shape);
   }, this);
   this.sceneObjects[sb.id] = sb;
+  if (sb.glowEffect) {
+    this.threeScene.add(sb.glowEffect);
+  }
+  sb.emit("sceneAdd");
 };
 
 Scene.prototype.remove = function(sb) {
@@ -172,6 +161,22 @@ Scene.prototype.remove = function(sb) {
     this.cpSpace.removeShape(shape);
   }, this);
   delete this.sceneObjects[sb.id];
+  if (sb.glowEffect) {
+    this.threeScene.remove(sb.glowEffect);
+  }
+  sb.emit("sceneRemove");
+};
+
+Scene.prototype.handleAddItem = function(itemConfig) {
+};
+
+Scene.prototype.handleAddChar = function(charConfig) {
+  var char = this.world.create.Char({world: this.world}, charConfig);
+  this.add(char);
+};
+
+Scene.prototype.handleRemoveChar = function(charId) {
+  this.remove(this.sceneObjects[charId]);
 };
 
 Scene.prototype.attachCanvas = function(threeCanvas) {
@@ -185,24 +190,53 @@ Scene.prototype.attachCanvas = function(threeCanvas) {
     }
   }
   this.renderer = new THREE.WebGLRenderer({canvas: canvas});
+  this.renderer.shadowMapEnabled = true;
   this.renderer.setSize(window.innerWidth, window.innerHeight);
   this.camera = new THREE.PerspectiveCamera(65,
                                             window.innerWidth / window.innerHeight,
                                             1, 10000);
-  this.camera.position.z = 550;
+  this.camera.position.z = 650;
   this.camera.lookAt(this.threeScene);
+  this.camera.lastPosition = this.camera.position.clone();
   var light;
   // add a ambient light
-  light       = new THREE.AmbientLight( 0x020202 );
-  this.threeScene.add( light );
+  var ambient = new THREE.AmbientLight( 0x444444 );
+  this.threeScene.add( ambient );
   // add a light in front
-  light       = new THREE.DirectionalLight('white', 1);
-  light.position.set(0.5, 0.5, 2);
+  light = new THREE.SpotLight( 0xFFF4E5, 1, 0, Math.PI / 2, 1 );
+  light.position.set( 0, 0, 1000 );
+  // light.target.position.set( 0, 0, 0 );
+
+  light.castShadow = true;
+  // light.shadowCameraNear = 200;
+  // light.shadowCameraFar = 50;
+  // light.shadowCameraFov = 50;
+  // light.shadowCameraVisible = true;
+  light.shadowCameraNear = 500;
+  light.shadowCameraFar = 4000;
+  light.shadowCameraFov = 30;
+
+  // light.shadowBias = 0.0001;
+  light.shadowDarkness = 0.5;
+  var SHADOW_MAP_WIDTH = 1024, SHADOW_MAP_HEIGHT = 1024;
+  light.shadowMapWidth = SHADOW_MAP_WIDTH;
+  light.shadowMapHeight = SHADOW_MAP_HEIGHT;
+
+  // light       = new THREE.DirectionalLight('white', 1);
+  // light.castShadow = true;
+  // light.shadowDarkness = 0.5;
+  // light.shadowCameraRight = 5;
+  // light.shadowCameraLeft = -5;
+  // light.shadowCameraTop = 5;
+  // light.shadowCameraBottom = -5;
+  // light.shadowCameraNear = 2;
+  // light.shadowCameraFar = 100;
+  // light.position.set(-400,2,500).normalize();
   this.threeScene.add( light );
   // add a light behind
-  light       = new THREE.DirectionalLight('white', 0.75);
-  light.position.set(-0.5, 2.5, -2);
-  this.threeScene.add( light );
+  // light       = new THREE.DirectionalLight('white', 0.75);
+  // light.position.set(-0.5, 2.5, -2);
+  // this.threeScene.add( light );
   this.threeResize = new THREEx.WindowResize(this.renderer, this.camera);
 };
 
@@ -244,6 +278,14 @@ Scene.prototype.animate = function(time) {
 };
 
 Scene.prototype.render = function(time) {
+  var delta = this.clock.getDelta();
+  // console.log(delta);
+  _.each(this.sceneObjects, function(sb) {
+    if (_.isFunction(sb.update)) {
+      sb.update(delta);
+    }
+    sb.syncCpAndThree();
+  });
   if (_.isObject(this.focusObj)) {
     var position;
     if (this.focusObj instanceof THREE.Mesh) {
@@ -251,22 +293,16 @@ Scene.prototype.render = function(time) {
     } else if (this.focusObj instanceof SceneObject) {
       position = this.focusObj.threeBody.position;
     }
-    this.camera.position.set(position.x,
-                             position.y - 64*3.5,
-                             this.camera.position.z);
+    this.camera.position.setX(position.x);
+    this.camera.position.setY(position.y - 64*4);
     this.camera.lookAt(position);
     this.camera.rotation.x = 25 * Math.PI / 180;
-    if (_.isFunction(this.focusObj.onCameraPositionChange)) {
+    if (_.isFunction(this.focusObj.onCameraPositionChange) &&
+        !this.camera.lastPosition.equals(this.camera.position)) {
       this.focusObj.onCameraPositionChange(this.camera);
     }
+    this.camera.lastPosition.copy(this.camera.position);
   }
-  var delta = this.clock.getDelta();
   this.cpSpace.step(delta);
-  _.each(this.sceneObjects, function(sb) {
-    if (_.isFunction(sb.update)) {
-      sb.update(delta);
-    }
-    sb.syncCpAndThree();
-  });
   this.renderer.render(this.threeScene, this.camera);
 };

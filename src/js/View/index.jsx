@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
 var $ = window.jQuery = window.$ = require('jquery/dist/jquery');
+require('mousestop');
 require('bootstrap/dist/js/bootstrap');
 
 module.exports = {
@@ -12,5 +13,9 @@ module.exports = {
   MiniTargetInfo: require('./MiniTargetInfo'),
   RegisterAccountModal: require('./RegisterAccountModal'),
   SelectChar: require('./SelectChar'),
+  SoundConfigModal: require('./SoundConfigModal'),
+  Item: require('./Item'),
+  CharItems: require('./CharItems'),
+  VideoConfigModal: require('./VideoConfigModal'),
   BrowserDependCheck: require('./BrowserDependCheck')
 };

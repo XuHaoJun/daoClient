@@ -13,13 +13,20 @@ var DropdownButton = BS.DropdownButton;
 var Glyphicon = BS.Glyphicon;
 var ProgressBar = BS.ProgressBar;
 var MenuItem = BS.MenuItem;
+var ModalTrigger = BS.ModalTrigger;
+var CharItems = require("./CharItems.js");
+var CharUsingEquips = require("./CharUsingEquips.js");
+var MiniTargetInfo = require("./MiniTargetInfo.js");
+var VideoConfigModal = require("./VideoConfigModal.js");
+var SoundConfigModal = require("./SoundConfigModal.js");
 
 // TODO
 // add mini target info to it.
 var Game2dUI = React.createClass({
   getInitialState: function() {
     return {hotkeyCount: 6,
-            showMiniTargetInfo: false,
+            showCharItems: false,
+            showCharUsingEquips: false,
             hpNow: 0, mpNow: 0};
   },
   handleLogout: function() {
@@ -32,15 +39,16 @@ var Game2dUI = React.createClass({
   handleCharBars: function() {
     var char = this.props.world.account.usingChar;
     if (_.isObject(char)) {
-      console.log(char.maxMp);
       var hpNow = (char.hp / char.maxHp) * 100;
       var mpNow = (char.mp / char.maxMp) * 100;
       this.setState({hpNow: hpNow, mpNow: mpNow});
     }
   },
-  handleShowMiniTargetInfo: function() {
+  handleToggleCharItems: function() {
+    this.setState({showCharItems: !this.state.showCharItems});
   },
-  handleHideMiniTargetInfo: function() {
+  handleToggleCharUsingEquips: function() {
+    this.setState({showCharUsingEquips: !this.state.showCharUsingEquips});
   },
   render: function() {
     var hotkeys = _.map(_.range(this.state.hotkeyCount), function(i) {
@@ -53,47 +61,70 @@ var Game2dUI = React.createClass({
           </div>
         </Colm>
       );});
+
+    var miniTargetInfo = (this.props.miniTarget ?
+                          <MiniTargetInfo miniTarget={this.props.miniTarget} />
+                                                    : null);
     return (
-      <div className="nav" role="navigation">
-        <div className="navbar-inner" style={{'margin-top': '7px'}}>
-          <Grid fluid>
-            <Row>
-              <Colm md={4} sm={4}>
-                <Row className='gutter-2px'>
-                  { hotkeys }
-                </Row>
-              </Colm>
-              <Colm md={4} sm={4}>
-                <div className="center-block">
-                  <ProgressBar bsStyle='danger' now={this.state.hpNow}
-                               label="%(percent)s%" style={{'margin-bottom': '5px'}}/>
-                  <ProgressBar bsStyle='info' now={this.state.mpNow}
-                               label="%(percent)s%" />
-                </div>
-              </Colm>
-              <Colm md={4} sm={4}>
-                <ButtonToolbar>
-                  <ButtonGroup>
-                    <Button bsStyle='default' bsSize='medium'>物品</Button>
-                    <Button bsStyle='default' bsSize='medium'>裝備</Button>
-                    <Button bsStyle='default' bsSize='medium'>人物</Button>
-                    <Button bsStyle='default' bsSize='medium'>技能</Button>
-                  </ButtonGroup>
-                  <ButtonGroup>
-                    <DropdownButton title={<Glyphicon glyph="align-justify" />}>
-                      <MenuItem key="1">Video</MenuItem>
-                      <MenuItem key="2">Sound</MenuItem>
-                      <MenuItem divider />
-                      <MenuItem onSelect={this.handleLogout} key="3">
-                        Logout
-                      </MenuItem>
-                    </DropdownButton>
-                  </ButtonGroup>
-                </ButtonToolbar>
-              </Colm>
-            </Row>
-          </Grid>
+      <div>
+        <div className="nav" role="navigation">
+          <div className="navbar-inner" style={{'margin-top': '7px'}}>
+            <Grid fluid>
+              <Row>
+                <Colm md={4} sm={4}>
+                  <Row className='gutter-2px'>
+                    { hotkeys }
+                  </Row>
+                </Colm>
+                <Colm md={4} sm={4}>
+                  <div className="center-block">
+                    <ProgressBar bsStyle='danger' now={this.state.hpNow}
+                                 label="%(percent)s%" style={{'margin-bottom': '2px'}}/>
+                    <ProgressBar bsStyle='info' now={this.state.mpNow}
+                                 label="%(percent)s%"  style={{'margin-bottom': '4px'}}/>
+                    { miniTargetInfo }
+                  </div>
+                </Colm>
+                <Colm md={4} sm={4}>
+                  <ButtonToolbar>
+                    <ButtonGroup>
+                      <Button onClick={this.handleToggleCharItems}
+                              bsStyle='default' bsSize='medium'>
+                        物品
+                      </Button>
+                      <Button onClick={this.handleToggleCharUsingEquips}
+                              bsStyle='default' bsSize='medium'>
+                        裝備
+                      </Button>
+                      <Button bsStyle='default' bsSize='medium'>人物</Button>
+                      <Button bsStyle='default' bsSize='medium'>技能</Button>
+                    </ButtonGroup>
+                    <ButtonGroup>
+                      <DropdownButton title={<Glyphicon glyph="align-justify" />}>
+                        <ModalTrigger modal={<VideoConfigModal world={this.props.world} />}>
+                          <MenuItem key="1">Video</MenuItem>
+                        </ModalTrigger>
+                        <ModalTrigger modal={<SoundConfigModal world={this.props.world} />}>
+                          <MenuItem key="2">Sound</MenuItem>
+                        </ModalTrigger>
+                        <MenuItem divider />
+                        <MenuItem onClick={this.handleLogout} key="3">
+                          Logout
+                        </MenuItem>
+                      </DropdownButton>
+                    </ButtonGroup>
+                  </ButtonToolbar>
+                </Colm>
+              </Row>
+            </Grid>
+          </div>
         </div>
+        <CharItems show={this.state.showCharItems}
+                   world={this.props.world}
+                   closeButtonClick={this.handleToggleCharItems} />
+        <CharUsingEquips show={this.state.showCharUsingEquips}
+                         world={this.props.world}
+                         closeButtonClick={this.handleToggleCharUsingEquips} />
       </div>
     );
   }

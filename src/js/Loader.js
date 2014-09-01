@@ -5,19 +5,20 @@ var React = require('react');
 var View = require('./View');
 var IDBStore = require('idb-wrapper');
 var Buzz = require('node-buzz');
+var EventEmitter2 = require('eventemitter2').EventEmitter2;
 
-var Loader = module.exports =  function (option) {
-  this.world = null;
+var Loader = module.exports = function (world) {
+  EventEmitter2.call(this);
+  this.world = world;
   this.isLoading = false;
   this.hasLoaded = false;
   this.numTotalItem = 0;
   this.numItem = 0;
   this.clientAssetsList = null;
   this.assetsStore = null;
-  if (option) {
-    this.onComplete = option.onComplete;
-  }
 };
+
+Loader.prototype = Object.create(EventEmitter2.prototype);
 
 Loader.prototype.run = function(onComplete) {
   if (this.hasLoaded) {
@@ -32,7 +33,6 @@ Loader.prototype.run = function(onComplete) {
     _.each(syncList, function(val) {
       this.numTotalItem += _.size(val);
     }, this);
-    console.log('this.clientAssetsList: ',this.clientAssetsList);
     this.assetsStore = new IDBStore({
       dbVersion: 1,
       storeName: 'assets',
@@ -57,8 +57,6 @@ Loader.prototype.handleReadyAssetsStore = function() {
     _.each(val, function(asset, key) {
       assetsStore.get(assetsType + '-' + key, function(result) {
         if (!_.isUndefined(result) && (result.md5 == asset.md5)) {
-          console.log("asset retrieve from indexeddb");
-          console.log('result:', result);
           loader.putToWorld(assetsType, result, key);
           loader.updateProgress();
         } else {
@@ -68,11 +66,9 @@ Loader.prototype.handleReadyAssetsStore = function() {
           xhr.responseType = "blob";
           xhr.addEventListener("load", function () {
             if (xhr.status === 200) {
-              console.log("asset retrieve from xhr");
               blob = xhr.response;
               asset.id = assetsType + '-' + key;
               asset.blob = blob;
-              console.log(blob);
               assetsStore.put(asset);
               loader.putToWorld(assetsType, asset, key);
             } else {
@@ -88,7 +84,7 @@ Loader.prototype.handleReadyAssetsStore = function() {
 };
 
 Loader.prototype.putToWorld = function(assetsType, asset, key) {
-  if (assetsType == 'image') {
+  if (assetsType == 'image' || assetsType == 'icon') {
     var tagName = 'img';
     this.world.assets[assetsType][key] = blob2DOM(asset.blob, tagName);
   } else if (assetsType == 'audio') {
@@ -116,14 +112,21 @@ Loader.prototype.handleComplete = function() {
   this.world.views.login =
     React.renderComponent(View.Login({world: this.world}),
                           document.body);
-  var geometry = new THREE.BoxGeometry( 64, 64, 64 );
-  var material = new THREE.MeshBasicMaterial( {color: 0x00ffff, transparent: true} );
+  var geometry = new THREE.BoxGeometry( 64, 64, 64, 2, 2, 2 );
+  var material = new THREE.MeshPhongMaterial( {color: 0x00ffff, transparent: true} );
   var cube = new THREE.Mesh( geometry, material );
   cube.position.z = 32;
+  cube.castShadow = true;
+  cube.receiveShadow = false;
   this.world.assets.mesh[0] = cube;
-  if (_.isFunction(this.onComplete)) {
-    this.onComplete();
-  }
+  geometry = new THREE.BoxGeometry( 12, 12, 12, 2, 2, 2 );
+  material = new THREE.MeshBasicMaterial( {color: 0x00ffff } );
+  cube = new THREE.Mesh( geometry, material );
+  cube.castShadow = true;
+  cube.receiveShadow = false;
+  cube.position.z = 6;
+  this.world.assets.mesh[3000] = cube;
+  this.emit('complete');
 };
 
 function blob2DOM(blob, tagName) {
@@ -137,6 +140,9 @@ function blob2DOM(blob, tagName) {
 function blob2audio(blob) {
   var URL = window.URL || window.webkitURL;
   var audioURL = URL.createObjectURL(blob);
-  var audio = new Buzz.sound(URL.createObjectURL(blob));
+  var audio = new Buzz.sound(audioURL);
+  audio.clone = function() {
+    return new Buzz.sound(audioURL);
+  };
   return audio;
 }
