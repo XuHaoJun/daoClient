@@ -15,6 +15,7 @@ var ProgressBar = BS.ProgressBar;
 var MenuItem = BS.MenuItem;
 var ModalTrigger = BS.ModalTrigger;
 var CharItems = require("./CharItems.js");
+var CharInfo = require("./CharInfo.js");
 var CharUsingEquips = require("./CharUsingEquips.js");
 var MiniTargetInfo = require("./MiniTargetInfo.js");
 var VideoConfigModal = require("./VideoConfigModal.js");
@@ -27,6 +28,7 @@ var Game2dUI = React.createClass({
     return {hotkeyCount: 6,
             showCharItems: false,
             showCharUsingEquips: false,
+            showCharInfo: false,
             hpNow: 0, mpNow: 0};
   },
   handleLogout: function() {
@@ -43,6 +45,9 @@ var Game2dUI = React.createClass({
       var mpNow = (char.mp / char.maxMp) * 100;
       this.setState({hpNow: hpNow, mpNow: mpNow});
     }
+  },
+  handleToggleCharInfo: function() {
+    this.setState({showCharInfo: !this.state.showCharInfo});
   },
   handleToggleCharItems: function() {
     this.setState({showCharItems: !this.state.showCharItems});
@@ -96,7 +101,10 @@ var Game2dUI = React.createClass({
                               bsStyle='default' bsSize='medium'>
                         裝備
                       </Button>
-                      <Button bsStyle='default' bsSize='medium'>人物</Button>
+                      <Button onClick={this.handleToggleCharInfo}
+                              bsStyle='default' bsSize='medium'>
+                        人物
+                      </Button>
                       <Button bsStyle='default' bsSize='medium'>技能</Button>
                     </ButtonGroup>
                     <ButtonGroup>
@@ -125,6 +133,9 @@ var Game2dUI = React.createClass({
         <CharUsingEquips show={this.state.showCharUsingEquips}
                          world={this.props.world}
                          closeButtonClick={this.handleToggleCharUsingEquips} />
+        <CharInfo show={this.state.showCharInfo}
+                  world={this.props.world}
+                  closeButtonClick={this.handleToggleCharInfo} />
       </div>
     );
   }

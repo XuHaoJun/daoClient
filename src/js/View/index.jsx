@@ -16,6 +16,7 @@ module.exports = {
   SoundConfigModal: require('./SoundConfigModal'),
   Item: require('./Item'),
   CharItems: require('./CharItems'),
+  CharInfo: require('./CharInfo'),
   VideoConfigModal: require('./VideoConfigModal'),
   BrowserDependCheck: require('./BrowserDependCheck')
 };
