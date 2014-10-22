@@ -21,7 +21,7 @@ var Item = React.createClass({
         } else {
           var keyName = bKey.charAt(0).toUpperCase() + bKey.substr(1);
           return (
-            <p>{keyName + ": " + bVal}</p>
+            <p key={keyName}>{keyName + ": " + bVal}</p>
           );
         }
       });

@@ -26,12 +26,12 @@ var CharInfo = React.createClass({
         />
       </div>
     );
-    var char = this.props.world.account.usingChar;
+    var char = this.props.char;
     return (
       <Draggable handle=".handle-draggable,.panel-heading"
                  zIndex={50}>
         <Panel header={header} style={style}>
-          <TabbedArea defaultActiveKey={1} center>
+          <TabbedArea defaultActiveKey={1} centerBlock>
             <TabPane key={1} tab="基本資訊">
               <h4>Name:</h4>
               <p>{ char.name }</p>

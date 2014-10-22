@@ -16,16 +16,16 @@ var ItemList = React.createClass({
     var itemsGroup = _.groupBy(items, function(item, index) {
       return Math.floor(index / colLength);
     });
-    var itemList = _.map(itemsGroup, function(rowItem) {
-      var colItems = _.map(rowItem, function(item) {
+    var itemList = _.map(itemsGroup, function(rowItem, rowIndex) {
+      var colItems = _.map(rowItem, function(item, colIndex) {
         return (
-          <Colm md={2}>
+          <Colm key={colIndex} md={2}>
             <Item item={item} icons={icons} />
           </Colm>
         );
       });
       return (
-        <Row className='items-gutter'>
+        <Row key={rowIndex} className='items-gutter'>
           { colItems }
         </Row>
       );

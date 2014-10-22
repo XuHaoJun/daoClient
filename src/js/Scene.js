@@ -1,3 +1,4 @@
+var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var $ = require('jquery/dist/jquery');
 var _ = require('lodash');
 var THREE = require('three');
@@ -33,6 +34,8 @@ var Scene = module.exports = function (world, config) {
     this.parseConfig(config);
   }
 };
+
+Scene.prototype = Object.create(EventEmitter2.prototype);
 
 Scene.prototype.createWallCpBodys = function() {
   var w = this.width,
@@ -147,7 +150,8 @@ Scene.prototype.add = function(sb) {
   if (sb.glowEffect) {
     this.threeScene.add(sb.glowEffect);
   }
-  sb.emit("sceneAdd");
+  this.emit("add", sb);
+  sb.emit("sceneAdd", sb);
 };
 
 Scene.prototype.remove = function(sb) {
@@ -164,7 +168,8 @@ Scene.prototype.remove = function(sb) {
   if (sb.glowEffect) {
     this.threeScene.remove(sb.glowEffect);
   }
-  sb.emit("sceneRemove");
+  this.emit("remove", sb);
+  sb.emit("sceneRemove", sb);
 };
 
 Scene.prototype.handleAddItem = function(itemConfig) {
@@ -175,8 +180,13 @@ Scene.prototype.handleAddChar = function(charConfig) {
   this.add(char);
 };
 
-Scene.prototype.handleRemoveChar = function(charId) {
-  this.remove(this.sceneObjects[charId]);
+Scene.prototype.handleAddNpc = function(npcConfig) {
+  var npc = this.world.create.Npc(npcConfig);
+  this.add(npc);
+};
+
+Scene.prototype.handleRemoveById = function(id) {
+  this.remove(this.sceneObjects[id]);
 };
 
 Scene.prototype.attachCanvas = function(threeCanvas) {

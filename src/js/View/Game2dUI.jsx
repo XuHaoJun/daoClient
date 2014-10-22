@@ -28,23 +28,11 @@ var Game2dUI = React.createClass({
     return {hotkeyCount: 6,
             showCharItems: false,
             showCharUsingEquips: false,
-            showCharInfo: false,
-            hpNow: 0, mpNow: 0};
+            showCharInfo: false};
   },
   handleLogout: function() {
     var char = this.props.world.account.usingChar;
     char.logout();
-  },
-  componentDidMount: function() {
-    this.handleCharBars();
-  },
-  handleCharBars: function() {
-    var char = this.props.world.account.usingChar;
-    if (_.isObject(char)) {
-      var hpNow = (char.hp / char.maxHp) * 100;
-      var mpNow = (char.mp / char.maxMp) * 100;
-      this.setState({hpNow: hpNow, mpNow: mpNow});
-    }
   },
   handleToggleCharInfo: function() {
     this.setState({showCharInfo: !this.state.showCharInfo});
@@ -70,6 +58,9 @@ var Game2dUI = React.createClass({
     var miniTargetInfo = (this.props.miniTarget ?
                           <MiniTargetInfo miniTarget={this.props.miniTarget} />
                                                     : null);
+    var char = this.props.char;
+    var hpNow = (char.hp / char.maxHp) * 100;
+    var mpNow = (char.mp / char.maxMp) * 100;
     return (
       <div>
         <div className="nav" role="navigation">
@@ -83,9 +74,9 @@ var Game2dUI = React.createClass({
                 </Colm>
                 <Colm md={4} sm={4}>
                   <div className="center-block">
-                    <ProgressBar bsStyle='danger' now={this.state.hpNow}
+                    <ProgressBar bsStyle='danger' now={hpNow}
                                  label="%(percent)s%" style={{'margin-bottom': '2px'}}/>
-                    <ProgressBar bsStyle='info' now={this.state.mpNow}
+                    <ProgressBar bsStyle='info' now={mpNow}
                                  label="%(percent)s%"  style={{'margin-bottom': '4px'}}/>
                     { miniTargetInfo }
                   </div>
@@ -105,7 +96,9 @@ var Game2dUI = React.createClass({
                               bsStyle='default' bsSize='medium'>
                         人物
                       </Button>
-                      <Button bsStyle='default' bsSize='medium'>技能</Button>
+                      <Button bsStyle='default' bsSize='medium'>
+                        技能
+                      </Button>
                     </ButtonGroup>
                     <ButtonGroup>
                       <DropdownButton title={<Glyphicon glyph="align-justify" />}>
@@ -127,14 +120,17 @@ var Game2dUI = React.createClass({
             </Grid>
           </div>
         </div>
-        <CharItems show={this.state.showCharItems}
+        <CharItems items={this.props.charItems}
+                   show={this.state.showCharItems}
                    world={this.props.world}
                    closeButtonClick={this.handleToggleCharItems} />
-        <CharUsingEquips show={this.state.showCharUsingEquips}
+        <CharUsingEquips usingEquips={this.props.charUsingEquips}
+                         show={this.state.showCharUsingEquips}
                          world={this.props.world}
                          closeButtonClick={this.handleToggleCharUsingEquips} />
         <CharInfo show={this.state.showCharInfo}
                   world={this.props.world}
+                  char={this.props.char}
                   closeButtonClick={this.handleToggleCharInfo} />
       </div>
     );

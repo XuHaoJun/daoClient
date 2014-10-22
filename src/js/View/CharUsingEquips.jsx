@@ -29,11 +29,10 @@ var CharUsingEquips = React.createClass({
         />
       </div>
     );
-    var char = this.props.world.account.usingChar;
-    var usingEquips = null;
     var icons = this.props.world.assets.icon;
-    if (char) {
-      usingEquips = _.map(char.usingEquips, function(eq, index) {
+    var usingEquips = null;
+    if (this.props.usingEquips) {
+      usingEquips = _.map(this.props.usingEquips, function(eq, index) {
         if (eq) {
           return (<Item item={eq} icons={icons} />);
         } else {

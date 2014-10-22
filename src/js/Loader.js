@@ -126,6 +126,13 @@ Loader.prototype.handleComplete = function() {
   cube.receiveShadow = false;
   cube.position.z = 6;
   this.world.assets.mesh[3000] = cube;
+  geometry = new THREE.BoxGeometry( 64, 64, 64, 2, 2, 2 );
+  material = new THREE.MeshBasicMaterial( {color: 0x0000ff } );
+  cube = new THREE.Mesh( geometry, material );
+  cube.castShadow = true;
+  cube.receiveShadow = false;
+  cube.position.z = 32;
+  this.world.assets.mesh[5000] = cube;
   this.emit('complete');
 };
 

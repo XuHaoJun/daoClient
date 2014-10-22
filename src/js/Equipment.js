@@ -30,9 +30,11 @@ Equipment.prototype.parseConfig = function(config) {
 // TODO
 // send request equip self to the sever
 Equipment.prototype.handleClick = function(event) {
-  console.log(this.owner);
-  if (!_.isObject(this.owner)) {
-    return;
+  if (_.isObject(this.owner)) {
+    if (_.indexOf(this.owner.usingEquips, this) == -1) {
+      this.owner.equipBySlot(this);
+    } else {
+      this.owner.unequipBySlot(this);
+    }
   }
-  // this.owner.equipByIndex(this);
 };

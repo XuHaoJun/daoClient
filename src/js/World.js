@@ -5,7 +5,7 @@ require('browsernizr/test/audio');
 require('browsernizr/test/draganddrop');
 require('browsernizr/test/requestanimationframe');
 require('browsernizr/test/blob');
-
+require('browsernizr/test/json');
 var Modernizr = require('browsernizr');
 var _ = require('lodash');
 var React = require('react');
@@ -42,7 +42,7 @@ World.prototype.run = function() {
 World.prototype.browserDependCheck =  function() {
   var checks = ['websockets', 'indexeddb', 'webgl',
                 'audio', 'draganddrop', 'requestanimationframe',
-                'blobconstructor'];
+                'blobconstructor', 'json'];
   var modernizrChecks = _.map(checks, function(c) { return Modernizr[c]; });
   var isPassed = _.all(modernizrChecks, function(c) { return c == true;});
   if (isPassed == false) {

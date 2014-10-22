@@ -3,6 +3,8 @@ var Conn = require('./Conn.js');
 var Scene = require('./Scene.js');
 var Account = require('./Account.js');
 var Char = require('./Char.js');
+var Npc = require('./Npc.js');
+var Equipment = require('./Equipment.js');
 
 var ObjectCreator = module.exports = function (world) {
   this.world = world;
@@ -25,8 +27,16 @@ ObjectCreator.prototype = {
     return new Char(acc, config);
   },
 
+  Npc: function(config) {
+    return new Npc(this.world, config);
+  },
+
   Scene: function (config) {
     return new Scene(this.world, config);
+  },
+
+  Equipment: function (config) {
+    return new Equipment(this.world, config);
   }
 };
 

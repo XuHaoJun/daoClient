@@ -28,27 +28,20 @@ var CharItems = React.createClass({
         />
       </div>
     );
-    var char = this.props.world.account.usingChar;
-    var useSelfItems = (char ?
-                        <ItemList items={char.items.useSelfItem}
+    var useSelfItems = (<ItemList items={this.props.items.useSelfItem}
                                   icons={this.props.world.assets.icon}
-                                  step={6} /> :
-                        null);
-    var equipments = (char ?
-                      <ItemList items={char.items.equipment}
+                                  step={6} />);
+    var equipments = (<ItemList items={this.props.items.equipment}
                                 icons={this.props.world.assets.icon}
-                                step={6} /> :
-                      null);
-    var etcItems = (char ?
-                    <ItemList items={char.items.etcItem}
+                                step={6} />);
+    var etcItems = (<ItemList items={this.props.items.etcItem}
                               icons={this.props.world.assets.icon}
-                              step={6} /> :
-                    null);
+                              step={6} /> );
     return (
       <Draggable handle=".handle-draggable,.panel-heading"
                  zIndex={50}>
         <Panel header={header} style={style}>
-          <TabbedArea defaultActiveKey={1} center>
+          <TabbedArea defaultActiveKey={1} centerBlock>
             <TabPane key={1} tab="消耗">
               { useSelfItems }
             </TabPane>

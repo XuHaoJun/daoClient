@@ -4,10 +4,12 @@ var THREE = require('three');
 var Items = require('./Items.js');
 var UsingEquips = require('./UsingEquips.js');
 var Bio = require('./Bio.js');
+var Npc = require('./Npc.js');
 var Account = require('./Account.js');
 
 var Char = module.exports = function (account, config) {
   Bio.call(this, account.world);
+  this.create = account.world.create;
   this.account = account;
   this.slotIndex = 0;
   this.items = {useSelfItem: new Array(30),
@@ -55,6 +57,85 @@ Char.prototype.parseConfig = function(config) {
   }, this);
 };
 
+Char.prototype.handleUpdateConfig = function(config) {
+  _.each(config, function(val, key) {
+    this[key] = val;
+  }, this);
+  if (_.isObject(this.world.views.game)) {
+    this.world.views.game.handleChar(this);
+  }
+};
+
+// TODO
+// add useSelfItem and etcItem
+Char.prototype.handleUpdateItems = function(items) {
+  _.each(items, function(val, key) {
+    switch (key) {
+    case "equipment":
+      _.each(val, function(eqConfig, slot) {
+        if (_.isNull(eqConfig)) {
+          this.items.equipment[slot] = null;
+          return;
+        }
+        var eq = this.create.Equipment(eqConfig);
+        eq.owner = this;
+        this.items.equipment[slot] = eq;
+      }, this);
+      break;
+    }
+  }, this);
+  if (_.isObject(this.world.views.game)) {
+    this.world.views.game.handleCharItems(this.items);
+  }
+};
+
+Char.prototype.handleUpdateUsingEquips = function(usingEquips) {
+  _.each(usingEquips, function(eqConfig, key) {
+    if (_.isNull(eqConfig)) {
+      this.usingEquips[key] = null;
+      return;
+    }
+    var eq = this.create.Equipment(eqConfig);
+    eq.owner = this;
+    this.usingEquips[key] = eq;
+  }, this);
+  if (_.isObject(this.world.views.game)) {
+    this.world.views.game.handleCharUsingEquips(this.usingEquips);
+  }
+};
+
+Char.prototype.talkNpcById = function(npc) {
+  var clientCall = {
+    receiver: "Char",
+    method:  "TalkNpcById",
+    params: [npc.id]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.responseTalkingNpc = function(optIndex) {
+  var clientCall = {
+    receiver: "Char",
+    method:  "ResponseTalkingNpc",
+    params: [optIndex]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.cancelTalkingNpc = function() {
+  var clientCall = {
+    receiver: "Char",
+    method:  "CancelTalkingNpc",
+    params: []
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.handleNpcTalkBox = function(config) {
+  console.log(config);
+  this.world.views.game.handleNpcTalkBox(config);
+};
+
 Char.prototype.run = function() {
   this.attach();
 };
@@ -88,15 +169,28 @@ Char.prototype.logout = function() {
   this.world.conn.sendJSON(clientCall);
 };
 
-Char.prototype.equipByIndex = function(eq) {
-  var eqIndex = _.indexOf(this.items.equipment, eq);
-  if (eqIndex < 0) {
+Char.prototype.equipBySlot = function(eq) {
+  var eqSlot = _.indexOf(this.items.equipment, eq);
+  if (eqSlot < 0) {
     return;
   }
   var clientCall = {
     receiver: "Char",
-    method: "EquipByIndex",
-    params: [eqIndex]
+    method: "EquipBySlot",
+    params: [eqSlot]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.unequipBySlot = function(eq) {
+  var eqSlot = _.indexOf(this.usingEquips, eq);
+  if (eqSlot < 0) {
+    return;
+  }
+  var clientCall = {
+    receiver: "Char",
+    method: "UnequipBySlot",
+    params: [eqSlot]
   };
   this.world.conn.sendJSON(clientCall);
 };
@@ -126,9 +220,20 @@ Char.prototype.handleChatMessage = function(msg) {
   }
 };
 
+Char.prototype.handleAttributesChange = function(atts) {
+  _.each(atts, function(val, key) {
+    this[key] = val;
+  }, this);
+  this.world.views.game.forceUpdate();
+};
+
 // handle collsion with 3d object on mouse events
 Char.prototype.attach = function() {
   this.attachCanvas();
+  this.attachScene();
+};
+
+Char.prototype.attachScene = function() {
 };
 
 Char.prototype.attachCanvas = function() {
@@ -158,9 +263,11 @@ Char.prototype.handleCanvasMousemove = function(event) {
     return mesh.userData instanceof Bio;
   });
   firstBio = (_.isUndefined(firstBio) ? null : firstBio.object.userData);
-  // if (firstBio != this.lastMiniTarget) {
-  //   this.lastMiniTarget
-  // }
+  if (firstBio && firstBio != this) {
+    document.body.style.cursor = "pointer";
+  } else {
+    document.body.style.cursor = "";
+  }
   this.lastMiniTarget = firstBio;
   this.lastClientX = event.clientX;
   this.lastClientY = event.clientY;
@@ -171,7 +278,7 @@ Char.prototype.handleCanvasMousemove = function(event) {
       var mesh = obj.object;
       return mesh.userData.isGround;
     });
-    if (_.isObject(foundGround)) {
+    if (_.isObject(foundGround) && (firstBio instanceof Npc) == false) {
       this.move(foundGround.point.x, foundGround.point.y);
     }
   }
@@ -222,6 +329,20 @@ Char.prototype.handleCanvasMousehover = function(event) {
 };
 
 Char.prototype.handleCanvasClick = function(event) {
+  var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
+                                 - (event.clientY / window.innerHeight) * 2 + 1,
+                                 0.5);
+  var projector = this.scene.projector;
+  var ray = projector.pickingRay( vector, this.scene.camera );
+  var objects = ray.intersectObjects( this.scene.threeScene.children, true );
+  _.each(objects, function(obj) {
+    var mesh = obj.object;
+    if (mesh.userData instanceof Bio) {
+      var bio = mesh.userData;
+      event.char = this;
+      bio.emit("click", event);
+    }
+  }.bind(this));
 };
 
 Char.prototype.destroy = function() {
