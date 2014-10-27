@@ -1,6 +1,7 @@
 var ENV = process.env.ENV;
 var production =  ( ENV == 'pro' || ENV == 'production' ? true : false);
 var development = ( ENV == 'dev' || ENV == 'development' || !production  ? true : false);
+var argv = require('yargs').argv;
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var notify = require('gulp-notify');
@@ -49,13 +50,14 @@ gulp.task('jsx:watch', function() {
 
 var cssFiles = ['src/css/**/*.styl', 'node_modules/bootstrap/dist/css/bootstrap.min.css'];
 gulp.task('css:build', function() {
-  gulp.src(cssFiles)
+  var bundleCssDest = (argv.bundleCssDest ? argv.bundleCssDest : 'assets/css');
+  return gulp.src(cssFiles)
   .pipe(plumber({errorHandler: handleError('css:build')}))
   .pipe(stylus())
   .pipe(prefix("last 3 version", { cascade: true }))
   .pipe(minifyCSS({keepSpecialComments: 0}))
   .pipe(concat('bundle.css', {newLine: ''}))
-  .pipe(gulp.dest('assets/css'));
+  .pipe(gulp.dest(bundleCssDest));
 });
 
 gulp.task('css:watch', function() {
@@ -84,7 +86,8 @@ function scripts(watch) {
     if(production) {
       stream.pipe(gStreamify(uglify()));
     }
-    return stream.pipe(gulp.dest('assets/js'));
+    var bundleJsDest = (argv.bundleJsDest ? argv.bundleJsDest : 'assets/js');
+    return stream.pipe(gulp.dest(bundleJsDest)).pipe(notify('scripts build done!'));
   };
   bundler.on('update', rebundle);
   return rebundle();

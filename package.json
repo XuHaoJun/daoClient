@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "browserify": "*",
+    "yargs": "*",
     "gulp": "*",
     "gulp-autoprefixer": "*",
     "gulp-concat": "*",
