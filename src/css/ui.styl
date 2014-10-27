@@ -122,10 +122,16 @@ body
     width 100%
     bottom 0px
 
-.item-img
-  &:hover
-    cursor pointer
-
 .container-fluid.using-equips
   .row
     margin-top 10px
+
+.noselect {
+    user-select: none;
+}
+
+.dao-equipment, .dao-useSelfItem, .dao-shopItem
+  border 1px solid black;
+  &:hover
+    outline 2px solid black;
+    cursor pointer

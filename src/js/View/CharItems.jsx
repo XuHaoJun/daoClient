@@ -19,7 +19,9 @@ var CharItems = React.createClass({
                  'display': display};
     var header = (
       <div className="handle-draggable">
-        物品欄
+        <span className="handle-draggable">
+          物品欄
+        </span>
         <button
         type="button"
         className="close pull-right"
@@ -30,17 +32,20 @@ var CharItems = React.createClass({
     );
     var useSelfItems = (<ItemList items={this.props.items.useSelfItem}
                                   icons={this.props.world.assets.icon}
+                                  viewName="CharItems"
                                   step={6} />);
     var equipments = (<ItemList items={this.props.items.equipment}
                                 icons={this.props.world.assets.icon}
+                                viewName="CharItems"
                                 step={6} />);
     var etcItems = (<ItemList items={this.props.items.etcItem}
                               icons={this.props.world.assets.icon}
+                              viewName="CharItems"
                               step={6} /> );
     return (
-      <Draggable handle=".handle-draggable,.panel-heading"
+      <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                  zIndex={50}>
-        <Panel header={header} style={style}>
+        <Panel header={header} style={style} className="noselect">
           <TabbedArea defaultActiveKey={1} centerBlock>
             <TabPane key={1} tab="消耗">
               { useSelfItems }

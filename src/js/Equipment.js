@@ -5,6 +5,7 @@ var Equipment = module.exports = function (world, config) {
   Item.call(this, world);
   this.equipLimit = null;
   this.bonusInfo = null;
+  this.on("click", this.handleEquipClick);
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
@@ -29,8 +30,9 @@ Equipment.prototype.parseConfig = function(config) {
 
 // TODO
 // send request equip self to the sever
-Equipment.prototype.handleClick = function(event) {
-  if (_.isObject(this.owner)) {
+Equipment.prototype.handleEquipClick = function(event, viewName) {
+  if (_.isObject(this.owner) &&
+      (viewName == "CharItems" || viewName == "CharUsingEquips")) {
     if (_.indexOf(this.owner.usingEquips, this) == -1) {
       this.owner.equipBySlot(this);
     } else {

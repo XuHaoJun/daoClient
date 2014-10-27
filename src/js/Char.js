@@ -22,10 +22,12 @@ var Char = module.exports = function (account, config) {
   this.lastClientY = 0;
   this.lastMiniTarget = null;
   this.lastRequestId = null;
+  this.dzeny = 0;
   this.buttons = {canvas: {mouse: {isDowning: false,
                                    isUping: false,
                                    isHovering: true,
                                    isMoving: false}}};
+  this.draggingItem = null;
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
@@ -51,6 +53,7 @@ Char.prototype.parseConfig = function(config) {
     case "lastX":
     case "lastY":
     case "slotIndex":
+    case "dzeny":
       this[key] = val;
       break;
     }
@@ -66,23 +69,24 @@ Char.prototype.handleUpdateConfig = function(config) {
   }
 };
 
+function capitalize(s) {
+  return s[0].toUpperCase() + s.slice(1);
+}
+
 // TODO
 // add useSelfItem and etcItem
 Char.prototype.handleUpdateItems = function(items) {
   _.each(items, function(val, key) {
-    switch (key) {
-    case "equipment":
-      _.each(val, function(eqConfig, slot) {
-        if (_.isNull(eqConfig)) {
-          this.items.equipment[slot] = null;
-          return;
-        }
-        var eq = this.create.Equipment(eqConfig);
-        eq.owner = this;
-        this.items.equipment[slot] = eq;
-      }, this);
-      break;
-    }
+    _.each(val, function(itemConfig, slot) {
+      if (_.isNull(itemConfig)) {
+        this.items[key][slot] = null;
+        return;
+      }
+      var item = this.create[capitalize(key)](itemConfig);
+      item.owner = this;
+      item.slotIndex = parseInt(slot);
+      this.items[key][slot] = item;
+    }, this);
   }, this);
   if (_.isObject(this.world.views.game)) {
     this.world.views.game.handleCharItems(this.items);
@@ -134,6 +138,59 @@ Char.prototype.cancelTalkingNpc = function() {
 Char.prototype.handleNpcTalkBox = function(config) {
   console.log(config);
   this.world.views.game.handleNpcTalkBox(config);
+};
+
+Char.prototype.cancelOpeningShop = function() {
+  var clientCall = {
+    receiver: "Char",
+    method:  "CancelOpeningShop",
+    params: []
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+function itemTypeByBaseId(i) {
+  if (i >= 1 && i <= 5000) {
+    return "equipment";
+  } else if (i >= 5001 && i <= 10000) {
+    return "useSelfItem";
+  } else {
+    return "etcItem";
+  }
+}
+
+Char.prototype.buyItemFromOpeningShop = function(sellIndex) {
+  var clientCall = {
+    receiver: "Char",
+    method:  "BuyItemFromOpeningShop",
+    params: [sellIndex]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.sellItemToOpeningShop = function(baseId, slotIndex) {
+  var clientCall = {
+    receiver: "Char",
+    method:  "SellItemToOpeningShop",
+    params: [baseId, slotIndex]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.handleShop = function(shopConfig) {
+  if (_.isNull(shopConfig)) {
+    this.world.views.game.handleShop(shopConfig);
+    return;
+  }
+  var items = _.map(shopConfig.items, function(item, idx) {
+    var iType = itemTypeByBaseId(item.itemConfig.baseId);
+    var it = this.create[capitalize(iType)](item);
+    it.shopIndex = idx;
+    return it;
+  }, this);
+  shopConfig.items = items;
+  this.world.views.game.handleShop(shopConfig);
+  console.log("handleShop:", shopConfig);
 };
 
 Char.prototype.run = function() {

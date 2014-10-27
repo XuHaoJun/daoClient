@@ -17,7 +17,9 @@ var CharInfo = React.createClass({
                  'display': display};
     var header = (
       <div className="handle-draggable">
-        人物資訊
+        <span className="handle-draggable">
+          人物資訊
+        </span>
         <button
         type="button"
         className="close pull-right"
@@ -28,15 +30,17 @@ var CharInfo = React.createClass({
     );
     var char = this.props.char;
     return (
-      <Draggable handle=".handle-draggable,.panel-heading"
+      <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                  zIndex={50}>
-        <Panel header={header} style={style}>
+        <Panel header={header} style={style}  className="noselect">
           <TabbedArea defaultActiveKey={1} centerBlock>
             <TabPane key={1} tab="基本資訊">
               <h4>Name:</h4>
               <p>{ char.name }</p>
               <h4>Level:</h4>
               <p>{ char.level }</p>
+              <h4>Dzeny:</h4>
+              <p>{ char.dzeny }</p>
             </TabPane>
             <TabPane key={2} tab="主屬性">
               <p>Str: {char.str}</p>

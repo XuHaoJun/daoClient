@@ -9,12 +9,14 @@ var Colm = BS.Col;
 var Game2dUI = require('./Game2dUI');
 var ChatBox = require('./ChatBox');
 var NpcTalkBox = require('./NpcTalkBox');
+var Shop = require('./Shop');
 
 var Game = React.createClass({
   getInitialState: function() {
     return {chatMessages: [],
             miniTarget: null,
             npcTalkBox: null,
+            shop: null,
             char: this.props.world.account.usingChar,
             charItems: this.props.world.account.usingChar.items,
             charUsingEquips: this.props.world.account.usingChar.usingEquips
@@ -58,6 +60,21 @@ var Game = React.createClass({
       this.setState({npcTalkBox: this.renderNpcTalkBox(npcTalkBoxConfig)});
     }
   },
+  renderShop: function(shopConfig) {
+    return (
+      <Shop name={shopConfig.name}
+            items={shopConfig.items}
+            world={this.props.world}
+            />
+    );
+  },
+  handleShop: function(shopConfig) {
+    if (_.isNull(shopConfig)) {
+      this.setState({shop: null});
+    } else {
+      this.setState({shop: this.renderShop(shopConfig)});
+    }
+  },
   render: function() {
     return (
       <div id="dao-game">
@@ -78,9 +95,8 @@ var Game = React.createClass({
           messages={this.state.chatMessages}
           char={this.props.world.account.usingChar} />
         </div>
-        <div style={{'margin-left': '25%', 'margin-top': '70%', 'max-width': '50%'}}>
-          {this.state.npcTalkBox}
-        </div>
+        {this.state.npcTalkBox}
+      {this.state.shop}
       </div>
     );
   }

@@ -5,6 +5,8 @@ var Account = require('./Account.js');
 var Char = require('./Char.js');
 var Npc = require('./Npc.js');
 var Equipment = require('./Equipment.js');
+var UseSelfItem = require('./UseSelfItem.js');
+var EtcItem = require('./EtcItem.js');
 
 var ObjectCreator = module.exports = function (world) {
   this.world = world;
@@ -37,6 +39,14 @@ ObjectCreator.prototype = {
 
   Equipment: function (config) {
     return new Equipment(this.world, config);
+  },
+
+  UseSelfItem: function (config) {
+    return new UseSelfItem(this.world, config);
+  },
+
+  EtcItem: function (config) {
+    return new EtcItem(this.world, config);
   }
 };
 

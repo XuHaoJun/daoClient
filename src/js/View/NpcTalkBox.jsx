@@ -25,6 +25,9 @@ var NpcTalkBox = React.createClass({
     var char = this.props.world.account.usingChar;
     char.cancelTalkingNpc();
   },
+  componentWillUnmount: function () {
+    this.props.world.account.usingChar.handleCanvasMouseenter();
+  },
   render: function() {
     var char = this.props.world.account.usingChar;
     var buttons = _.map(this.props.options, function(opt, index) {

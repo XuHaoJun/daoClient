@@ -73,7 +73,7 @@ var Game2dUI = React.createClass({
                   </Row>
                 </Colm>
                 <Colm md={4} sm={4}>
-                  <div className="center-block">
+                  <div className="center-block noselect">
                     <ProgressBar bsStyle='danger' now={hpNow}
                                  label="%(percent)s%" style={{'margin-bottom': '2px'}}/>
                     <ProgressBar bsStyle='info' now={mpNow}

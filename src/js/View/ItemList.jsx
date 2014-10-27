@@ -13,6 +13,7 @@ var ItemList = React.createClass({
     var items = this.props.items;
     var icons = this.props.icons;
     var colLength = this.props.step;
+    var viewName = this.props.viewName;
     var itemsGroup = _.groupBy(items, function(item, index) {
       return Math.floor(index / colLength);
     });
@@ -20,7 +21,7 @@ var ItemList = React.createClass({
       var colItems = _.map(rowItem, function(item, colIndex) {
         return (
           <Colm key={colIndex} md={2}>
-            <Item item={item} icons={icons} />
+            <Item key={item} item={item} icons={icons} viewName={viewName}/>
           </Colm>
         );
       });

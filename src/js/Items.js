@@ -13,40 +13,55 @@ var Items = module.exports = function (world, config) {
   }
 };
 
+function capitalize(s) {
+  return s[0].toUpperCase() + s.slice(1);
+}
+
 Items.prototype.parseConfig = function(config) {
-  _.each(config, function(val, key) {
-    switch (key) {
-    case "useSelfItem":
-      this.useSelfItem = [];
-      _.each(val, function(item) {
-        if (item) {
-          this.useSelfItem.push(new UseSelfItem(this.world, item));
-        } else {
-          this.useSelfItem.push(null);
-        }
-      }, this);
-      break;
-    case "equipment":
-      this.equipment = [];
-      _.each(val, function(item) {
-        if (item) {
-        this.equipment.push(new Equipment(this.world, item));
-        } else {
-          this.equipment.push(null);
-        }
-      }, this);
-      break;
-    case "etcItem":
-      this.etcItem = [];
-      _.each(val, function(item) {
-        if (item) {
-          this.etcItem.push(new EtcItem(this.world, item));
-        } else {
-          this.etcItem.push(null);
-        }
-      }, this);
-      break;
-    }
+  _.each(config, function(val, itemType) {
+    this[itemType] = [];
+    _.each(val, function(itemConfig, slotIndex) {
+      if (itemConfig) {
+        var item = this.world.create[capitalize(itemType)](itemConfig);
+        item.slotIndex = slotIndex;
+        this[itemType].push(item);
+      } else {
+        this[itemType].push(null);
+      }
+    }, this);
+
+    // switch (key) {
+    // case "useSelfItem":
+    //   this.useSelfItem = [];
+    //   _.each(val, function(item) {
+    //     if (item) {
+    //       this.useSelfItem.push(new UseSelfItem(this.world, item));
+    //     } else {
+    //       this.useSelfItem.push(null);
+    //     }
+    //   }, this);
+    //   break;
+    // case "equipment":
+    //   this.equipment = [];
+    //   _.each(val, function(item) {
+    //     if (item) {
+    //     this.equipment.push(new Equipment(this.world, item));
+    //     } else {
+    //       this.equipment.push(null);
+    //     }
+    //   }, this);
+    //   break;
+    // case "etcItem":
+    //   this.etcItem = [];
+    //   _.each(val, function(item) {
+    //     if (item) {
+    //       this.etcItem.push(new EtcItem(this.world, item));
+    //     } else {
+    //       this.etcItem.push(null);
+    //     }
+    //   }, this);
+    //   break;
+    // }
   }, this);
 };
 

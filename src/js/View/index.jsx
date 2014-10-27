@@ -17,6 +17,7 @@ module.exports = {
   Item: require('./Item'),
   CharItems: require('./CharItems'),
   CharInfo: require('./CharInfo'),
+  Shop: require('./Shop'),
   VideoConfigModal: require('./VideoConfigModal'),
   BrowserDependCheck: require('./BrowserDependCheck')
 };

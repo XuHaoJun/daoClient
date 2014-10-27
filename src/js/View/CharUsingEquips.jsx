@@ -20,7 +20,9 @@ var CharUsingEquips = React.createClass({
                  'display': display};
     var header = (
       <div className="handle-draggable">
-        裝備欄
+        <span className="handle-draggable">
+          裝備欄
+        </span>
         <button
         type="button"
         className="close pull-right"
@@ -34,7 +36,7 @@ var CharUsingEquips = React.createClass({
     if (this.props.usingEquips) {
       usingEquips = _.map(this.props.usingEquips, function(eq, index) {
         if (eq) {
-          return (<Item item={eq} icons={icons} />);
+          return (<Item item={eq} icons={icons} viewName="CharUsingEquips"/>);
         } else {
           var boxStyle = {
             width: '34px',
@@ -56,9 +58,9 @@ var CharUsingEquips = React.createClass({
       'background-color': '#EEE'
     };
     return (
-      <Draggable handle=".handle-draggable,.panel-heading"
+      <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                  zIndex={50}>
-        <Panel header={header} style={style}>
+        <Panel header={header} style={style} className="noselect">
           <Grid fluid className="using-equips">
             <Row>
               <Colm md={4}>

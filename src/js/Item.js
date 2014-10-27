@@ -10,8 +10,13 @@ var Item = module.exports = function (world, config) {
   this.ageisName = '';
   this.iconViewId = 0;
   this.bodyViewId = 0;
+  this.buyPrice = 0;
+  this.sellPrice = 0;
   this.icon = null;
   this.owner = null;
+  this.slotIndex = -1;
+  this.on("click", this.handleShopClick);
+  this.on("click", this.handleSellClick);
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
@@ -28,13 +33,15 @@ Item.prototype.parseConfig = function(config) {
     case "ageisName":
     case "iconViewId":
     case "bodyViewId":
+    case "buyPrice":
+    case "sellPrice":
       this[key] = val;
       break;
     case "cpBody":
       this.cpBody = parseClient.cpBody(val);
       break;
     default:
-      console.log("unknown config");
+      console.log("unknown config: ", key, val);
       break;
     }
   }, this);
@@ -47,4 +54,20 @@ Item.prototype.parseConfig = function(config) {
   if (_.isNumber(config.iconViewId)) {
     this.icon = this.world.assets.icon[this.iconViewId];
   }
+};
+
+Item.prototype.handleShopClick = function(event, viewName) {
+  if (viewName != "Shop" || !_.isNumber(this.shopIndex)) {
+    return;
+  }
+  var char = this.world.account.usingChar;
+  char.buyItemFromOpeningShop(this.shopIndex);
+};
+
+Item.prototype.handleSellClick = function(event, viewName) {
+  if (viewName != "CharItems" || event.ctrlKey == false) {
+    return;
+  }
+  var char = this.world.account.usingChar;
+  char.sellItemToOpeningShop(this.baseId, this.slotIndex);
 };
