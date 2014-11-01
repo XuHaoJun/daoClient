@@ -5,6 +5,7 @@ var UseSelfItem = module.exports = function (world, config) {
   Item.call(this, world);
   this.stackCount = 0;
   this.maxStackCount = 0;
+  this.on("click", this.handleUseClick);
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
@@ -24,4 +25,11 @@ UseSelfItem.prototype.parseConfig = function(config) {
       break;
     }
   }, this);
+};
+
+UseSelfItem.prototype.handleUseClick = function(event, viewName) {
+  if (_.isObject(this.owner) &&
+      (viewName == "CharItems")) {
+    this.owner.useItemBySlot(this.slotIndex);
+  }
 };

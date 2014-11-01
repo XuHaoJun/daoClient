@@ -82,6 +82,16 @@ Bio.prototype.parseConfig = function(config) {
   }
 };
 
+Bio.prototype.handleUpdateBioConfig = function(config) {
+  _.each(config, function(val, key) {
+    this[key] = val;
+  }, this);
+  if (_.isObject(this.world.views.game) &&
+      this.world.account.usingChar.lastMiniTarget == this) {
+    this.world.views.game.handleMiniTarget(this);
+  }
+};
+
 Bio.prototype.onKill = function(target) {
 };
 

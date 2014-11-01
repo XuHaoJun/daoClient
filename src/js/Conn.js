@@ -1,12 +1,16 @@
 var _ = require('lodash');
+var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var React = require('react');
 var View = require('./View');
 
 var Conn = module.exports = function(world, wsurl) {
+  EventEmitter2.call(this);
   this.wsurl = wsurl;
   this.world = world;
   this.sock = null;
 };
+
+Conn.prototype = Object.create(EventEmitter2.prototype);
 
 Conn.prototype.run = function() {
   this.sock = new WebSocket(this.wsurl);
@@ -20,7 +24,8 @@ Conn.prototype.run = function() {
   }.bind(this);
   this.sock.onopen = function() {
     console.log('successfully connect to dao server');
-  };
+    this.emit('onopen');
+  }.bind(this);
   this.sock.onmessage = function(r) {
     this.handleOnmessage(r);
   }.bind(this);

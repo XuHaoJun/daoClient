@@ -1,3 +1,5 @@
+"use strict";
+
 var $ = require('jquery/dist/jquery');
 var World = require('./World.js');
 

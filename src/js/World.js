@@ -8,11 +8,13 @@ require('browsernizr/test/blob');
 require('browsernizr/test/json');
 var Modernizr = require('browsernizr');
 var _ = require('lodash');
+var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var React = require('react');
 var View = require('./View');
 var ObjectCreator = require('./ObjectCreator.js');
 
 var World = module.exports = function (config) {
+  EventEmitter2.call(this);
   this.scenes = {};
   this.assets  = {image: {}, audio: {},
                   geometry: {}, texture: {},
@@ -29,9 +31,15 @@ var World = module.exports = function (config) {
   this.initThreeCanvas();
   this.loader = this.create.Loader();
   this.loader.once('complete', function() {
+    this.conn.once('onopen', function() {
+      this.emit("connOnopen");
+    }.bind(this));
     this.conn.run();
+    this.emit("loadComplete");
   }.bind(this));
 };
+
+World.prototype = Object.create(EventEmitter2.prototype);
 
 World.prototype.run = function() {
   if (this.browserDependCheck()) {
@@ -140,7 +148,11 @@ World.prototype.handleSuccessLoginAcccount = function(accountConfig) {
     this.views.selectChar = React
       .renderComponent(View.SelectChar({world: this}),
                        document.body);
+    this.emit('handleSuccessLoginAcccount', accountConfig);
   }
+};
+
+World.prototype.handleSuccessRegisterAccount = function(config) {
 };
 
 World.prototype.handleErrorLoginAccount = function(err) {

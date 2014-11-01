@@ -54,10 +54,10 @@ var Shop = React.createClass({
     var icons = this.props.world.assets.icon;
     var sellItemsList = _.map(items, function(item) {
       return (
-        <Row key={item}
+        <Row key={item.baseId}
              className="dao-shopItem"
              style={{"max-width": '30%'}}
-             onClick={function(event) {item.emit("click", event,"Shop");}}
+             onClick={function(event) {item.emit("click", event, "Shop");}}
              >
           <Colm md={4}>
             <Item item={item} icons={icons} viewName="Shop"/>
@@ -83,7 +83,7 @@ var Shop = React.createClass({
                onDragOver={function(e) {e.preventDefault();}}
                className="noselect">
           <Grid>
-            {sellItemsList}
+            { sellItemsList }
           </Grid>
         </Panel>
       </Draggable>

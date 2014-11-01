@@ -117,6 +117,15 @@ Char.prototype.talkNpcById = function(npc) {
   this.world.conn.sendJSON(clientCall);
 };
 
+Char.prototype.useItemBySlot = function(slot) {
+  var clientCall = {
+    receiver: "Char",
+    method:  "UseItemBySlot",
+    params: [slot]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
 Char.prototype.responseTalkingNpc = function(optIndex) {
   var clientCall = {
     receiver: "Char",

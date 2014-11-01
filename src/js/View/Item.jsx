@@ -9,7 +9,8 @@ var Equipment = require('../Equipment');
 var UseSelfItem = require('../UseSelfItem');
 
 var itemDescription = {
-  1: "初學者使用的長劍。"
+  1: "初學者使用的長劍。",
+  10001: "普通的小石子。"
 };
 
 var Item = React.createClass({
@@ -62,10 +63,20 @@ var Item = React.createClass({
           </div>
         );
       }
+      var itemStackCount = null;
+      if (_.isNumber(item.stackCount)) {
+        itemStackCount = (
+          <div>
+            <h4>Stack Count</h4>
+            { item.stackCount }
+          </div>
+        );
+      }
       var itemInfo = (
         <Popover title={item.name}>
           { itemDesc }
-        { itemBonus }
+          { itemBonus }
+          { itemStackCount }
         </Popover>
       );
       var className = "dao-item";

@@ -7,7 +7,7 @@ var Colm = BS.Col;
 var Alert = BS.Alert;
 var Button = BS.Button;
 var ModalTrigger = BS.ModalTrigger;
-var RegisterAccountModal = require('./RegisterAccountModal');
+var RegisterAccountModal = require('./RegisterAccountModal.js');
 
 var Login = React.createClass({
   getInitialState: function() {
@@ -55,7 +55,7 @@ var Login = React.createClass({
         </Row>
         <Row>
           <Colm sm={6} md={4} mdOffset={4}>
-            <ModalTrigger modal={RegisterAccountModal({world: this.props.world})}>
+            <ModalTrigger modal={<RegisterAccountModal world={this.props.world} />} >
               <Button bsStyle='success'>Register</Button>
             </ModalTrigger>
           </Colm>

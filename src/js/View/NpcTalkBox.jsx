@@ -6,7 +6,7 @@ var BS = require('react-bootstrap');
 var Modal = BS.Modal;
 var Button = BS.Button;
 
-var npcTalkButton = React.createClass({
+var NpcTalkButton = React.createClass({
   handleClick: function() {
     var char = this.props.char;
     char.responseTalkingNpc(this.props.index);
@@ -32,7 +32,7 @@ var NpcTalkBox = React.createClass({
     var char = this.props.world.account.usingChar;
     var buttons = _.map(this.props.options, function(opt, index) {
       return (
-        <npcTalkButton key={index}
+        <NpcTalkButton key={index}
                        name={opt.name}
                        index={index}
                        char={char}
