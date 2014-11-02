@@ -16,26 +16,70 @@ var Scene = module.exports = function (world, config) {
   this.height = 0;
   this.grounds = [];
   this.threeScene = new THREE.Scene();
+  this.clock = new THREE.Clock();
+  this.projector = new THREE.Projector();
+  this.cpSpace = new cp.Space();
   this.threeResize = null;
   this.focusObj = null;
   this.camera = null;
   this.renderer = null;
   this.requestId = null;
-  this.clock = new THREE.Clock();
-  this.projector = new THREE.Projector();
-  this.cpSpace = new cp.Space();
   this.cpSpace.iterations = 10;
   this.wallCpShapes = [];
   this.staticShapes = [];
   // this.staticCpBodys = [];
   this.canvas = world.threeCanvas;
   this.sceneObjects = {};
+  // TODO addDefaultLight just for test will remove in the future
+  this.addDefaultLight();
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
 };
 
 Scene.prototype = Object.create(EventEmitter2.prototype);
+
+Scene.prototype.addDefaultLight = function() {
+  var light;
+  // add a ambient light
+  var ambient = new THREE.AmbientLight( 0x444444 );
+  this.threeScene.add( ambient );
+  // add a light in front
+  light = new THREE.SpotLight( 0xFFF4E5, 1, 0, Math.PI / 2, 1 );
+  light.position.set( 0, 0, 1000 );
+  // light.target.position.set( 0, 0, 0 );
+
+  light.castShadow = true;
+  // light.shadowCameraNear = 200;
+  // light.shadowCameraFar = 50;
+  // light.shadowCameraFov = 50;
+  // light.shadowCameraVisible = true;
+  light.shadowCameraNear = 500;
+  light.shadowCameraFar = 4000;
+  light.shadowCameraFov = 30;
+
+  // light.shadowBias = 0.0001;
+  light.shadowDarkness = 0.5;
+  var SHADOW_MAP_WIDTH = 1024, SHADOW_MAP_HEIGHT = 1024;
+  light.shadowMapWidth = SHADOW_MAP_WIDTH;
+  light.shadowMapHeight = SHADOW_MAP_HEIGHT;
+
+  // light       = new THREE.DirectionalLight('white', 1);
+  // light.castShadow = true;
+  // light.shadowDarkness = 0.5;
+  // light.shadowCameraRight = 5;
+  // light.shadowCameraLeft = -5;
+  // light.shadowCameraTop = 5;
+  // light.shadowCameraBottom = -5;
+  // light.shadowCameraNear = 2;
+  // light.shadowCameraFar = 100;
+  // light.position.set(-400,2,500).normalize();
+  this.threeScene.add( light );
+  // add a light behind
+  // light       = new THREE.DirectionalLight('white', 0.75);
+  // light.position.set(-0.5, 2.5, -2);
+  // this.threeScene.add( light );
+};
 
 Scene.prototype.createWallCpBodys = function() {
   var w = this.width,
@@ -92,15 +136,15 @@ Scene.prototype.parseConfig = function(config) {
   }, this);
   if (this.width > 0 && this.height > 0 &&
       _.isEmpty(this.grounds)) {
-    this.addDefaultPlaneGround();
+    this.addDefaultPlaneGround(config["defaultGroundTextureName"]);
   }
   if (run === true) {
     this.run();
   }
 };
 
-Scene.prototype.addDefaultPlaneGround = function() {
-  var image = this.world.assets.image.grass;
+Scene.prototype.addDefaultPlaneGround = function(groundTextureName) {
+  var image = this.world.assets.image[groundTextureName];
   var geometry = new THREE.PlaneGeometry(this.width, this.height);
   var material;
   if (_.isElement(image)) {
@@ -185,7 +229,10 @@ Scene.prototype.handleAddNpc = function(npcConfig) {
   this.add(npc);
 };
 
-Scene.prototype.handleRemoveById = function(id) {
+Scene.prototype.handleRemoveById = function(id, sceneName) {
+  if (sceneName != this.name) {
+    return;
+  }
   this.remove(this.sceneObjects[id]);
 };
 
@@ -208,45 +255,6 @@ Scene.prototype.attachCanvas = function(threeCanvas) {
   this.camera.position.z = 650;
   this.camera.lookAt(this.threeScene);
   this.camera.lastPosition = this.camera.position.clone();
-  var light;
-  // add a ambient light
-  var ambient = new THREE.AmbientLight( 0x444444 );
-  this.threeScene.add( ambient );
-  // add a light in front
-  light = new THREE.SpotLight( 0xFFF4E5, 1, 0, Math.PI / 2, 1 );
-  light.position.set( 0, 0, 1000 );
-  // light.target.position.set( 0, 0, 0 );
-
-  light.castShadow = true;
-  // light.shadowCameraNear = 200;
-  // light.shadowCameraFar = 50;
-  // light.shadowCameraFov = 50;
-  // light.shadowCameraVisible = true;
-  light.shadowCameraNear = 500;
-  light.shadowCameraFar = 4000;
-  light.shadowCameraFov = 30;
-
-  // light.shadowBias = 0.0001;
-  light.shadowDarkness = 0.5;
-  var SHADOW_MAP_WIDTH = 1024, SHADOW_MAP_HEIGHT = 1024;
-  light.shadowMapWidth = SHADOW_MAP_WIDTH;
-  light.shadowMapHeight = SHADOW_MAP_HEIGHT;
-
-  // light       = new THREE.DirectionalLight('white', 1);
-  // light.castShadow = true;
-  // light.shadowDarkness = 0.5;
-  // light.shadowCameraRight = 5;
-  // light.shadowCameraLeft = -5;
-  // light.shadowCameraTop = 5;
-  // light.shadowCameraBottom = -5;
-  // light.shadowCameraNear = 2;
-  // light.shadowCameraFar = 100;
-  // light.position.set(-400,2,500).normalize();
-  this.threeScene.add( light );
-  // add a light behind
-  // light       = new THREE.DirectionalLight('white', 0.75);
-  // light.position.set(-0.5, 2.5, -2);
-  // this.threeScene.add( light );
   this.threeResize = new THREEx.WindowResize(this.renderer, this.camera);
 };
 

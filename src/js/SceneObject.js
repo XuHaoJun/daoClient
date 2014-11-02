@@ -4,7 +4,7 @@ var EventEmitter2 = require('eventemitter2').EventEmitter2;
 
 var SceneObject = module.exports = function () {
   EventEmitter2.call(this);
-  this.id = 0;
+  this.id = -1;
   this.scene = null;
   this.bodyViewId = 0;
   this.threeBody = null;

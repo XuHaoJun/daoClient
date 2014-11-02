@@ -10,6 +10,8 @@ var UseSelfItem = require('../UseSelfItem');
 
 var itemDescription = {
   1: "初學者使用的長劍。",
+  5001: "藥水。",
+  5002: "回城。",
   10001: "普通的小石子。"
 };
 

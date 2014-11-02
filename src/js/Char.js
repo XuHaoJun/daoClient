@@ -28,6 +28,16 @@ var Char = module.exports = function (account, config) {
                                    isHovering: true,
                                    isMoving: false}}};
   this.draggingItem = null;
+  this.canvasEvents = {
+    "mousemove": this.handleCanvasMousemove.bind(this),
+    "mousestop": this.handleCanvasMousestop.bind(this),
+    "mouseup": this.handleCanvasMouseup.bind(this),
+    "mousedown": this.handleCanvasMousedown.bind(this),
+    "mouseleave": this.handleCanvasMouseleave.bind(this),
+    "mouseenter": this.handleCanvasMouseenter.bind(this),
+    "mousehover": this.handleCanvasMousehover.bind(this),
+    "click": this.handleCanvasClick.bind(this)
+  };
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
@@ -275,9 +285,26 @@ Char.prototype.talkScene = function(content) {
 
 Char.prototype.handleJoinScene = function(config) {
   this.id = config.id;
+  // FIXME
+  // should not clone again, i didn't known why can't show the mesh
+  // after change another scene.
+  this.threeBody = this.world.assets.mesh[this.bodyViewId].clone();
+  this.threeBody.userData = this;
+  //
   this.world.scenes[config.sceneName].add(this);
-  this.scene.focusObj = this;
-  this.run();
+  if (this.scene) {
+    this.scene.focusObj = this;
+    this.run();
+  }
+};
+
+Char.prototype.handleLeaveScene = function() {
+  this.destroy();
+  this.scene.remove(this);
+};
+
+Char.prototype.handleSetPosition = function(pos) {
+  this.setPosition(pos);
 };
 
 Char.prototype.handleChatMessage = function(msg) {
@@ -296,23 +323,14 @@ Char.prototype.handleAttributesChange = function(atts) {
 // handle collsion with 3d object on mouse events
 Char.prototype.attach = function() {
   this.attachCanvas();
-  this.attachScene();
-};
-
-Char.prototype.attachScene = function() {
 };
 
 Char.prototype.attachCanvas = function() {
   this.scene.focusObj = this;
-  var canvas = this.scene.canvas;
-  canvas.addEventListener("mousemove", this.handleCanvasMousemove.bind(this), false);
-  $(canvas).on("mousestop", this.handleCanvasMousestop.bind(this));
-  canvas.addEventListener("mouseup", this.handleCanvasMouseup.bind(this), false);
-  canvas.addEventListener("mousedown", this.handleCanvasMousedown.bind(this), false);
-  canvas.addEventListener("mouseleave", this.handleCanvasMouseleave.bind(this), false);
-  canvas.addEventListener("mouseenter", this.handleCanvasMouseenter.bind(this), false);
-  canvas.addEventListener("mousehover", this.handleCanvasMousehover.bind(this), false);
-  canvas.addEventListener("click", this.handleCanvasClick.bind(this), false);
+  var canvas = $(this.scene.canvas);
+  _.each(this.canvasEvents, function(event, eventName) {
+    canvas.on(eventName, event);
+  });
 };
 
 Char.prototype.handleCanvasMousemove = function(event) {
@@ -413,13 +431,8 @@ Char.prototype.handleCanvasClick = function(event) {
 
 Char.prototype.destroy = function() {
   this.scene.focusObj = null;
-  var canvas = this.scene.canvas;
-  canvas.removeEventListener("mousemove", this.handleCanvasMousemove, false);
-  $(canvas).off("mousestop", this.handleCanvasMousestop);
-  canvas.removeEventListener("mouseup", this.handleCanvasMouseup, false);
-  canvas.removeEventListener("mousedown", this.handleCanvasMousedown, false);
-  canvas.removeEventListener("mouseleave", this.handleCanvasMouseleave, false);
-  canvas.removeEventListener("mouseenter", this.handleCanvasMouseenter, false);
-  canvas.removeEventListener("mousehover", this.handleCanvasMousehover, false);
-  canvas.removeEventListener("click", this.handleCanvasClick, false);
+  var canvas = $(this.scene.canvas);
+  _.each(this.canvasEvents, function(event, eventName) {
+    canvas.off(eventName, event);
+  });
 };

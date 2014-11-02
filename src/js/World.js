@@ -115,6 +115,7 @@ World.prototype.handleDisconnect = function() {
   if (_.isObject(this.account) &&
       _.isObject(this.account.usingChar)) {
     this.account.usingChar.destroy();
+    // may be remove to world scenes after scene destroy
     this.account.usingChar.scene.destroy();
   }
   this.initConn();
@@ -172,4 +173,8 @@ World.prototype.handleRunScene = function(sceneName) {
   }
   this.scenes[sceneName].run();
   this.isGaming = true;
+};
+
+World.prototype.handleDestroyScene = function(name) {
+  this.scenes[name].destroy();
 };
