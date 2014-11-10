@@ -50,6 +50,7 @@ var Char = module.exports = function (account, config) {
     "mouseleave": this.handleCanvasMouseleave.bind(this),
     "mouseenter": this.handleCanvasMouseenter.bind(this),
     "mousehover": this.handleCanvasMousehover.bind(this),
+    "mousewheel": this.handleCanvasMousewheel.bind(this),
     "click": this.handleCanvasClick.bind(this)
   };
   this.documentEvents = {
@@ -533,6 +534,13 @@ Char.prototype.handleCanvasMouseenter = function(event) {
 
 Char.prototype.handleCanvasMousehover = function(event) {
   this.buttons.canvas.mouse.isHovering = true;
+};
+
+Char.prototype.handleCanvasMousewheel = function(event) {
+  var e = event.originalEvent;
+  var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+  this.scene.camera.position.z += delta * 2;
+  return false;
 };
 
 Char.prototype.handleDocumentKeydown = function(event) {
