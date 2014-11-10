@@ -17,6 +17,11 @@ var itemDescription = {
 };
 
 var Item = React.createClass({
+  getDefaultProps: function() {
+    return {
+      popOverPlacement: "bottom"
+    };
+  },
   handleClick: function(event) {
     this.props.item.emit("click", event, this.props.viewName);
   },
@@ -93,13 +98,18 @@ var Item = React.createClass({
       }
       return this.transferPropsTo(
         <OverlayTrigger trigger="hover"
-                        placement="bottom"
+                        placement={this.props.popOverPlacement}
                         overlay={itemInfo}>
-          <img onClick={this.handleClick}
+          <div className={className + " " + this.props.className}
+               onClick={this.handleClick}
                onDragStart={this.handleDragStart}
-               className={className + " " + this.props.className}
-               draggable="true"
-               src={iconSrc} />
+               draggable="true">
+            <img draggable="false"
+                 src={iconSrc} />
+            <strong className="dao-item-stackCount" >
+              {item.stackCount}
+            </strong>
+          </div>
         </OverlayTrigger>
       );
     } else {

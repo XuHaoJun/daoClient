@@ -88,9 +88,6 @@ var NormalHotKey = React.createClass({
       if (item == null) {
         return this.renderEmpty();
       }
-      var defaultKeyStyle = {
-        'background-color': '#EEE'
-      };
       return (
         <Item item={item}
               className="dao-hotKey-item"

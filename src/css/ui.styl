@@ -129,17 +129,6 @@ body
 .noselect
   user-select none
 
-.dao-charItems
-  .dao-equipment, .dao-useSelfItem
-    border 1px solid black
-    &:hover
-      outline 2px solid black
-      cursor pointer
-  .dao-etcItem
-    border 1px solid black
-    &:hover
-      outline 2px solid black
-
 .dao-shop
   .dao-shopItem
     border 1px solid black
@@ -155,4 +144,25 @@ body
 
 .dao-hotKeys
   .dao-hotKey-item
-    background-color #EEE
+    img
+      background-color #EEE
+
+.dao-charItems
+  .dao-item
+    border 1px solid black
+  .dao-equipment, .dao-useSelfItem
+    &:hover
+      outline 2px solid black
+      cursor pointer
+  .dao-etcItem
+    &:hover
+      outline 2px solid black
+
+.dao-item
+  position relative
+  .dao-item-stackCount
+    user-select none
+    position absolute
+    bottom 0
+    left 0
+    padding-left 2px
