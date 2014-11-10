@@ -23,7 +23,8 @@ var World = module.exports = function (config) {
   this.isGaming = false;
   this.account = null;
   this.serverList = {
-    main: (location.hostname + ":"  + location.port)
+    main: (location.hostname + ":"  + location.port),
+    default: (location.hostname + ":"  + location.port)
   };
   if (isNode) {
     this.serverList.main = "127.0.0.1:3000";
