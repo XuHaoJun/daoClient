@@ -66,7 +66,7 @@ gulp.task('css:watch', function() {
 
 function scripts(watch) {
   var bundler, rebundle;
-  bundler = browserify('./src/js/App.js', {
+  bundler = browserify('./src/js/Main.js', {
     basedir: __dirname,
     cache: {}, // required for watchify
     packageCache: {}, // required for watchify
