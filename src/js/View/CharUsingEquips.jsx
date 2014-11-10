@@ -31,12 +31,11 @@ var CharUsingEquips = React.createClass({
         />
       </div>
     );
-    var icons = this.props.world.assets.icon;
     var usingEquips = null;
     if (this.props.usingEquips) {
       usingEquips = _.map(this.props.usingEquips, function(eq, index) {
         if (eq) {
-          return (<Item item={eq} icons={icons} viewName="CharUsingEquips"/>);
+          return (<Item item={eq} viewName="CharUsingEquips"/>);
         } else {
           var boxStyle = {
             width: '34px',

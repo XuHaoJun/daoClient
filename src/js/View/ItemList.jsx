@@ -11,7 +11,6 @@ var Item = require('./Item');
 var ItemList = React.createClass({
   render: function() {
     var items = this.props.items;
-    var icons = this.props.icons;
     var colLength = this.props.step;
     var viewName = this.props.viewName;
     var itemsGroup = _.groupBy(items, function(item, index) {
@@ -21,7 +20,8 @@ var ItemList = React.createClass({
       var colItems = _.map(rowItem, function(item, colIndex) {
         return (
           <Colm key={colIndex} md={2}>
-            <Item key={item} item={item} icons={icons} viewName={viewName}/>
+            <Item key={item} item={item} viewName={viewName}
+                  className="center-block" />
           </Colm>
         );
       });

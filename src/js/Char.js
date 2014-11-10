@@ -1,9 +1,11 @@
 var $ = require('jquery/dist/jquery');
 var _ = require('lodash');
+var cp = require('chipmunk');
 var THREE = require('three');
 var Items = require('./Items.js');
 var UsingEquips = require('./UsingEquips.js');
 var Bio = require('./Bio.js');
+var Mob = require('./Mob.js');
 var Npc = require('./Npc.js');
 var Account = require('./Account.js');
 
@@ -15,6 +17,9 @@ var Char = module.exports = function (account, config) {
   this.items = {useSelfItem: new Array(30),
                 equipment: new Array(30),
                 etcItem: new Array(30)};
+  this.hotKeys = {normal: new Array(4),
+                  skill: new Array(2)};
+  this.skillBaseIds = [];
   this.lastSceneName = '';
   this.lastX = 0;
   this.lastY = 0;
@@ -23,11 +28,20 @@ var Char = module.exports = function (account, config) {
   this.lastMiniTarget = null;
   this.lastRequestId = null;
   this.dzeny = 0;
-  this.buttons = {canvas: {mouse: {isDowning: false,
-                                   isUping: false,
-                                   isHovering: true,
-                                   isMoving: false}}};
+  this.buttons = {canvas:
+                  {mouse: {isDowning: false,
+                           isUping: false,
+                           isHovering: true,
+                           isMoving: false,
+                           leftDowning: false,
+                           rightDowning: false}
+                  },
+                  document: {
+                    key: {shift: false}
+                  }
+                 };
   this.draggingItem = null;
+  this.draggingSkillBaseId = 0;
   this.canvasEvents = {
     "mousemove": this.handleCanvasMousemove.bind(this),
     "mousestop": this.handleCanvasMousestop.bind(this),
@@ -37,6 +51,10 @@ var Char = module.exports = function (account, config) {
     "mouseenter": this.handleCanvasMouseenter.bind(this),
     "mousehover": this.handleCanvasMousehover.bind(this),
     "click": this.handleCanvasClick.bind(this)
+  };
+  this.documentEvents = {
+    "keydown": this.handleDocumentKeydown.bind(this),
+    "keyup": this.handleDocumentKeyup.bind(this)
   };
   if (_.isObject(config)) {
     this.parseConfig(config);
@@ -64,6 +82,8 @@ Char.prototype.parseConfig = function(config) {
     case "lastY":
     case "slotIndex":
     case "dzeny":
+    case "skillBaseIds":
+    case "hotKeys":
       this[key] = val;
       break;
     }
@@ -79,23 +99,34 @@ Char.prototype.handleUpdateConfig = function(config) {
   }
 };
 
+Char.prototype.handleSkillBaseIds = function(sids) {
+  this.skillBaseIds = sids;
+  if (_.isObject(this.world.views.game)) {
+    this.world.views.game.handleCharSkillBaseIds(sids);
+  }
+};
+
 function capitalize(s) {
   return s[0].toUpperCase() + s.slice(1);
 }
 
 // TODO
 // add useSelfItem and etcItem
-Char.prototype.handleUpdateItems = function(items) {
+Char.prototype.handleUpdateItems = function(items, isUpsert) {
   _.each(items, function(val, key) {
     _.each(val, function(itemConfig, slot) {
       if (_.isNull(itemConfig)) {
         this.items[key][slot] = null;
         return;
       }
-      var item = this.create[capitalize(key)](itemConfig);
-      item.owner = this;
-      item.slotIndex = parseInt(slot);
-      this.items[key][slot] = item;
+      if(isUpsert) {
+        this.items[key][slot].handleUpdateConfig(itemConfig);
+      } else {
+        var item = this.create[capitalize(key)](itemConfig);
+        item.owner = this;
+        item.slotIndex = parseInt(slot);
+        this.items[key][slot] = item;
+      }
     }, this);
   }, this);
   if (_.isObject(this.world.views.game)) {
@@ -116,6 +147,28 @@ Char.prototype.handleUpdateUsingEquips = function(usingEquips) {
   if (_.isObject(this.world.views.game)) {
     this.world.views.game.handleCharUsingEquips(this.usingEquips);
   }
+};
+
+
+Char.prototype.useSkillByBaseId = function(sid) {
+  if (sid <= 0) {
+    return;
+  }
+  var clientCall = {
+    receiver: "Char",
+    method:  "UseSkillByBaseId",
+    params: [sid]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.useFireBall = function() {
+  var clientCall = {
+    receiver: "Char",
+    method:  "UseFireBall",
+    params: []
+  };
+  this.world.conn.sendJSON(clientCall);
 };
 
 Char.prototype.talkNpcById = function(npc) {
@@ -217,6 +270,9 @@ Char.prototype.run = function() {
 };
 
 Char.prototype.move = function(x, y) {
+  if (this.isDied()) {
+    return;
+  }
   Bio.prototype.move.call(this, x, y);
   var clientCall = {
     receiver: "Char",
@@ -267,6 +323,36 @@ Char.prototype.unequipBySlot = function(eq) {
     receiver: "Char",
     method: "UnequipBySlot",
     params: [eqSlot]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.setLeftSkillHotKey = function(sid) {
+  var clientCall = {
+    receiver: "Char",
+    method: "SetLeftSkillHotKey",
+    params: [sid]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.setNormalHotKey = function(index, itemBaseId, slotIndex) {
+  if (index > 4 || itemBaseId <= 0 || slotIndex < 0) {
+    return;
+  }
+  var clientCall = {
+    receiver: "Char",
+    method: "SetNormalHotKey",
+    params: [index, itemBaseId, slotIndex]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.setRightSkillHotKey = function(sid) {
+  var clientCall = {
+    receiver: "Char",
+    method: "SetRightSkillHotKey",
+    params: [sid]
   };
   this.world.conn.sendJSON(clientCall);
 };
@@ -323,6 +409,10 @@ Char.prototype.handleAttributesChange = function(atts) {
 // handle collsion with 3d object on mouse events
 Char.prototype.attach = function() {
   this.attachCanvas();
+  var doc = $(document);
+  _.each(this.documentEvents, function(event, eventName) {
+    doc.on(eventName, event);
+  });
 };
 
 Char.prototype.attachCanvas = function() {
@@ -334,6 +424,9 @@ Char.prototype.attachCanvas = function() {
 };
 
 Char.prototype.handleCanvasMousemove = function(event) {
+  if (event.preventDefault) {
+    event.preventDefault();
+  }
   this.buttons.canvas.isMoving = true;
   var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
                                  - (event.clientY / window.innerHeight) * 2 + 1,
@@ -355,14 +448,27 @@ Char.prototype.handleCanvasMousemove = function(event) {
   this.lastMiniTarget = firstBio;
   this.lastClientX = event.clientX;
   this.lastClientY = event.clientY;
-  this.world.views.game.handleMiniTarget(firstBio);
+  this.world.views.game.handleMiniTarget(firstBio, false);
   if (this.buttons.canvas.mouse.isDowning &&
       this.buttons.canvas.mouse.isHovering) {
     var foundGround = _.find(objects, function(obj) {
       var mesh = obj.object;
       return mesh.userData.isGround;
     });
-    if (_.isObject(foundGround) && (firstBio instanceof Npc) == false) {
+    if (firstBio == this) {
+      this.shutDownMove();
+      return;
+    } else if (firstBio instanceof Mob) {
+      if (this.hotKeys.skill[0]) {
+        this.useSkillByBaseId(this.hotKeys.skill[0].skillBaseId);
+      }
+    } else if (this.buttons.document.key.shift) {
+      if (this.buttons.canvas.mouse.leftDowning) {
+        this.useSkillByBaseId(this.hotKeys.skill[0].skillBaseId);
+      } else if(this.buttons.canvas.mouse.rightDowning) {
+        this.useSkillByBaseId(this.hotKeys.skill[1].skillBaseId);
+      }
+    } else if (_.isObject(foundGround) && (firstBio instanceof Npc) == false) {
       this.move(foundGround.point.x, foundGround.point.y);
     }
   }
@@ -374,8 +480,16 @@ Char.prototype.handleCanvasMousestop = function(event) {
 };
 
 Char.prototype.handleCanvasMouseup = function(event) {
+  event.preventDefault();
   this.buttons.canvas.mouse.isUping = true;
   this.buttons.canvas.mouse.isDowning = false;
+  switch (event.which) {
+  case 1:
+    this.buttons.canvas.mouse.leftDowning = false;
+    break;
+  case 3:
+    this.buttons.canvas.mouse.rightDowning = false;
+  }
   if (this.moveState.running) {
     this.shutDownMove();
   }
@@ -394,6 +508,13 @@ Char.prototype.handleCanvasMousedown = function(event) {
   this.lastClientY = event.clientY;
   this.buttons.canvas.mouse.isUping = false;
   this.buttons.canvas.mouse.isDowning = true;
+  switch (event.which) {
+  case 1:
+    this.buttons.canvas.mouse.leftDowning = true;
+    break;
+  case 3:
+    this.buttons.canvas.mouse.rightDowning = true;
+  }
   this.handleCanvasMousemove(event);
   if (document.activeElement != document.body) {
     document.activeElement.blur();
@@ -401,7 +522,9 @@ Char.prototype.handleCanvasMousedown = function(event) {
 };
 
 Char.prototype.handleCanvasMouseleave = function(event) {
+  event.preventDefault();
   this.buttons.canvas.mouse.isHovering = false;
+  this.shutDownMove();
 };
 
 Char.prototype.handleCanvasMouseenter = function(event) {
@@ -412,7 +535,19 @@ Char.prototype.handleCanvasMousehover = function(event) {
   this.buttons.canvas.mouse.isHovering = true;
 };
 
+Char.prototype.handleDocumentKeydown = function(event) {
+  this.buttons.document.key.shift = event.shiftKey;
+  if (event.shiftKey) {
+    this.shutDownMove();
+  }
+};
+
+Char.prototype.handleDocumentKeyup = function(event) {
+  this.buttons.document.key.shift = event.shiftKey;
+};
+
 Char.prototype.handleCanvasClick = function(event) {
+  event.preventDefault();
   var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
                                  - (event.clientY / window.innerHeight) * 2 + 1,
                                  0.5);
@@ -434,5 +569,9 @@ Char.prototype.destroy = function() {
   var canvas = $(this.scene.canvas);
   _.each(this.canvasEvents, function(event, eventName) {
     canvas.off(eventName, event);
+  });
+  var doc = $(document);
+  _.each(this.documentEvents, function(event, eventName) {
+    doc.off(eventName, event);
   });
 };

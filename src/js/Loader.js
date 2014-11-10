@@ -60,8 +60,8 @@ Loader.prototype.handleReadyAssetsStore = function() {
           loader.putToWorld(assetsType, result, key);
           loader.updateProgress();
         } else {
-          var xhr = new XMLHttpRequest(),
-              blob;
+          var xhr = new XMLHttpRequest();
+          var blob;
           xhr.open("GET", asset.url, true);
           xhr.responseType = "blob";
           xhr.addEventListener("load", function () {
@@ -84,7 +84,9 @@ Loader.prototype.handleReadyAssetsStore = function() {
 };
 
 Loader.prototype.putToWorld = function(assetsType, asset, key) {
-  if (assetsType == 'image' || assetsType == 'icon') {
+  if (assetsType == 'image' ||
+      assetsType == 'itemIcon' ||
+      assetsType == 'skillIcon') {
     var tagName = 'img';
     this.world.assets[assetsType][key] = blob2DOM(asset.blob, tagName);
   } else if (assetsType == 'audio') {
@@ -140,6 +142,13 @@ Loader.prototype.handleComplete = function() {
   cube.receiveShadow = false;
   cube.position.z = 32;
   this.world.assets.mesh[10001] = cube;
+  geometry = new THREE.BoxGeometry( 12, 12, 12, 2, 2, 2 );
+  material = new THREE.MeshBasicMaterial( {color: 0xff0000 } );
+  cube = new THREE.Mesh( geometry, material );
+  cube.castShadow = true;
+  cube.receiveShadow = false;
+  cube.position.z = 6;
+  this.world.assets.mesh[10002] = cube;
   this.emit('complete');
 };
 

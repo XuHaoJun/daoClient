@@ -22,6 +22,9 @@ Conn.prototype.run = function() {
       alert("Disconnect!");
     }
   }.bind(this);
+  this.sock.onerror = function(err) {
+    console.log("socket onerror: ", err);
+  };
   this.sock.onopen = function() {
     console.log('successfully connect to dao server');
     this.emit('onopen');
@@ -52,7 +55,7 @@ Conn.prototype.sendText = function(text) {
 };
 
 Conn.prototype.parse = function(data) {
-  console.log(data);
+  // console.log(data);
   var world = this.world;
   var account = (world? world.account : null);
   var char = (account? account.usingChar : null);
@@ -76,8 +79,8 @@ Conn.prototype.parse = function(data) {
       bio = scene.sceneObjects[data.params[0]];
       receiver = bio;
       data.params.shift();
-      console.log(data);
-      console.log(bio);
+      // console.log(data);
+      // console.log(bio);
     }
   } else {
     receiver = receivers[data.receiver];

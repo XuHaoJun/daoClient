@@ -4,9 +4,11 @@ var Scene = require('./Scene.js');
 var Account = require('./Account.js');
 var Char = require('./Char.js');
 var Npc = require('./Npc.js');
+var Mob = require('./Mob.js');
 var Equipment = require('./Equipment.js');
 var UseSelfItem = require('./UseSelfItem.js');
 var EtcItem = require('./EtcItem.js');
+var FireBall = require('./Skill/FireBall.js');
 
 var ObjectCreator = module.exports = function (world) {
   this.world = world;
@@ -29,8 +31,16 @@ ObjectCreator.prototype = {
     return new Char(acc, config);
   },
 
+  FireBall: function(config) {
+    return new FireBall(this.world, config);
+  },
+
   Npc: function(config) {
     return new Npc(this.world, config);
+  },
+
+  Mob: function(config) {
+    return new Mob(this.world, config);
   },
 
   Scene: function (config) {

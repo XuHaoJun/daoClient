@@ -31,21 +31,18 @@ var CharItems = React.createClass({
       </div>
     );
     var useSelfItems = (<ItemList items={this.props.items.useSelfItem}
-                                  icons={this.props.world.assets.icon}
                                   viewName="CharItems"
                                   step={6} />);
     var equipments = (<ItemList items={this.props.items.equipment}
-                                icons={this.props.world.assets.icon}
                                 viewName="CharItems"
                                 step={6} />);
     var etcItems = (<ItemList items={this.props.items.etcItem}
-                              icons={this.props.world.assets.icon}
                               viewName="CharItems"
                               step={6} /> );
     return (
       <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                  zIndex={50}>
-        <Panel header={header} style={style} className="noselect">
+        <Panel header={header} style={style} className="noselect dao-charItems" >
           <TabbedArea defaultActiveKey={1} centerBlock>
             <TabPane key={1} tab="消耗">
               { useSelfItems }

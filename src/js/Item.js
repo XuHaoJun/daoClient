@@ -52,7 +52,7 @@ Item.prototype.parseConfig = function(config) {
     this.syncCpAndThree();
   }
   if (_.isNumber(config.iconViewId)) {
-    this.icon = this.world.assets.icon[this.iconViewId];
+    this.icon = this.world.assets.itemIcon[this.iconViewId];
   }
 };
 
@@ -70,4 +70,10 @@ Item.prototype.handleSellClick = function(event, viewName) {
   }
   var char = this.world.account.usingChar;
   char.sellItemToOpeningShop(this.baseId, this.slotIndex);
+};
+
+Item.prototype.handleUpdateConfig = function(config) {
+  _.each(config, function(val, key) {
+    this[key] = val;
+  }, this);
 };

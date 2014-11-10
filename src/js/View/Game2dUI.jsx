@@ -15,8 +15,10 @@ var ProgressBar = BS.ProgressBar;
 var MenuItem = BS.MenuItem;
 var ModalTrigger = BS.ModalTrigger;
 var CharItems = require("./CharItems.js");
+var CharSkills = require("./CharSkills.js");
 var CharInfo = require("./CharInfo.js");
 var CharUsingEquips = require("./CharUsingEquips.js");
+var HotKeys = require("./HotKeys.js");
 var MiniTargetInfo = require("./MiniTargetInfo.js");
 var VideoConfigModal = require("./VideoConfigModal.js");
 var SoundConfigModal = require("./SoundConfigModal.js");
@@ -28,7 +30,8 @@ var Game2dUI = React.createClass({
     return {hotkeyCount: 6,
             showCharItems: false,
             showCharUsingEquips: false,
-            showCharInfo: false};
+            showCharInfo: false,
+            showCharSkills: false};
   },
   handleLogout: function() {
     var char = this.props.world.account.usingChar;
@@ -40,24 +43,21 @@ var Game2dUI = React.createClass({
   handleToggleCharItems: function() {
     this.setState({showCharItems: !this.state.showCharItems});
   },
+  handleToggleCharSkills: function() {
+    this.setState({showCharSkills: !this.state.showCharSkills});
+  },
   handleToggleCharUsingEquips: function() {
     this.setState({showCharUsingEquips: !this.state.showCharUsingEquips});
   },
   render: function() {
-    var hotkeys = _.map(_.range(this.state.hotkeyCount), function(i) {
-      var defaultKeyStyle = {
-        width: '40px', height: '40px', 'background-color': '#EEE'
-      };
-      return (
-        <Colm md={2}  key={i}>
-          <div className="center-block" style={defaultKeyStyle}>
-          </div>
-        </Colm>
-      );});
-
-    var miniTargetInfo = (this.props.miniTarget ?
-                          <MiniTargetInfo miniTarget={this.props.miniTarget} />
-                                                    : null);
+    var hotkeys = (
+      <HotKeys hotKeys={this.props.char.hotKeys}
+               world={this.props.world} />
+    );
+    var miniTargetInfo = null;
+    if (this.props.miniTarget) {
+      miniTargetInfo = (<MiniTargetInfo miniTarget={this.props.miniTarget} />);
+    }
     var char = this.props.char;
     var hpNow = (char.hp / char.maxHp) * 100;
     var mpNow = (char.mp / char.maxMp) * 100;
@@ -68,9 +68,7 @@ var Game2dUI = React.createClass({
             <Grid fluid>
               <Row>
                 <Colm md={4} sm={4}>
-                  <Row className='gutter-2px'>
-                    { hotkeys }
-                  </Row>
+                  { hotkeys }
                 </Colm>
                 <Colm md={4} sm={4}>
                   <div className="center-block noselect">
@@ -96,7 +94,8 @@ var Game2dUI = React.createClass({
                               bsStyle='default' bsSize='medium'>
                         人物
                       </Button>
-                      <Button bsStyle='default' bsSize='medium'>
+                      <Button onClick={this.handleToggleCharSkills}
+                              bsStyle='default' bsSize='medium'>
                         技能
                       </Button>
                     </ButtonGroup>
@@ -132,6 +131,10 @@ var Game2dUI = React.createClass({
                   world={this.props.world}
                   char={this.props.char}
                   closeButtonClick={this.handleToggleCharInfo} />
+        <CharSkills show={this.state.showCharSkills}
+                    world={this.props.world}
+                    skillBaseIds={this.props.charSkillBaseIds}
+                    closeButtonClick={this.handleToggleCharSkills} />
       </div>
     );
   }

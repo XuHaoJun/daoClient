@@ -19,16 +19,20 @@ var Game = React.createClass({
             shop: null,
             char: this.props.world.account.usingChar,
             charItems: this.props.world.account.usingChar.items,
+            charSkillBaseIds: this.props.world.account.usingChar.skillBaseIds,
             charUsingEquips: this.props.world.account.usingChar.usingEquips
     };
   },
-  handleMiniTarget: function(target) {
-    if (target != this.state.miniTarget) {
+  handleMiniTarget: function(target, forceUpdate) {
+    if (forceUpdate || target != this.state.miniTarget) {
       this.setState({miniTarget: target});
     }
   },
   handleChar: function(char) {
     this.setState({char: char});
+  },
+  handleCharSkillBaseIds: function(sids) {
+    this.setState({charSkillBaseIds: sids});
   },
   handleCharItems: function(charItems) {
     this.setState({charItems: charItems});
@@ -83,7 +87,8 @@ var Game = React.createClass({
             <Colm md={12}>
               <Game2dUI world={this.props.world}
                         char={this.state.char}
-                        charItems={this.state.char.items}
+                        charItems={this.state.charItems}
+                        charSkillBaseIds={this.state.charSkillBaseIds}
                         charUsingEquips={this.props.world.account.usingChar.usingEquips}
                         miniTarget={this.state.miniTarget} />
             </Colm>
@@ -96,7 +101,7 @@ var Game = React.createClass({
           char={this.props.world.account.usingChar} />
         </div>
         {this.state.npcTalkBox}
-      {this.state.shop}
+        {this.state.shop}
       </div>
     );
   }

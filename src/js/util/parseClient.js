@@ -13,9 +13,17 @@ function parseCpBodyClient(bodyClient) {
     var cpShape = parseCpShapeClient(shape, cpBody);
     cpBody.shapes.push(cpShape);
   });
-  cpBody.setPos(cp.v(bodyClient.position.x,
-                     bodyClient.position.y));
-  cpBody.setAngle(bodyClient.angle);
+  if (bodyClient.position) {
+    cpBody.setPos(cp.v(bodyClient.position.x,
+                       bodyClient.position.y));
+  }
+  if (bodyClient.velocity) {
+    cpBody.setVel(cp.v(bodyClient.velocity.x,
+                       bodyClient.velocity.y));
+  }
+  if (bodyClient.angle) {
+    cpBody.setAngle(bodyClient.angle);
+  }
   return cpBody;
 }
 
@@ -28,6 +36,7 @@ function parseCpShapeClient(shape, body) {
                                    shape.radius,
                                    cp.v(shape.position.x,
                                         shape.position.y));
+    realShape.sensor = shape.sensor;
     break;
   case "segment":
   case "Segment":
@@ -35,6 +44,7 @@ function parseCpShapeClient(shape, body) {
                                     cp.v(shape.a.x, shape.a.y),
                                     cp.v(shape.b.x, shape.b.y),
                                     shape.radius);
+    realShape.sensor = shape.sensor;
     break;
   default:
     console.log("unknown shape.");

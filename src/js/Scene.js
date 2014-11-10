@@ -19,12 +19,12 @@ var Scene = module.exports = function (world, config) {
   this.clock = new THREE.Clock();
   this.projector = new THREE.Projector();
   this.cpSpace = new cp.Space();
+  this.cpSpace.iterations = 10;
   this.threeResize = null;
   this.focusObj = null;
   this.camera = null;
   this.renderer = null;
   this.requestId = null;
-  this.cpSpace.iterations = 10;
   this.wallCpShapes = [];
   this.staticShapes = [];
   // this.staticCpBodys = [];
@@ -229,6 +229,16 @@ Scene.prototype.handleAddNpc = function(npcConfig) {
   this.add(npc);
 };
 
+Scene.prototype.handleAddMob = function(mobConfig) {
+  var mob = this.world.create.Mob(mobConfig);
+  this.add(mob);
+};
+
+Scene.prototype.handleAddFireBall = function(config)  {
+  var fireBall = this.world.create.FireBall(config);
+  this.add(fireBall);
+};
+
 Scene.prototype.handleRemoveById = function(id, sceneName) {
   if (sceneName != this.name) {
     return;
@@ -298,12 +308,6 @@ Scene.prototype.animate = function(time) {
 Scene.prototype.render = function(time) {
   var delta = this.clock.getDelta();
   // console.log(delta);
-  _.each(this.sceneObjects, function(sb) {
-    if (_.isFunction(sb.update)) {
-      sb.update(delta);
-    }
-    sb.syncCpAndThree();
-  });
   if (_.isObject(this.focusObj)) {
     var position;
     if (this.focusObj instanceof THREE.Mesh) {
@@ -322,5 +326,11 @@ Scene.prototype.render = function(time) {
     this.camera.lastPosition.copy(this.camera.position);
   }
   this.cpSpace.step(delta);
+  _.each(this.sceneObjects, function(sb) {
+    if (_.isFunction(sb.afterUpdate)) {
+      sb.afterUpdate(delta);
+    }
+    sb.syncCpAndThree();
+  });
   this.renderer.render(this.threeScene, this.camera);
 };

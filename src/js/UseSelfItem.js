@@ -29,7 +29,7 @@ UseSelfItem.prototype.parseConfig = function(config) {
 
 UseSelfItem.prototype.handleUseClick = function(event, viewName) {
   if (_.isObject(this.owner) &&
-      (viewName == "CharItems")) {
+      (viewName == "CharItems" || viewName == "HotKeys")) {
     this.owner.useItemBySlot(this.slotIndex);
   }
 };

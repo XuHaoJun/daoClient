@@ -66,8 +66,7 @@ SceneObject.prototype.syncCpAndThree = function() {
   var cpPos = this.cpBody.getPos();
   this.threeBody.position.setX(cpPos.x);
   this.threeBody.position.setY(cpPos.y);
-  // var cpAngle = this.cpBody.a;
-  // this.threeBody.rotation.z = cpAngle;
+  this.threeBody.rotation.z = this.cpBody.a;
   if (this.glowEffect) {
     window.glowEffect = this.glowEffect;
     this.glowEffect.position.copy(this.threeBody.position);

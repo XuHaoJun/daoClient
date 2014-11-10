@@ -14,7 +14,7 @@ var Bio = module.exports = function (world, config) {
     targetPos: null,
     baseVelocity: null,
     lastVelocity: null,
-    lastPosition: null,
+    lastTargetPos: null,
     lastAngle: null
   };
   //
@@ -88,8 +88,19 @@ Bio.prototype.handleUpdateBioConfig = function(config) {
   }, this);
   if (_.isObject(this.world.views.game) &&
       this.world.account.usingChar.lastMiniTarget == this) {
-    this.world.views.game.handleMiniTarget(this);
+    this.world.views.game.handleMiniTarget(this, true);
   }
+};
+
+Bio.prototype.handleUpdateCpBody = function(config) {
+  _.each(config, function(val, key) {
+    switch (key) {
+    case "position":
+      this.cpBody.setPos(cp.v(val.x, val.y));
+    case "angle":
+      this.cpBody.setAngle(val);
+    }
+  }, this);
 };
 
 Bio.prototype.onKill = function(target) {
@@ -168,10 +179,12 @@ Bio.prototype.moveUpdate = function(delta) {
                    m * velChange.y / t);
   cpBody.setForce(force);
   this.lookAt(this.moveState.targetPos);
-  console.log(this.threeBody.rotation);
+  this.moveState.lastTargetPos = cp.v(this.moveState.targetPos.x,
+                                      this.moveState.targetPos.y);
+  // console.log("position: ", cpBody.getPos());
 };
 
-Bio.prototype.update = function(delta) {
+Bio.prototype.afterUpdate = function(delta) {
   this.moveUpdate(delta);
 };
 
@@ -190,4 +203,8 @@ Bio.prototype.handleMoveStateChange = function(config) {
              this.moveState.running == true) {
     Bio.prototype.shutDownMove.call(this);
   }
+};
+
+Bio.prototype.isDied = function() {
+  return this.hp <= 0;
 };

@@ -10,8 +10,9 @@ var UseSelfItem = require('../UseSelfItem');
 
 var itemDescription = {
   1: "初學者使用的長劍。",
-  5001: "藥水。",
+  5001: "隨機回復 5~20 Hp。",
   5002: "回城。",
+  5003: "學習火球術的捲軸。",
   10001: "普通的小石子。"
 };
 
@@ -35,8 +36,7 @@ var Item = React.createClass({
   render: function() {
     var item = this.props.item;
     if (item) {
-      var icons = this.props.icons;
-      var iconSrc = icons[item.iconViewId]["src"];
+      var iconSrc = item.icon["src"];
       var itemBonus = null
       if (_.isObject(item.bonusInfo)) {
         itemBonus = _.map(item.bonusInfo, function(bVal, bKey) {
@@ -93,11 +93,11 @@ var Item = React.createClass({
       }
       return this.transferPropsTo(
         <OverlayTrigger trigger="hover"
-                        placement="top"
+                        placement="bottom"
                         overlay={itemInfo}>
           <img onClick={this.handleClick}
                onDragStart={this.handleDragStart}
-               className={'center-block' + className}
+               className={className + " " + this.props.className}
                draggable="true"
                src={iconSrc} />
         </OverlayTrigger>
@@ -109,7 +109,7 @@ var Item = React.createClass({
         'background-color': '#B0B0B0'
       };
       return this.transferPropsTo(
-        <div className='center-block' style={style}>
+        <div style={style}>
         </div>
       );
     }

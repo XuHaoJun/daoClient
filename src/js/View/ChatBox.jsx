@@ -15,6 +15,7 @@ var ChatBox = React.createClass({
     $(document).off("keydown", this.handleToggleTextInput);
   },
   handleToggleTextInput: function(event) {
+    // enter key
     if (event.keyCode != 13) {
       return;
     }
@@ -24,8 +25,10 @@ var ChatBox = React.createClass({
     if (this.state.showTextInput === false) {
       this.setState({showTextInput: !this.state.showTextInput});
       $(this.refs.textInput.getDOMNode()).focus();
+    } else if (this.state.showTextInput && document.activeElement != this.refs.textInput.getDOMNode()) {
+      $(this.refs.textInput.getDOMNode()).focus();
     } else if (this.state.showTextInput && textInputValue === '') {
-      this.setState({showTextInput: !this.state.showTextInput});
+      this.setState({showTextInput: false});
     }
   },
   componentDidUpdate: function() {

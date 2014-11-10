@@ -21,7 +21,7 @@ var Shop = React.createClass({
   componentWillUnmount: function() {
     this.props.world.account.usingChar.handleCanvasMouseenter();
   },
-  handleDragEnd: function(event) {
+  handleDrop: function(event) {
     event.preventDefault();
     var char = this.props.world.account.usingChar;
     console.log(char);
@@ -51,7 +51,6 @@ var Shop = React.createClass({
       </div>
     );
     var items = this.props.items;
-    var icons = this.props.world.assets.icon;
     var sellItemsList = _.map(items, function(item) {
       return (
         <Row key={item.baseId}
@@ -60,7 +59,7 @@ var Shop = React.createClass({
              onClick={function(event) {item.emit("click", event, "Shop");}}
              >
           <Colm md={4}>
-            <Item item={item} icons={icons} viewName="Shop"/>
+            <Item item={item} viewName="Shop"/>
           </Colm>
           <Colm md={4}>
           </Colm>
@@ -78,10 +77,9 @@ var Shop = React.createClass({
                  zIndex={51}>
         <Panel header={header}
                style={style}
-               onDragEnd={this.handleDragEnd}
-               onDrop={this.handleDragEnd}
+               onDrop={this.handleDrop}
                onDragOver={function(e) {e.preventDefault();}}
-               className="noselect">
+               className="noselect dao-shop">
           <Grid>
             { sellItemsList }
           </Grid>

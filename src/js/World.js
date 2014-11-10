@@ -18,7 +18,7 @@ var World = module.exports = function (config) {
   this.scenes = {};
   this.assets  = {image: {}, audio: {},
                   geometry: {}, texture: {},
-                  mesh: {}, icon: {}};
+                  mesh: {}, itemIcon: {}, skillIcon: {}};
   this.isGaming = false;
   this.account = null;
   this.serverList = {

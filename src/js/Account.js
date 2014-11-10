@@ -1,8 +1,10 @@
+var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var React = require('react');
 var View = require('./View');
 var _ = require('lodash');
 
 var Account = module.exports = function (world, config) {
+  EventEmitter2.call(this);
   this.username = null;
   this.world = world;
   this.chars = [];
@@ -11,6 +13,8 @@ var Account = module.exports = function (world, config) {
     this.parseConfig(config);
   }
 };
+
+Account.prototype = Object.create(EventEmitter2.prototype);
 
 Account.prototype.parseConfig = function(config) {
   _.each(config, function(val, key) {
@@ -69,6 +73,7 @@ Account.prototype.logout = function() {
 
 Account.prototype.handleSuccessLoginChar = function(config) {
   this.usingChar = this.chars[config.usingChar];
+  this.emit("handleSuccessLoginChar", config);
 };
 
 Account.prototype.handleSuccessCreateChar = function(config) {

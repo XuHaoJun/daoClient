@@ -32,7 +32,8 @@ Equipment.prototype.parseConfig = function(config) {
 // send request equip self to the sever
 Equipment.prototype.handleEquipClick = function(event, viewName) {
   if (_.isObject(this.owner) &&
-      (viewName == "CharItems" || viewName == "CharUsingEquips")) {
+      (viewName == "CharItems" || viewName == "CharUsingEquips" ||
+       viewName == "HotKeys")) {
     if (_.indexOf(this.owner.usingEquips, this) == -1) {
       this.owner.equipBySlot(this);
     } else {
