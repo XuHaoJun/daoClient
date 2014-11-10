@@ -130,7 +130,7 @@ World.prototype.handleDisconnect = function() {
   React.unmountComponentAtNode(document.body);
   this.initViews();
   this.views.login =
-    React.renderComponent(View.Login({world: this}),
+    React.renderComponent(View.Router({world: this}),
                           document.body);
   this.isGaming = false;
 };

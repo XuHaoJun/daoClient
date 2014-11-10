@@ -120,7 +120,7 @@ Loader.prototype.handleComplete = function() {
   React.unmountComponentAtNode(document.body);
   this.world.views.loading = null;
   this.world.views.login =
-    React.renderComponent(View.Login({world: this.world}),
+    React.renderComponent(View.Router({world: this.world}),
                           document.body);
   var geometry = new THREE.BoxGeometry( 64, 64, 64, 2, 2, 2 );
   var material = new THREE.MeshPhongMaterial( {color: 0x00ffff, transparent: true} );

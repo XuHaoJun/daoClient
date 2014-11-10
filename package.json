@@ -28,7 +28,8 @@
     "react-bootstrap": "*",
     "react-draggable": "*",
     "three": "*",
-    "threex.windowresize": "git://github.com/XuHaoJun/threex.windowresize.git#master"
+    "threex.windowresize": "git://github.com/XuHaoJun/threex.windowresize.git#master",
+    "backbone": "*"
   },
   "devDependencies": {
     "browserify": "*",
