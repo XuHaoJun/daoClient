@@ -7,6 +7,7 @@ require('browsernizr/test/requestanimationframe');
 require('browsernizr/test/blob');
 require('browsernizr/test/json');
 var Modernizr = require('browsernizr');
+var isNode = require('detect-node');
 var _ = require('lodash');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var React = require('react');
@@ -22,8 +23,11 @@ var World = module.exports = function (config) {
   this.isGaming = false;
   this.account = null;
   this.serverList = {
-    main: ("ws://" + location.hostname + ":"  + location.port + "/daows")
+    main: (location.hostname + ":"  + location.port)
   };
+  if (isNode) {
+    this.serverList.main = "127.0.0.1:3000";
+  }
   this.create = new ObjectCreator(this);
   this.initConn();
   this.initLastErrors();
@@ -64,7 +68,7 @@ World.prototype.browserDependCheck =  function() {
 };
 
 World.prototype.initConn = function() {
-  this.conn = this.create.Conn(this.serverList.main);
+  this.conn = this.create.Conn("ws://" + this.serverList.main + "/daows");
 };
 
 World.prototype.initViews = function() {

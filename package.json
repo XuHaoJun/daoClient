@@ -1,6 +1,18 @@
 {
   "name": "dao",
   "main": "index.html",
+  "window": {
+    "title": "Dao",
+    "resizable": true,
+    "fullscreen": true,
+    "toolbar": false,
+    "frame": false
+  },
+  "webkit": {
+    "plugin": false,
+    "java" : false,
+    "page-cache" : false
+  },
   "description": "Dao game client",
   "dependencies": {
     "bootstrap": "*",

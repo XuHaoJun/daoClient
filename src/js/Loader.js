@@ -6,6 +6,7 @@ var View = require('./View');
 var IDBStore = require('idb-wrapper');
 var Buzz = require('node-buzz');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var isNode = require('detect-node');
 
 var Loader = module.exports = function (world) {
   EventEmitter2.call(this);
@@ -28,7 +29,8 @@ Loader.prototype.run = function(onComplete) {
     React.renderComponent(View.Loading(null),
                           document.body);
   this.isLoading = true;
-  $.getJSON('assets/json/ClientAssetsList.json', function(syncList) {
+  var url = "http://" + this.world.serverList.main + '/assets/json/ClientAssetsList.json';
+  $.getJSON(url, function(syncList) {
     this.clientAssetsList = syncList;
     _.each(syncList, function(val) {
       this.numTotalItem += _.size(val);
@@ -62,20 +64,26 @@ Loader.prototype.handleReadyAssetsStore = function() {
         } else {
           var xhr = new XMLHttpRequest();
           var blob;
-          xhr.open("GET", asset.url, true);
+          if (isNode) {
+            asset.url = "http://" + world.serverList.main + "/" + asset.url;
+            console.log(asset.url);
+          }
           xhr.responseType = "blob";
           xhr.addEventListener("load", function () {
             if (xhr.status === 200) {
               blob = xhr.response;
               asset.id = assetsType + '-' + key;
               asset.blob = blob;
-              assetsStore.put(asset);
+              if (!isNode) {
+                assetsStore.put(asset);
+              }
               loader.putToWorld(assetsType, asset, key);
             } else {
               console.log('error download client assets');
             }
             loader.updateProgress();
           }, false);
+          xhr.open("GET", asset.url, true);
           xhr.send();
         }
       });
