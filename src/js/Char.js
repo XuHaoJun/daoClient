@@ -40,6 +40,7 @@ var Char = module.exports = function (account, config) {
                     key: {shift: false}
                   }
                  };
+  this.dragStartViewName = "";
   this.draggingItem = null;
   this.draggingSkillBaseId = 0;
   this.canvasEvents = {
@@ -51,6 +52,8 @@ var Char = module.exports = function (account, config) {
     "mouseenter": this.handleCanvasMouseenter.bind(this),
     "mousehover": this.handleCanvasMousehover.bind(this),
     "mousewheel": this.handleCanvasMousewheel.bind(this),
+    "dragover": this.handleCanvasDragOver.bind(this),
+    "drop": this.handleCanvasDrop.bind(this),
     "click": this.handleCanvasClick.bind(this)
   };
   this.documentEvents = {
@@ -150,6 +153,15 @@ Char.prototype.handleUpdateUsingEquips = function(usingEquips) {
   }
 };
 
+
+Char.prototype.dropItem = function(id, slotIndex) {
+  var clientCall = {
+    receiver: "Char",
+    method:  "DropItem",
+    params: [id, slotIndex]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
 
 Char.prototype.useSkillByBaseId = function(sid) {
   if (sid <= 0) {
@@ -434,6 +446,7 @@ THREE.Vector3.prototype.pickingRay = function ( camera ) {
 };
 
 Char.prototype.handleCanvasMousemove = function(event) {
+  // console.log("mouse position: ", event.clientX, event.clientY);
   if (event.preventDefault) {
     event.preventDefault();
   }
@@ -551,6 +564,16 @@ Char.prototype.handleCanvasMousewheel = function(event) {
   var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
   this.scene.camera.position.z += delta * 2;
   return false;
+};
+
+Char.prototype.handleCanvasDragOver = function(event) {
+  event.preventDefault();
+};
+
+Char.prototype.handleCanvasDrop = function(event) {
+  if (this.draggingItem && this.dragStartViewName == "CharItems") {
+    this.dropItem(this.draggingItem.baseId, this.draggingItem.slotIndex);
+  }
 };
 
 Char.prototype.handleDocumentKeydown = function(event) {

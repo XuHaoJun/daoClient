@@ -14,6 +14,7 @@ var Item = module.exports = function (world, config) {
   this.sellPrice = 0;
   this.icon = null;
   this.owner = null;
+  this.domLabel = null;
   this.slotIndex = -1;
   this.on("click", this.handleShopClick);
   this.on("click", this.handleSellClick);
@@ -76,4 +77,18 @@ Item.prototype.handleUpdateConfig = function(config) {
   _.each(config, function(val, key) {
     this[key] = val;
   }, this);
+};
+
+Item.prototype.genDomLabel = function(pos) {
+  var element	= document.createElement('div');
+  element.className = "dao-item-label";
+  element.innerHTML = this.name;
+  element.style.left = pos.x+'px';
+  element.style.top = pos.y+'px';
+  return element;
+};
+
+Item.prototype.updateDomLabel = function(pos) {
+  this.domLabel.style.left = pos.x+'px';
+  this.domLabel.style.top = pos.y+'px';
 };

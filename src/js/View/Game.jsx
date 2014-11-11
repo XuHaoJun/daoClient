@@ -10,10 +10,12 @@ var Game2dUI = require('./Game2dUI');
 var ChatBox = require('./ChatBox');
 var NpcTalkBox = require('./NpcTalkBox');
 var Shop = require('./Shop');
+var ItemLabel = require('./ItemLabel');
 
 var Game = React.createClass({
   getInitialState: function() {
     return {chatMessages: [],
+            inSceneItemLabels: null,
             miniTarget: null,
             npcTalkBox: null,
             shop: null,
@@ -56,6 +58,18 @@ var Game = React.createClass({
                   options={config.options}
                   />
     );
+  },
+  renderInSceneItemLabels: function(items) {
+    var lables =  _.map(items, function(item) {
+      return (
+        <ItemLabel key={item.id} item={item} position={item.screenXY()} />
+      );
+    });
+    return lables;
+  },
+  handleInSceneItems: function(inSceneItems) {
+    this.setState({inSceneItemLabels:
+                  this.renderInSceneItemLabels(inSceneItems)});
   },
   handleNpcTalkBox: function(npcTalkBoxConfig) {
     if (_.isNull(npcTalkBoxConfig)) {
@@ -102,6 +116,7 @@ var Game = React.createClass({
         </div>
         {this.state.npcTalkBox}
         {this.state.shop}
+        {this.state.inSceneItemLabels}
       </div>
     );
   }

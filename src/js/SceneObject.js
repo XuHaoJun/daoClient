@@ -14,6 +14,30 @@ var SceneObject = module.exports = function () {
 
 SceneObject.prototype = Object.create(EventEmitter2.prototype);
 
+SceneObject.prototype.screenXY = function (camera) {
+  var width = window.innerWidth, height = window.innerHeight;
+  var widthHalf = width / 2, heightHalf = height / 2;
+  var vector = new THREE.Vector3();
+  vector.setFromMatrixPosition(this.threeBody.matrixWorld);
+  vector.project(camera);
+  vector.x = ( vector.x * widthHalf ) + widthHalf;
+  vector.y = - ( vector.y * heightHalf ) + heightHalf;
+  return {x: vector.x, y: vector.y};
+};
+
+SceneObject.prototype.screenXY1 = function (camera, jqdiv) {
+  var pos = this.threeBody.position.clone();
+  var projScreenMat = new THREE.Matrix4();
+  projScreenMat.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
+  pos.applyMatrix4(projScreenMat);
+  if (jqdiv) {
+    return { x: ( pos.x + 1 ) * jqdiv.width() / 2 + jqdiv.offset().left,
+             y: ( - pos.y + 1) * jqdiv.height() / 2 + jqdiv.offset().top };
+  }
+  return { x: ( pos.x + 1 ) * window.innerWidth / 2,
+           y: ( - pos.y + 1) * window.innerHeight / 2};
+};
+
 SceneObject.prototype.setPosition = function(pos) {
   this.cpBody.setPos(pos);
   this.threeBody.position.x = pos.x;

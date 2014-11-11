@@ -6,6 +6,7 @@ var cp = require('chipmunk');
 var SceneObject = require('./SceneObject.js');
 var parseClient = require('./util/parseClient.js');
 var ThreeStats = require('./vendor/Stats.js/src/Stats.js');
+var Item = require('./Item.js');
 var THREEx = {
   WindowResize: require('threex.windowresize').WindowResize
 };
@@ -19,6 +20,7 @@ var Scene = module.exports = function (world, config) {
   this.threeScene = new THREE.Scene();
   this.clock = new THREE.Clock();
   this.raycaster = new THREE.Raycaster();
+  this.inSceneItems = [];
   this.cpSpace = new cp.Space();
   this.cpSpace.iterations = 10;
   this.threeResize = null;
@@ -195,6 +197,11 @@ Scene.prototype.add = function(sb) {
   if (sb.glowEffect) {
     this.threeScene.add(sb.glowEffect);
   }
+  if (sb instanceof Item) {
+    this.inSceneItems.push(sb);
+    sb.domLabel = sb.genDomLabel(sb.screenXY(this.camera));
+    document.body.appendChild(sb.domLabel);
+  }
   this.emit("add", sb);
   sb.emit("sceneAdd", sb);
 };
@@ -213,16 +220,27 @@ Scene.prototype.remove = function(sb) {
   if (sb.glowEffect) {
     this.threeScene.remove(sb.glowEffect);
   }
+  if (sb instanceof Item) {
+    _.remove(this.inSceneItems, function(item) {
+      return item == sb;
+    });
+    if (sb.domLabel) {
+      $(sb.domLabel).remove();
+    }
+  }
   this.emit("remove", sb);
   sb.emit("sceneRemove", sb);
-};
-
-Scene.prototype.handleAddItem = function(itemConfig) {
 };
 
 Scene.prototype.handleAddChar = function(charConfig) {
   var char = this.world.create.Char({world: this.world}, charConfig);
   this.add(char);
+};
+
+Scene.prototype.handleAddItem = function(itemConfig) {
+  console.log(itemConfig);
+  var item = this.world.create.Item(itemConfig);
+  this.add(item);
 };
 
 Scene.prototype.handleAddNpc = function(npcConfig) {
@@ -241,6 +259,7 @@ Scene.prototype.handleAddFireBall = function(config)  {
 };
 
 Scene.prototype.handleRemoveById = function(id, sceneName) {
+  console.log("scene remove id:", id);
   if (sceneName != this.name) {
     return;
   }
@@ -343,5 +362,8 @@ Scene.prototype.render = function(time) {
     }
     sb.syncCpAndThree();
   });
+  _.each(this.inSceneItems, function(item) {
+    item.updateDomLabel(item.screenXY(this.camera));
+  }, this);
   this.renderer.render(this.threeScene, this.camera);
 };

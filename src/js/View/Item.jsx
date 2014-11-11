@@ -35,6 +35,7 @@ var Item = React.createClass({
     if (!_.isObject(char)) {
       return;
     }
+    char.dragStartViewName = this.props.viewName;
     char.draggingItem = this.props.item;
     event.dataTransfer.setData("text/html", "workaround fix drag on firefox");
   },

@@ -5,6 +5,7 @@ var Account = require('./Account.js');
 var Char = require('./Char.js');
 var Npc = require('./Npc.js');
 var Mob = require('./Mob.js');
+var Item = require('./Item.js');
 var Equipment = require('./Equipment.js');
 var UseSelfItem = require('./UseSelfItem.js');
 var EtcItem = require('./EtcItem.js');
@@ -45,6 +46,10 @@ ObjectCreator.prototype = {
 
   Scene: function (config) {
     return new Scene(this.world, config);
+  },
+
+  Item: function (config) {
+    return new Item(this.world, config);
   },
 
   Equipment: function (config) {
