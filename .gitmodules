@@ -1,0 +1,3 @@
+[submodule "src/js/vendor/Stats.js"]
+	path = src/js/vendor/Stats.js
+	url = https://github.com/mrdoob/stats.js.git

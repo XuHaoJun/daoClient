@@ -5,6 +5,7 @@ var THREE = require('three');
 var cp = require('chipmunk');
 var SceneObject = require('./SceneObject.js');
 var parseClient = require('./util/parseClient.js');
+var ThreeStats = require('./vendor/Stats.js/src/Stats.js');
 var THREEx = {
   WindowResize: require('threex.windowresize').WindowResize
 };
@@ -273,6 +274,13 @@ Scene.prototype.run = function() {
     return;
   }
   this.isRendering = true;
+  this.threeStats = new ThreeStats();
+  this.threeStats.setMode(0);
+  this.threeStats.domElement.style.position = 'absolute';
+  this.threeStats.domElement.style.bottom = '0px';
+  this.threeStats.domElement.style.right = '0px';
+  this.threeStats.domElement.id = "threeStats";
+  $('body').prepend(this.threeStats.domElement);
   $('body').prepend(this.canvas);
   this.attachCanvas(this.canvas);
   this.animate();
@@ -286,6 +294,7 @@ Scene.prototype.destroy = function() {
     this.requestId = null;
     this.renderer.clear();
     $('#threeCanvas').remove();
+    $('#threeStats').remove();
   }
 };
 
@@ -298,10 +307,12 @@ Scene.prototype.resumeRender = function() {
 };
 
 Scene.prototype.animate = function(time) {
+  this.threeStats.begin();
   if (this.isRendering === false) {
     return;
   }
   this.render(time);
+  this.threeStats.end();
   this.requestId = requestAnimationFrame(this.animate.bind(this));
 };
 

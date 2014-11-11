@@ -13,6 +13,7 @@
     "java" : false,
     "page-cache" : false
   },
+  "scripts":{"preinstall": "git submodule update -i -r"},
   "description": "Dao game client",
   "dependencies": {
     "bootstrap": "*",
