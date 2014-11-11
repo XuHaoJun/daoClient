@@ -17,13 +17,13 @@ var Scene = module.exports = function (world, config) {
   this.grounds = [];
   this.threeScene = new THREE.Scene();
   this.clock = new THREE.Clock();
-  this.projector = new THREE.Projector();
+  this.raycaster = new THREE.Raycaster();
   this.cpSpace = new cp.Space();
   this.cpSpace.iterations = 10;
   this.threeResize = null;
   this.focusObj = null;
   this.camera = null;
-  this.renderer = null;
+  this.renderer = world.renderer;
   this.requestId = null;
   this.wallCpShapes = [];
   this.staticShapes = [];
@@ -256,8 +256,8 @@ Scene.prototype.attachCanvas = function(threeCanvas) {
       return;
     }
   }
-  this.renderer = new THREE.WebGLRenderer({canvas: canvas});
-  this.renderer.shadowMapEnabled = true;
+  // this.renderer = new THREE.WebGLRenderer({canvas: canvas});
+  // this.renderer.shadowMapEnabled = true;
   this.renderer.setSize(window.innerWidth, window.innerHeight);
   this.camera = new THREE.PerspectiveCamera(65,
                                             window.innerWidth / window.innerHeight,

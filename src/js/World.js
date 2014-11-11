@@ -6,6 +6,7 @@ require('browsernizr/test/draganddrop');
 require('browsernizr/test/requestanimationframe');
 require('browsernizr/test/blob');
 require('browsernizr/test/json');
+var THREE = require('three');
 var Modernizr = require('browsernizr');
 var isNode = require('detect-node');
 var _ = require('lodash');
@@ -94,6 +95,8 @@ World.prototype.initThreeCanvas = function() {
   this.threeCanvas.oncontextmenu = function(event) {
     event.preventDefault();
   };
+  this.renderer = new THREE.WebGLRenderer({canvas: this.threeCanvas});
+  this.renderer.shadowMapEnabled = true;
 };
 
 // following method for send to server
@@ -129,6 +132,7 @@ World.prototype.handleDisconnect = function() {
   this.scenes = {};
   React.unmountComponentAtNode(document.body);
   this.initViews();
+  window.location.hash = "#login";
   this.views.login =
     React.renderComponent(View.Router({world: this}),
                           document.body);
@@ -158,13 +162,16 @@ World.prototype.handleSuccessLoginAcccount = function(accountConfig) {
   }
 };
 
-World.prototype.handleSuccessRegisterAccount = function(config) {
+World.prototype.handleSuccessRegisterAccount = function(succesMsg) {
+  if (_.isObject(this.views.login)) {
+    this.views.login.handleSuccessRegisterAccount(succesMsg);
+  }
 };
 
 World.prototype.handleErrorLoginAccount = function(err) {
   this.lastErrors.errorLoginAccount = err;
   if (_.isObject(this.views.login)) {
-    this.views.login.handleErrorLoginAccount();
+    this.views.login.handleErrorLoginAccount(err);
   }
 };
 

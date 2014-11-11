@@ -29,7 +29,10 @@ Loader.prototype.run = function(onComplete) {
     React.renderComponent(View.Loading(null),
                           document.body);
   this.isLoading = true;
-  var url = "http://" + this.world.serverList.main + '/assets/json/ClientAssetsList.json';
+  var url =  'assets/json/ClientAssetsList.json';
+  if (isNode) {
+    url = "http://" + this.world.serverList.main + '/assets/json/ClientAssetsList.json';
+  }
   $.getJSON(url, function(syncList) {
     this.clientAssetsList = syncList;
     _.each(syncList, function(val) {
@@ -68,6 +71,7 @@ Loader.prototype.handleReadyAssetsStore = function() {
             asset.url = "http://" + world.serverList.main + "/" + asset.url;
             console.log(asset.url);
           }
+          xhr.open("GET", asset.url, true);
           xhr.responseType = "blob";
           xhr.addEventListener("load", function () {
             if (xhr.status === 200) {
@@ -83,7 +87,6 @@ Loader.prototype.handleReadyAssetsStore = function() {
             }
             loader.updateProgress();
           }, false);
-          xhr.open("GET", asset.url, true);
           xhr.send();
         }
       });

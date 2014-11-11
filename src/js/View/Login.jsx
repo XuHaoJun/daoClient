@@ -12,7 +12,7 @@ var RegisterAccountModal = require('./RegisterAccountModal.js');
 var Login = React.createClass({
   getInitialState: function() {
     return {
-      alertVisible: false
+      alertVisible: true
     };
   },
   handleLoginAccount: function(e) {
@@ -26,22 +26,35 @@ var Login = React.createClass({
     this.props.world.loginAccount(username, password);
     return false;
   },
-  handleErrorLoginAccount: function() {
-    this.setState({alertVisible: true});
-  },
   handleAlertDismiss: function() {
-    this.setState({alertVisible: false});
+    this.setState({alertVisible: false}, function() {
+      this.state.alertVisible = true;
+    });
   },
   render: function() {
+    var errAlert = null;
+    var successAlert = null;
+    if (this.props.err && this.state.alertVisible) {
+      errAlert = (
+        <Alert bsStyle="danger" onDismiss={ this.handleAlertDismiss }>
+          { this.props.err }
+        </Alert>
+      );
+    }
+    if (this.props.success && this.state.alertVisible) {
+      successAlert = (
+        <Alert bsStyle="success" onDismiss={ this.handleAlertDismiss }>
+          { this.props.success }
+        </Alert>
+      );
+    }
     return (
       <div className='container-fluid'>
         <Row>
           <Colm sm={6} md={4} mdOffset={4}>
             <h1 className="text-center login-title">Login to Dao!</h1>
-            <Alert style={ {display: (this.state.alertVisible ? 'block' : 'none')} }
-                   bsStyle="danger" onDismiss={ this.handleAlertDismiss }>
-              { this.props.world.lastErrors.errorLoginAccount }
-            </Alert>
+            { errAlert }
+            { successAlert }
             <div className='account-wall'>
               <form className='form-signin' onSubmit={this.handleLoginAccount} >
                 <input ref='username' name='username' placeholder='username'

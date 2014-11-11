@@ -424,6 +424,15 @@ Char.prototype.attachCanvas = function() {
   });
 };
 
+THREE.Vector3.prototype.pickingRay = function ( camera ) {
+  var tan = Math.tan( 0.5 * THREE.Math.degToRad( camera.fov ) ) / camera.zoom;
+  this.x *= tan * camera.aspect;
+  this.y *= tan;
+  this.z = - 1;
+  return this.transformDirection( camera.matrixWorld );
+
+};
+
 Char.prototype.handleCanvasMousemove = function(event) {
   if (event.preventDefault) {
     event.preventDefault();
@@ -432,9 +441,10 @@ Char.prototype.handleCanvasMousemove = function(event) {
   var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
                                  - (event.clientY / window.innerHeight) * 2 + 1,
                                  0.5);
-  var projector = this.scene.projector;
-  var ray = projector.pickingRay( vector, this.scene.camera );
-  var objects = ray.intersectObjects( this.scene.threeScene.children, true );
+  var raycaster = this.scene.raycaster;
+  vector.pickingRay(this.scene.camera);
+  raycaster.set(this.scene.camera.position, vector);
+  var objects = raycaster.intersectObjects( this.scene.threeScene.children, false );
   //
   var firstBio = _.find(objects, function(obj) {
     var mesh = obj.object;
@@ -559,9 +569,10 @@ Char.prototype.handleCanvasClick = function(event) {
   var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
                                  - (event.clientY / window.innerHeight) * 2 + 1,
                                  0.5);
-  var projector = this.scene.projector;
-  var ray = projector.pickingRay( vector, this.scene.camera );
-  var objects = ray.intersectObjects( this.scene.threeScene.children, true );
+  var raycaster = this.scene.raycaster;
+  vector.pickingRay(this.scene.camera);
+  raycaster.set(this.scene.camera.position, vector);
+  var objects = raycaster.intersectObjects( this.scene.threeScene.children, false );
   _.each(objects, function(obj) {
     var mesh = obj.object;
     if (mesh.userData instanceof Bio) {
