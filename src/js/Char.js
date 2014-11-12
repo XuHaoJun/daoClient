@@ -87,6 +87,7 @@ Char.prototype.parseConfig = function(config) {
     case "slotIndex":
     case "dzeny":
     case "skillBaseIds":
+    case "pickRadius":
     case "hotKeys":
       this[key] = val;
       break;
@@ -154,7 +155,35 @@ Char.prototype.handleUpdateUsingEquips = function(usingEquips) {
 };
 
 
-Char.prototype.tryPickItem = function(id) {
+Char.prototype.tryPickItem = function(item) {
+  var itemPos = item.cpBody.getPos();
+  var charPos = this.cpBody.getPos();
+  var dist = cp.v.dist(itemPos, charPos);
+  console.log(dist, this.pickRadius);
+  if (dist > this.pickRadius) {
+    var needDist = dist - this.pickRadius;
+    var targetVect = cp.v(needDist+2, needDist+2);
+    var vect = cp.v.sub(itemPos, charPos);
+    if (vect.x < 0) {
+      targetVect.x *= -1;
+    } else if (vect.x == 0) {
+      targetVect.x = 0;
+    }
+    if (vect.y < 0) {
+      targetVect.y *= -1;
+    } else if (vect.y == 0) {
+      targetVect.y = 0;
+    }
+    var targetPos = cp.v.add(charPos, targetVect);
+    console.log(targetPos);
+    var id = item.id;
+    this.move(targetPos.x, targetPos.y);
+    this.once('moveOnTargetPosition', function(event) {
+      this.pickItem(id);
+    }.bind(this));
+  } else {
+    this.pickItem(item.id);
+  }
 };
 
 Char.prototype.pickItem = function(id) {
@@ -299,6 +328,7 @@ Char.prototype.move = function(x, y) {
     return;
   }
   Bio.prototype.move.call(this, x, y);
+  this.removeAllListeners('moveOnTargetPosition');
   var clientCall = {
     receiver: "Char",
     method:  "Move",

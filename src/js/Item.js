@@ -90,7 +90,7 @@ Item.prototype.genDomLabel = function(pos) {
     event.preventDefault();
     console.log('wiwiwiwi');
     var char = this.world.account.usingChar;
-    char.pickItem(this.id);
+    char.tryPickItem(this);
   }.bind(this));
   return element;
 };

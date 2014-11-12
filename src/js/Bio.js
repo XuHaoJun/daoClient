@@ -127,6 +127,7 @@ Bio.prototype.moveUpdate = function(delta) {
     return;
   }
   if (cp.v.eql(this.cpBody.getPos(), this.moveState.targetPos)) {
+    this.emit('moveOnTargetPosition', this.moveState.targetPos);
     this.shutDownMove();
     return;
   }
@@ -156,6 +157,7 @@ Bio.prototype.moveUpdate = function(delta) {
     moveVect.y = 0;
   }
   if (cp.v.eql(this.cpBody.getPos(), this.moveState.targetPos)) {
+    this.emit('moveOnTargetPosition', this.moveState.targetPos);
     this.shutDownMove();
     return;
   }
