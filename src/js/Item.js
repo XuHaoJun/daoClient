@@ -88,7 +88,6 @@ Item.prototype.genDomLabel = function(pos) {
   element.style.top = pos.y+'px';
   $(element).on('click', function(event) {
     event.preventDefault();
-    console.log('wiwiwiwi');
     var char = this.world.account.usingChar;
     char.tryPickItem(this);
   }.bind(this));

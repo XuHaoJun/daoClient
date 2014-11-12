@@ -583,6 +583,7 @@ Char.prototype.handleCanvasMousedown = function(event) {
 
 Char.prototype.handleCanvasMouseleave = function(event) {
   this.buttons.canvas.mouse.isHovering = false;
+  this.buttons.canvas.mouse.isDowning = false;
   this.shutDownMove();
 };
 
