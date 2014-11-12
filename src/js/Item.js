@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var $ = require('jquery/dist/jquery');
 var parseClient = require('./util/parseClient.js');
 var SceneObject = require('./SceneObject.js');
 
@@ -80,11 +81,17 @@ Item.prototype.handleUpdateConfig = function(config) {
 };
 
 Item.prototype.genDomLabel = function(pos) {
-  var element	= document.createElement('div');
+  var element   = document.createElement('div');
   element.className = "dao-item-label";
   element.innerHTML = this.name;
   element.style.left = pos.x+'px';
   element.style.top = pos.y+'px';
+  $(element).on('click', function(event) {
+    event.preventDefault();
+    console.log('wiwiwiwi');
+    var char = this.world.account.usingChar;
+    char.pickItem(this.id);
+  }.bind(this));
   return element;
 };
 

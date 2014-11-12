@@ -154,11 +154,23 @@ Char.prototype.handleUpdateUsingEquips = function(usingEquips) {
 };
 
 
-Char.prototype.dropItem = function(id, slotIndex) {
+Char.prototype.tryPickItem = function(id) {
+};
+
+Char.prototype.pickItem = function(id) {
+  var clientCall = {
+    receiver: "Char",
+    method:  "PickItem",
+    params: [id]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.dropItem = function(baseId, slotIndex) {
   var clientCall = {
     receiver: "Char",
     method:  "DropItem",
-    params: [id, slotIndex]
+    params: [baseId, slotIndex]
   };
   this.world.conn.sendJSON(clientCall);
 };
@@ -442,14 +454,10 @@ THREE.Vector3.prototype.pickingRay = function ( camera ) {
   this.y *= tan;
   this.z = - 1;
   return this.transformDirection( camera.matrixWorld );
-
 };
 
 Char.prototype.handleCanvasMousemove = function(event) {
   // console.log("mouse position: ", event.clientX, event.clientY);
-  if (event.preventDefault) {
-    event.preventDefault();
-  }
   this.buttons.canvas.isMoving = true;
   var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
                                  - (event.clientY / window.innerHeight) * 2 + 1,
@@ -504,7 +512,6 @@ Char.prototype.handleCanvasMousestop = function(event) {
 };
 
 Char.prototype.handleCanvasMouseup = function(event) {
-  event.preventDefault();
   this.buttons.canvas.mouse.isUping = true;
   this.buttons.canvas.mouse.isDowning = false;
   switch (event.which) {
@@ -527,7 +534,6 @@ Char.prototype.onCameraPositionChange = function(camera) {
 };
 
 Char.prototype.handleCanvasMousedown = function(event) {
-  event.preventDefault();
   this.lastClientX = event.clientX;
   this.lastClientY = event.clientY;
   this.buttons.canvas.mouse.isUping = false;
@@ -546,7 +552,6 @@ Char.prototype.handleCanvasMousedown = function(event) {
 };
 
 Char.prototype.handleCanvasMouseleave = function(event) {
-  event.preventDefault();
   this.buttons.canvas.mouse.isHovering = false;
   this.shutDownMove();
 };
