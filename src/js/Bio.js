@@ -120,6 +120,7 @@ Bio.prototype.shutDownMove = function() {
   this.moveState.running = false;
   this.cpBody.setForce(cp.v(0, 0));
   this.cpBody.setVel(cp.v(0, 0));
+  this.removeAllListeners('moveOnTargetPosition');
 };
 
 Bio.prototype.moveUpdate = function(delta) {

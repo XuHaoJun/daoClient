@@ -328,7 +328,6 @@ Char.prototype.move = function(x, y) {
     return;
   }
   Bio.prototype.move.call(this, x, y);
-  this.removeAllListeners('moveOnTargetPosition');
   var clientCall = {
     receiver: "Char",
     method:  "Move",
