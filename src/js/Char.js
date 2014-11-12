@@ -161,8 +161,8 @@ Char.prototype.tryPickItem = function(item) {
   var dist = cp.v.dist(itemPos, charPos);
   console.log(dist, this.pickRadius);
   if (dist > this.pickRadius) {
-    var needDist = dist - this.pickRadius;
-    var targetVect = cp.v(needDist+2, needDist+2);
+    var needDist = dist - this.pickRadius + 5;
+    var targetVect = cp.v(needDist, needDist);
     var vect = cp.v.sub(itemPos, charPos);
     if (vect.x < 0) {
       targetVect.x *= -1;
@@ -563,6 +563,7 @@ Char.prototype.onCameraPositionChange = function(camera) {
 };
 
 Char.prototype.handleCanvasMousedown = function(event) {
+  event.preventDefault();
   this.lastClientX = event.clientX;
   this.lastClientY = event.clientY;
   this.buttons.canvas.mouse.isUping = false;

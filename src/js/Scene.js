@@ -299,6 +299,10 @@ Scene.prototype.run = function() {
   this.threeStats.domElement.style.bottom = '0px';
   this.threeStats.domElement.style.right = '0px';
   this.threeStats.domElement.id = "threeStats";
+  this.threeStats.domElement.unselectable = 'on';
+  this.threeStats.domElement.onselectstart = function(event) {
+    event.preventDefault();
+  };
   $('body').prepend(this.threeStats.domElement);
   $('body').prepend(this.canvas);
   this.attachCanvas(this.canvas);

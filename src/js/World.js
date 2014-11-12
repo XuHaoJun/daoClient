@@ -90,10 +90,10 @@ World.prototype.initThreeCanvas = function() {
   this.threeCanvas.id = 'threeCanvas';
   this.threeCanvas.unselectable = 'on';
   this.threeCanvas.onselectstart = function(event) {
-    event.preventDefault();
+    return false;
   };
   this.threeCanvas.oncontextmenu = function(event) {
-    event.preventDefault();
+    return false;
   };
   this.renderer = new THREE.WebGLRenderer({canvas: this.threeCanvas});
   this.renderer.shadowMapEnabled = true;
