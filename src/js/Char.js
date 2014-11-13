@@ -506,10 +506,12 @@ Char.prototype.handleCanvasMousemove = function(event) {
   } else {
     document.body.style.cursor = "";
   }
-  this.lastMiniTarget = firstBio;
-  this.lastClientX = event.clientX;
-  this.lastClientY = event.clientY;
-  this.world.views.game.handleMiniTarget(firstBio, false);
+  if (firstBio != this) {
+    this.lastMiniTarget = firstBio;
+    this.lastClientX = event.clientX;
+    this.lastClientY = event.clientY;
+    this.world.views.game.handleMiniTarget(firstBio, false);
+  }
   if (this.buttons.canvas.mouse.isDowning &&
       this.buttons.canvas.mouse.isHovering) {
     var foundGround = _.find(objects, function(obj) {
@@ -583,7 +585,6 @@ Char.prototype.handleCanvasMousedown = function(event) {
 
 Char.prototype.handleCanvasMouseleave = function(event) {
   this.buttons.canvas.mouse.isHovering = false;
-  this.buttons.canvas.mouse.isDowning = false;
   this.shutDownMove();
 };
 
