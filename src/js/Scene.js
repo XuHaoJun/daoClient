@@ -318,6 +318,9 @@ Scene.prototype.destroy = function() {
     this.renderer.clear();
     $('#threeCanvas').remove();
     $('#threeStats').remove();
+    _.each(this.inSceneItems, function(item) {
+      $(item.domLabel).remove();
+    });
   }
 };
 
