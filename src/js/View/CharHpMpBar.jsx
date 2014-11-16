@@ -12,12 +12,14 @@ var CharHpMpBar = React.createClass({
         };
     },
     shouldComponentUpdate: function(nextProps, nextState) {
+        if (_.isEqual(this.props, nextProps)) {
+            return false;
+        }
         return (nextProps.shouldUpdate ? true : false);
     },
     render: function() {
-        var char = this.props.char;
-        var hpNow = (char.hp / char.maxHp) * 100;
-        var mpNow = (char.mp / char.maxMp) * 100;
+        var hpNow = (this.props.hp / this.props.maxHp) * 100;
+        var mpNow = (this.props.mp / this.props.maxMp) * 100;
         return (
             <div>
                 <ProgressBar bsStyle='danger' now={hpNow}

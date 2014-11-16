@@ -41,9 +41,7 @@ var Game2dUI = React.createClass({
         };
     },
     shouldComponentUpdate: function(nextProps, nextState) {
-        if (this.props.miniTarget != nextProps.miniTarget ||
-            this.props.char.lastHp != this.props.char.hp ||
-            this.props.char.lastMp != this.props.char.mp) {
+        if (this.props.miniTarget != nextProps.miniTarget) {
                 nextState.updateCharItems = false;
                 nextState.updateCharSkills = false;
                 nextState.updateCharUsingEquips = false;
@@ -96,7 +94,10 @@ var Game2dUI = React.createClass({
                                 </Colm>
                                 <Colm md={4} sm={4}>
                                     <div className="center-block noselect">
-                                        <CharHpMpBar char={this.props.char} />
+                                        <CharHpMpBar hp={this.props.char.hp}
+                                                     maxHp={this.props.char.maxHp}
+                                                     mp={this.props.char.mp}
+                                                     maxMp={this.props.char.maxMp} />
                                         { miniTargetInfo }
                                     </div>
                                 </Colm>

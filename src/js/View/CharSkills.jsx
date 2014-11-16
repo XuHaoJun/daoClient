@@ -17,6 +17,9 @@ var CharSkills = React.createClass({
         if (!_.isEqual(this.state, nextState)) {
             return true;
         }
+        if (_.isEqual(this.props.skillBaseIds, nextProps.skillBaseIds)) {
+            return false;
+        }
         return nextProps.shouldUpdate;
     },
     render: function() {

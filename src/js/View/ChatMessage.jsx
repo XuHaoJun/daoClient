@@ -4,6 +4,13 @@ var _ = require('lodash');
 var React = require('react');
 
 var ChatMessage = React.createClass({
+    shouldComponentUpdate: function(nextProps, nextState) {
+        if (!_.isEqual(this.state, nextState) ||
+            this.props.time != nextProps.time ) {
+                return true;
+        }
+        return nextProps.shouldUpdate;
+    },
     render: function() {
         var talker = (_.isEmpty(this.props.talker) ? '' :  this.props.talker + ": ");
         return (

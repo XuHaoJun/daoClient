@@ -55,6 +55,7 @@ var ChatBox = React.createClass({
         var messages = this.props.messages.slice(-1 * this.props.maxMessage).map(function(msg, i) {
             return (
                 <ChatMessage key={i}
+                             time={msg.time}
                              chatType={msg.chatType}
                              talker={msg.talker}
                              content={msg.content} />
