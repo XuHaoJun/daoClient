@@ -33,12 +33,18 @@ var Bio = module.exports = function (world, config) {
   this.hp    = 0;
   this.maxMp = 0;
   this.mp    = 0;
+  this.lastHp = this.hp;
+  this.lastMp = this.mp;
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
 };
 
 Bio.prototype = Object.create(SceneObject.prototype);
+
+function capitalize(s) {
+  return s[0].toUpperCase() + s.slice(1);
+}
 
 // FIXME
 Bio.prototype.parseConfig = function(config) {
@@ -57,9 +63,12 @@ Bio.prototype.parseConfig = function(config) {
     case "atk":
     case "matk":
     case "maxHp":
-    case "hp":
     case "maxMp":
+      this[key] = val;
+      break;
+    case "hp":
     case "mp":
+      this["last"+capitalize(key)] = this[key];
       this[key] = val;
       break;
     case "cpBody":

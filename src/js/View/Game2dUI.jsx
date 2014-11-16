@@ -22,6 +22,7 @@ var HotKeys = require("./HotKeys.js");
 var MiniTargetInfo = require("./MiniTargetInfo.js");
 var VideoConfigModal = require("./VideoConfigModal.js");
 var SoundConfigModal = require("./SoundConfigModal.js");
+var CharHpMpBar = require("./CharHpMpBar.js");
 
 // TODO
 // add mini target info to it.
@@ -31,9 +32,28 @@ var Game2dUI = React.createClass({
                 showCharItems: false,
                 showCharUsingEquips: false,
                 showCharInfo: false,
-                showCharSkills: false};
+                showCharSkills: false,
+                updateCharItems: true,
+                updateCharSkills: true,
+                updateCharUsingEquips: true,
+                updateCharInfo: true
+        };
     },
     shouldComponentUpdate: function(nextProps, nextState) {
+        if (this.props.miniTarget != nextProps.miniTarget ||
+            this.props.char.lastHp != this.props.char.hp ||
+            this.props.char.lastMp != this.props.char.mp) {
+                nextState.updateCharItems = false;
+                nextState.updateCharSkills = false;
+                nextState.updateCharUsingEquips = false;
+                nextState.updateCharInfo = false;
+                return true;
+        } else {
+            nextState.updateCharItems = true;
+            nextState.updateCharSkills = true;
+            nextState.updateCharUsingEquips = true;
+            nextState.updateCharInfo = true;
+        }
         if (!_.isEqual(this.state, nextState)) {
             return true;
         }
@@ -60,9 +80,6 @@ var Game2dUI = React.createClass({
         if (this.props.miniTarget) {
             miniTargetInfo = (<MiniTargetInfo miniTarget={this.props.miniTarget} />);
         }
-        var char = this.props.char;
-        var hpNow = (char.hp / char.maxHp) * 100;
-        var mpNow = (char.mp / char.maxMp) * 100;
         return (
             <div>
                 <div className="nav" role="navigation">
@@ -75,10 +92,7 @@ var Game2dUI = React.createClass({
                                 </Colm>
                                 <Colm md={4} sm={4}>
                                     <div className="center-block noselect">
-                                        <ProgressBar bsStyle='danger' now={hpNow}
-                                                     label="%(percent)s%" style={{'margin-bottom': '2px'}}/>
-                                        <ProgressBar bsStyle='info' now={mpNow}
-                                                     label="%(percent)s%"  style={{'margin-bottom': '4px'}}/>
+                                        <CharHpMpBar char={this.props.char} />
                                         { miniTargetInfo }
                                     </div>
                                 </Colm>
@@ -123,18 +137,22 @@ var Game2dUI = React.createClass({
                     </div>
                 </div>
                 <CharItems items={this.props.charItems}
+                           shouldUpdate={this.state.updateCharItems}
                            show={this.state.showCharItems}
                            world={this.props.world}
                            closeButtonClick={this.handleToggleCharItems} />
                 <CharUsingEquips usingEquips={this.props.charUsingEquips}
+                                 shouldUpdate={this.state.updateCharUsingEquips}
                                  show={this.state.showCharUsingEquips}
                                  world={this.props.world}
                                  closeButtonClick={this.handleToggleCharUsingEquips} />
                 <CharInfo show={this.state.showCharInfo}
+                          shouldUpdate={this.state.updateCharInfo}
                           world={this.props.world}
                           char={this.props.char}
                           closeButtonClick={this.handleToggleCharInfo} />
                 <CharSkills show={this.state.showCharSkills}
+                            shouldUpdate={this.state.updateCharSkills}
                             world={this.props.world}
                             skillBaseIds={this.props.charSkillBaseIds}
                             closeButtonClick={this.handleToggleCharSkills} />
