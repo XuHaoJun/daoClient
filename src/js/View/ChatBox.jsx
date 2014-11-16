@@ -6,6 +6,11 @@ var React = require('react');
 var ChatMessage = require('./ChatMessage.js');
 
 var ChatBox = React.createClass({
+    getDefaultProps: function() {
+        return {
+            maxMessage: 25
+        };
+    },
     getInitialState: function() {
         return {showTextInput: false};
     },
@@ -47,7 +52,7 @@ var ChatBox = React.createClass({
         }
     },
     render: function() {
-        var messages = this.props.messages.slice(-25).map(function(msg, i) {
+        var messages = this.props.messages.slice(-1 * this.props.maxMessage).map(function(msg, i) {
             return (
                 <ChatMessage key={i}
                              chatType={msg.chatType}

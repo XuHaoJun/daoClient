@@ -18,7 +18,7 @@ var CharItems = require("./CharItems.js");
 var CharSkills = require("./CharSkills.js");
 var CharInfo = require("./CharInfo.js");
 var CharUsingEquips = require("./CharUsingEquips.js");
-var HotKeys = require("./HotKeys.js");
+var CharHotKeys = require("./CharHotKeys.js");
 var MiniTargetInfo = require("./MiniTargetInfo.js");
 var VideoConfigModal = require("./VideoConfigModal.js");
 var SoundConfigModal = require("./SoundConfigModal.js");
@@ -36,6 +36,7 @@ var Game2dUI = React.createClass({
                 updateCharItems: true,
                 updateCharSkills: true,
                 updateCharUsingEquips: true,
+                updateCharHotKeys: true,
                 updateCharInfo: true
         };
     },
@@ -47,12 +48,14 @@ var Game2dUI = React.createClass({
                 nextState.updateCharSkills = false;
                 nextState.updateCharUsingEquips = false;
                 nextState.updateCharInfo = false;
+                nextState.updateCharHotKeys = false;
                 return true;
         } else {
             nextState.updateCharItems = true;
             nextState.updateCharSkills = true;
             nextState.updateCharUsingEquips = true;
             nextState.updateCharInfo = true;
+            nextState.updateCharHotKeys = true;
         }
         if (!_.isEqual(this.state, nextState)) {
             return true;
@@ -87,8 +90,9 @@ var Game2dUI = React.createClass({
                         <Grid fluid>
                             <Row>
                                 <Colm md={4} sm={4}>
-                                    <HotKeys hotKeys={this.props.char.hotKeys}
-                                             world={this.props.world} />
+                                    <CharHotKeys hotKeys={this.props.char.hotKeys}
+                                                 shouldUpdate={this.state.updateCharHotKeys}
+                                                 world={this.props.world} />
                                 </Colm>
                                 <Colm md={4} sm={4}>
                                     <div className="center-block noselect">
