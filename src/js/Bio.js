@@ -194,12 +194,15 @@ Bio.prototype.afterUpdate = function(delta) {
 // recevie from server data
 
 Bio.prototype.handleMoveStateChange = function(config) {
+  console.log(config);
   if ((config.running == true &&
        this.moveState.running == false) ||
       (config.running == true &&
        this.moveState.running == true)) {
-    this.moveState.baseVelocity = cp.v(config.baseVelocity.x,
-                                       config.baseVelocity.y);
+    if (config.baseVelocity) {
+      this.moveState.baseVelocity = cp.v(config.baseVelocity.x,
+                                         config.baseVelocity.y);
+    }
     Bio.prototype.move.call(this, config.targetPos.x,
                             config.targetPos.y);
   } else if (config.running == false &&
