@@ -9,6 +9,13 @@ var Skill = require('./Skill.js');
 var Item = require('./Item.js');
 
 var SkillHotKey = React.createClass({
+    shouldComponentUpdate: function(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) ||
+            !_.isEqual(this.state, nextState) ) {
+                return true;
+        }
+        return false;
+    },
     handleEmptyDrop: function(event) {
         event.preventDefault();
         var char = this.props.world.account.usingChar;
@@ -28,11 +35,8 @@ var SkillHotKey = React.createClass({
     },
     render: function() {
         if (this.props.hotKey === null || this.props.hotKey.skillBaseId <= 0) {
-            var defaultKeyStyle = {
-                width: '44px', height: '44px', 'background-color': '#EEE'
-            };
             return (
-                <div style={defaultKeyStyle}
+                <div className="dao-emptySkillHotKey"
                      onDrop={this.handleEmptyDrop}
                      onDragOver={function(e) {e.preventDefault();}}
                      >
@@ -61,11 +65,8 @@ var NormalHotKey = React.createClass({
         }
     },
     renderEmpty: function() {
-        var defaultKeyStyle = {
-            width: '34px', height: '34px', 'background-color': '#EEE'
-        };
         return (
-            <div style={defaultKeyStyle}
+            <div className="dao-emptyItemHotKey"
                  onDrop={this.handleDrop}
                  onDragOver={function(e) {e.preventDefault();}}
                  >
@@ -91,6 +92,7 @@ var NormalHotKey = React.createClass({
             return (
                 <Item item={item}
                       className="dao-hotKey-item"
+                      updateId={item.updateId}
                       viewName="HotKeys" />
             );
         }
@@ -98,17 +100,6 @@ var NormalHotKey = React.createClass({
 });
 
 var HotKeys = React.createClass({
-    getDefaultProps: function() {
-        return {
-            shouldUpdate: true
-        };
-    },
-    shouldComponentUpdate: function(nextProps, nextState) {
-        if (!_.isEqual(this.state, nextState)) {
-            return true;
-        }
-        return nextProps.shouldUpdate;
-    },
     handleTriggerNormalHotKey: function(event) {
         var normalKeyIndex;
         switch(event.keyCode) {

@@ -17,6 +17,7 @@ var Item = module.exports = function (world, config) {
   this.owner = null;
   this.domLabel = null;
   this.slotIndex = -1;
+  this.updateId = 0;
   this.on("click", this.handleShopClick);
   this.on("click", this.handleSellClick);
   if (_.isObject(config)) {

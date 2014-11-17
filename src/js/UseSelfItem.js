@@ -6,6 +6,7 @@ var UseSelfItem = module.exports = function (world, config) {
   this.stackCount = 0;
   this.maxStackCount = 0;
   this.on("click", this.handleUseClick);
+  this.on("use", this.handleUseClick);
   if (_.isObject(config)) {
     this.parseConfig(config);
   }

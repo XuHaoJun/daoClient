@@ -21,11 +21,13 @@ var CharHpMpBar = React.createClass({
         var hpNow = (this.props.hp / this.props.maxHp) * 100;
         var mpNow = (this.props.mp / this.props.maxMp) * 100;
         return (
-            <div>
+            <div >
                 <ProgressBar bsStyle='danger' now={hpNow}
-                             label="%(percent)s%" style={{'margin-bottom': '2px'}}/>
+                             id="dao-hpBar"
+                             label="%(percent)s%" />
                 <ProgressBar bsStyle='info' now={mpNow}
-                             label="%(percent)s%"  style={{'margin-bottom': '4px'}}/>
+                             id="dao-mpBar"
+                             label="%(percent)s%" />
             </div>
         );
     }

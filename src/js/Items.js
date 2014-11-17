@@ -8,6 +8,7 @@ var Items = module.exports = function (world, config) {
   this.useSelfItem = new Array(30);
   this.equipment = new Array(30);
   this.etcItem = new Array(30);
+  this.updateId = 0;
   if (_.isObject(config)) {
     this.parseConfig(config);
   }

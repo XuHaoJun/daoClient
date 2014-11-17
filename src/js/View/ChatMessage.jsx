@@ -4,6 +4,11 @@ var _ = require('lodash');
 var React = require('react');
 
 var ChatMessage = React.createClass({
+    getDefaultProps: function() {
+        return {
+            shouldUpdate: true
+        };
+    },
     shouldComponentUpdate: function(nextProps, nextState) {
         if (!_.isEqual(this.state, nextState) ||
             this.props.time != nextProps.time ) {

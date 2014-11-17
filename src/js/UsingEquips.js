@@ -3,6 +3,7 @@ var Equipment = require('./Equipment.js');
 
 var UsingEquips = module.exports = function (world, config) {
   this.world = world;
+  this.updateId = 0;
   this.equipment = new Array(12);
   if (_.isObject(config)) {
     this.parseConfig(config);

@@ -15,8 +15,13 @@ var CharInfo = React.createClass({
         };
     },
     shouldComponentUpdate: function(nextProps, nextState) {
-        if (!_.isEqual(this.state, nextState)) {
-            return true;
+        if (!nextProps.show && !this.props.show) {
+            return false;
+        }
+        if (this.props.show != nextProps.show ||
+            this.props.updateId != nextProps.updateId ||
+            !_.isEqual(this.state, nextState) ) {
+                return true;
         }
         return nextProps.shouldUpdate;
     },

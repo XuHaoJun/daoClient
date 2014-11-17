@@ -36,24 +36,21 @@ var Game2dUI = React.createClass({
                 updateCharItems: true,
                 updateCharSkills: true,
                 updateCharUsingEquips: true,
-                updateCharHotKeys: true,
                 updateCharInfo: true
         };
     },
     shouldComponentUpdate: function(nextProps, nextState) {
         if (this.props.miniTarget != nextProps.miniTarget) {
-                nextState.updateCharItems = false;
-                nextState.updateCharSkills = false;
-                nextState.updateCharUsingEquips = false;
-                nextState.updateCharInfo = false;
-                nextState.updateCharHotKeys = false;
-                return true;
+            nextState.updateCharItems = false;
+            nextState.updateCharSkills = false;
+            nextState.updateCharUsingEquips = false;
+            nextState.updateCharInfo = false;
+            return true;
         } else {
             nextState.updateCharItems = true;
             nextState.updateCharSkills = true;
             nextState.updateCharUsingEquips = true;
             nextState.updateCharInfo = true;
-            nextState.updateCharHotKeys = true;
         }
         if (!_.isEqual(this.state, nextState)) {
             return true;
@@ -84,12 +81,11 @@ var Game2dUI = React.createClass({
         return (
             <div>
                 <div className="nav" role="navigation">
-                    <div className="navbar-inner" style={{'margin-top': '7px'}}>
+                    <div className="navbar-inner" style={{'margin-top': '5px'}}>
                         <Grid fluid>
                             <Row>
                                 <Colm md={4} sm={4}>
                                     <CharHotKeys hotKeys={this.props.char.hotKeys}
-                                                 shouldUpdate={this.state.updateCharHotKeys}
                                                  world={this.props.world} />
                                 </Colm>
                                 <Colm md={4} sm={4}>
@@ -143,11 +139,13 @@ var Game2dUI = React.createClass({
                 </div>
                 <CharItems items={this.props.charItems}
                            shouldUpdate={this.state.updateCharItems}
+                           updateId={this.props.charItems.updateId}
                            show={this.state.showCharItems}
                            world={this.props.world}
                            closeButtonClick={this.handleToggleCharItems} />
                 <CharUsingEquips usingEquips={this.props.charUsingEquips}
                                  shouldUpdate={this.state.updateCharUsingEquips}
+                                 updateId={this.props.charUsingEquips.updateId}
                                  show={this.state.showCharUsingEquips}
                                  world={this.props.world}
                                  closeButtonClick={this.handleToggleCharUsingEquips} />
@@ -155,6 +153,7 @@ var Game2dUI = React.createClass({
                           shouldUpdate={this.state.updateCharInfo}
                           world={this.props.world}
                           char={this.props.char}
+                          updateId={this.props.char.updateId}
                           closeButtonClick={this.handleToggleCharInfo} />
                 <CharSkills show={this.state.showCharSkills}
                             shouldUpdate={this.state.updateCharSkills}

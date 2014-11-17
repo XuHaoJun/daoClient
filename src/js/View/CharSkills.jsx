@@ -14,11 +14,13 @@ var CharSkills = React.createClass({
         };
     },
     shouldComponentUpdate: function(nextProps, nextState) {
-        if (!_.isEqual(this.state, nextState)) {
-            return true;
-        }
-        if (_.isEqual(this.props.skillBaseIds, nextProps.skillBaseIds)) {
+        if (!nextProps.show && !this.props.show) {
             return false;
+        }
+        if (this.props.show != nextProps.show ||
+            !_.isEqual(this.props, nextProps) ||
+            !_.isEqual(this.state, nextState) ) {
+                return true;
         }
         return nextProps.shouldUpdate;
     },

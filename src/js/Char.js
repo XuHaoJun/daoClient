@@ -43,6 +43,7 @@ var Char = module.exports = function (account, config) {
   this.dragStartViewName = "";
   this.draggingItem = null;
   this.draggingSkillBaseId = 0;
+  this.updateId = 0;
   this.canvasEvents = {
     "mousemove": this.handleCanvasMousemove.bind(this),
     "mousestop": this.handleCanvasMousestop.bind(this),
@@ -100,6 +101,7 @@ Char.prototype.handleUpdateConfig = function(config) {
     this[key] = val;
   }, this);
   if (_.isObject(this.world.views.game)) {
+    this.updateId += 1;
     this.world.views.game.handleChar(this);
   }
 };
@@ -126,15 +128,20 @@ Char.prototype.handleUpdateItems = function(items, isUpsert) {
       }
       if(isUpsert) {
         this.items[key][slot].handleUpdateConfig(itemConfig);
+        this.items[key][slot].updateId += 1;
       } else {
         var item = this.create[capitalize(key)](itemConfig);
         item.owner = this;
         item.slotIndex = parseInt(slot);
+        if (this.items[key][slot]) {
+          item.updateId = this.items[key][slot].updateId + 1;
+        }
         this.items[key][slot] = item;
       }
     }, this);
   }, this);
   if (_.isObject(this.world.views.game)) {
+    this.items.updateId += 1;
     this.world.views.game.handleCharItems(this.items);
   }
 };
@@ -150,6 +157,7 @@ Char.prototype.handleUpdateUsingEquips = function(usingEquips) {
     this.usingEquips[key] = eq;
   }, this);
   if (_.isObject(this.world.views.game)) {
+    this.usingEquips.updateId += 1;
     this.world.views.game.handleCharUsingEquips(this.usingEquips);
   }
 };
