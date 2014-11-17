@@ -20,7 +20,11 @@ var itemDescription = {
 var Item = React.createClass({
     getDefaultProps: function() {
         return {
-            popOverPlacement: "bottom"
+            onDrop: function() {},
+            onDragOver: function() {},
+            popoverPlacement: "bottom",
+            showStackCount: true,
+            disableClick: false
         };
     },
     shouldComponentUpdate: function(nextProps, nextState) {
@@ -33,6 +37,9 @@ var Item = React.createClass({
         return false;
     },
     handleClick: function(event) {
+        if (this.props.disableClick) {
+            return;
+        }
         this.props.item.emit("click", event, this.props.viewName);
     },
     handleDragStart: function(event) {
@@ -81,7 +88,7 @@ var Item = React.createClass({
             );
         }
         var itemStackCount = null;
-        if (_.isNumber(item.stackCount)) {
+        if (_.isNumber(item.stackCount) && this.props.showStackCount) {
             itemStackCount = (
                 <div>
                     <h4>Stack Count</h4>
@@ -106,19 +113,27 @@ var Item = React.createClass({
         } else {
             className += " dao-etcItem";
         }
+        var smallStackCount = null;
+        if (this.props.showStackCount) {
+            smallStackCount = (
+                <strong className="dao-item-stackCount" >
+                    {item.stackCount}
+                </strong>
+            );
+        }
         return (
             <OverlayTrigger trigger="hover"
-                            placement={this.props.popOverPlacement}
+                            placement={this.props.popoverPlacement}
                             overlay={itemInfo}>
                 <div className={className + " " + this.props.className}
                      onClick={this.handleClick}
                      onDragStart={this.handleDragStart}
+                     onDrop={this.props.onDrop}
+                     onDragOver={this.props.onDragOver}
                      draggable="true">
                     <img draggable="false"
                          src={iconSrc} />
-                    <strong className="dao-item-stackCount" >
-                        {item.stackCount}
-                    </strong>
+                    { smallStackCount }
                 </div>
             </OverlayTrigger>
         );

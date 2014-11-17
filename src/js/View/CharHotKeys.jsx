@@ -63,6 +63,7 @@ var NormalHotKey = React.createClass({
             char.hotKeys.normal[this.props.index].slotIndex = item.slotIndex;
             char.setNormalHotKey(this.props.index, item.baseId, item.slotIndex);
         }
+        char.draggingItem = null;
     },
     renderEmpty: function() {
         return (
@@ -93,7 +94,10 @@ var NormalHotKey = React.createClass({
                 <Item item={item}
                       className="dao-hotKey-item"
                       updateId={item.updateId}
-                      viewName="HotKeys" />
+                      viewName="HotKeys"
+                      onDrop={this.handleDrop}
+                      onDragOver={function(e) {e.preventDefault();}}
+                      />
             );
         }
     }

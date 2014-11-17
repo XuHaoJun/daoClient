@@ -95,9 +95,14 @@ Bio.prototype.handleUpdateBioConfig = function(config) {
   _.each(config, function(val, key) {
     this[key] = val;
   }, this);
-  if (_.isObject(this.world.views.game) &&
-      this.world.account.usingChar.lastMiniTarget == this) {
-    this.world.views.game.handleMiniTarget(this, true);
+  if (_.isObject(this.world.views.game)) {
+    if (this.world.account.usingChar.lastMiniTarget == this) {
+      this.world.views.game.handleMiniTarget(this, true);
+    }
+    if (this.world.account.usingChar == this) {
+      this.world.views.game.handleChar(this);
+    }
+    this.updateId += 1;
   }
 };
 

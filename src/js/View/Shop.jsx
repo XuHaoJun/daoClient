@@ -59,7 +59,10 @@ var Shop = React.createClass({
              onClick={function(event) {item.emit("click", event, "Shop");}}
              >
           <Colm md={4}>
-            <Item item={item} viewName="Shop"/>
+            <Item item={item} viewName="Shop"
+                  showStackCount={false}
+                  popoverPlacement="left"
+                  disableClick={true} />
           </Colm>
           <Colm md={4}>
           </Colm>
