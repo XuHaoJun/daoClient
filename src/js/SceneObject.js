@@ -79,6 +79,7 @@ SceneObject.prototype.lookAt = function(pos) {
   var toTarget = cp.v(pos.x - this.cpBody.p.x,
                       pos.y - this.cpBody.p.y);
   var desiredAngle = Math.atan2(-toTarget.x, toTarget.y);
+  this.threeBody.lookAt(new THREE.Vector3(pos.x, pos.y, this.threeBody.position.z + 2));
   this.setAngle(desiredAngle);
 };
 

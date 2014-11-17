@@ -153,14 +153,38 @@ Loader.prototype.handleComplete = function() {
   cube.receiveShadow = false;
   cube.position.z = 32;
   this.world.assets.mesh[10001] = cube;
-  geometry = new THREE.BoxGeometry( 12, 12, 12, 2, 2, 2 );
+  geometry = new THREE.BoxGeometry( 18, 18, 18, 8, 8, 8 );
   material = new THREE.MeshBasicMaterial( {color: 0xff0000 } );
   cube = new THREE.Mesh( geometry, material );
   cube.castShadow = true;
   cube.receiveShadow = false;
-  cube.position.z = 6;
+  cube.position.z = 8;
   this.world.assets.mesh[10002] = cube;
-  this.emit('complete');
+
+  var loader = new THREE.JSONLoader(); // init the loader util
+  // init loading
+  loader.load('./assets/3dmodel/shark.js', function (geometry) {
+    console.log(geometry);
+    // create a new material
+    var material = new THREE.MeshLambertMaterial({
+      map: THREE.ImageUtils.loadTexture('assets/3dmodel/shark.png')  // specify and load the texture
+    });
+    // var material = new THREE.MeshPhongMaterial( {color: 0x00ffff, transparent: true} );
+    // create a mesh with models geometry and material
+    var mesh = new THREE.Mesh(
+      geometry,
+      material
+    );
+    mesh.castShadow = true;
+    mesh.receiveShadow = false;
+    mesh.position.z = 20;
+    mesh.scale.x = 30;
+    mesh.scale.y = 30;
+    mesh.scale.z = 30;
+
+    this.world.assets.mesh[0] = mesh;
+    this.emit('complete');
+  }.bind(this));
 };
 
 function blob2DOM(blob, tagName) {
