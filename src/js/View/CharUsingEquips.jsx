@@ -30,10 +30,10 @@ var CharUsingEquips = React.createClass({
     },
     render: function() {
         var display = (this.props.show ? 'block' : 'none');
-        var style = {'position': 'fixed',
-                     'margin-top': '10%',
-                     'margin-left': '25%',
-                     'display': display};
+        var style = {position: 'fixed',
+                     marginTop: '10%',
+                     marginLeft: '25%',
+                     display: display};
         var header = (
             <div className="handle-draggable">
                 <span className="handle-draggable">
@@ -56,7 +56,7 @@ var CharUsingEquips = React.createClass({
                     var boxStyle = {
                         width: '34px',
                         height: '34px',
-                        'background-color': '#EEE'
+                        backgroundColor: '#EEE'
                     };
                     return (
                         <div className='center-block' style={boxStyle}>
@@ -70,7 +70,7 @@ var CharUsingEquips = React.createClass({
         var boxStyle = {
             width: '34px',
             height: '34px',
-            'background-color': '#EEE'
+            backgroundColor: '#EEE'
         };
         return (
             <Draggable handle=".handle-draggable,.panel-heading,.panel-title"

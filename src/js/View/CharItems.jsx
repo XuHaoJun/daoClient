@@ -29,10 +29,10 @@ var CharItems = React.createClass({
     },
     render: function() {
         var display = (this.props.show ? 'block' : 'none');
-        var style = {'position': 'fixed',
-                     'margin-top': '10%',
-                     'margin-left': '10%',
-                     'display': display};
+        var style = {position: 'fixed',
+                     marginTop: '10%',
+                     marginLeft: '10%',
+                     display: display};
         var header = (
             <div className="handle-draggable">
                 <span className="handle-draggable">
@@ -60,13 +60,13 @@ var CharItems = React.createClass({
                        zIndex={50}>
                 <Panel header={header} style={style} className="noselect dao-charItems" >
                     <TabbedArea defaultActiveKey={1} centerBlock>
-                        <TabPane key={1} tab="消耗">
+                        <TabPane eventKey={1} tab="消耗">
                             { useSelfItems }
                         </TabPane>
-                        <TabPane key={2} tab="裝備">
+                        <TabPane eventKey={2} tab="裝備">
                             { equipments }
                         </TabPane>
-                        <TabPane key={3} tab="其他">
+                        <TabPane eventKey={3} tab="其他">
                             { etcItems }
                         </TabPane>
                     </TabbedArea>

@@ -1,7 +1,7 @@
 var $ = require('jquery/dist/jquery');
 var _ = require('lodash');
 var cp = require('chipmunk');
-var THREE = require('three');
+var THREE = require('n3d-threejs');
 var Items = require('./Items.js');
 var UsingEquips = require('./UsingEquips.js');
 var Bio = require('./Bio.js');
@@ -43,6 +43,8 @@ var Char = module.exports = function (account, config) {
   this.dragStartViewName = "";
   this.draggingItem = null;
   this.draggingSkillBaseId = 0;
+  this.draggingNormalHotKeyIndex = -1;
+  this.draggingSkillHotKeyIndex = -1;
   this.updateId = 0;
   this.canvasEvents = {
     "mousemove": this.handleCanvasMousemove.bind(this),
@@ -222,6 +224,13 @@ Char.prototype.useSkillByBaseId = function(sid) {
     params: [sid]
   };
   this.world.conn.sendJSON(clientCall);
+  switch (sid) {
+  case 1:
+    // this.world.assets.audio["fireballShoot"].stop();
+    // this.world.assets.audio["fireballShoot"].setTime(0);
+    // this.world.assets.audio["fireballShoot"].play();
+    break;
+  }
 };
 
 Char.prototype.useFireBall = function() {
@@ -394,6 +403,27 @@ Char.prototype.setLeftSkillHotKey = function(sid) {
     receiver: "Char",
     method: "SetLeftSkillHotKey",
     params: [sid]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.clearSkillHotKey = function(index) {
+  var clientCall = {
+    receiver: "Char",
+    method: "ClearSkillHotKey",
+    params: [index]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.clearNormalHotKey = function(index) {
+  if (index > 4) {
+    return;
+  }
+  var clientCall = {
+    receiver: "Char",
+    method: "ClearNormalHotKey",
+    params: [index]
   };
   this.world.conn.sendJSON(clientCall);
 };
@@ -616,8 +646,15 @@ Char.prototype.handleCanvasDragOver = function(event) {
 };
 
 Char.prototype.handleCanvasDrop = function(event) {
+  console.log(this.dragStartViewName);
   if (this.draggingItem && this.dragStartViewName == "CharItems") {
     this.dropItem(this.draggingItem.baseId, this.draggingItem.slotIndex);
+  } else if (this.draggingNormalHotKeyIndex >= 0 && this.dragStartViewName == "CharHotKeys") {
+    this.clearNormalHotKey(this.draggingNormalHotKeyIndex);
+    this.draggingNormalHotKeyIndex = -1;
+  } else if (this.draggingSkillHotKeyIndex >= 0 && this.dragStartViewName == "CharHotKeys") {
+    this.clearSkillHotKey(this.draggingSkillHotKeyIndex);
+    this.draggingSkillHotKeyIndex = -1;
   }
 };
 
@@ -630,6 +667,10 @@ Char.prototype.handleDocumentKeydown = function(event) {
 
 Char.prototype.handleDocumentKeyup = function(event) {
   this.buttons.document.key.shift = event.shiftKey;
+  if (!event.shiftKey) {
+    this.handleCanvasMousemove({clientX: this.lastClientX,
+                                clientY: this.lastClientY});
+  }
 };
 
 Char.prototype.handleCanvasClick = function(event) {

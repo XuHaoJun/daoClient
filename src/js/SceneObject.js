@@ -1,4 +1,5 @@
-var THREE = require('three');
+var _ = require('lodash');
+var THREE = require('n3d-threejs');
 var cp = require('chipmunk');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 
@@ -8,6 +9,7 @@ var SceneObject = module.exports = function () {
   this.scene = null;
   this.bodyViewId = 0;
   this.threeBody = null;
+  this.subThreeBodys = null;
   this.cpBody = null;
   this.glowEffect = null;
 };
@@ -46,7 +48,7 @@ SceneObject.prototype.setPosition = function(pos) {
 
 SceneObject.prototype.setAngle = function(angle) {
   this.cpBody.setAngle(angle);
-  this.threeBody.rotation.z = angle;
+  this.threeBody.rotation.z = this.cpBody.a;
 };
 
 // FIXME
@@ -79,7 +81,7 @@ SceneObject.prototype.lookAt = function(pos) {
   var toTarget = cp.v(pos.x - this.cpBody.p.x,
                       pos.y - this.cpBody.p.y);
   var desiredAngle = Math.atan2(-toTarget.x, toTarget.y);
-  this.threeBody.lookAt(new THREE.Vector3(pos.x, pos.y, this.threeBody.position.z + 2));
+  // this.threeBody.lookAt(new THREE.Vector3(pos.x, pos.y, this.threeBody.position.z + 1));
   this.setAngle(desiredAngle);
 };
 
@@ -92,6 +94,17 @@ SceneObject.prototype.syncCpAndThree = function() {
   this.threeBody.position.setX(cpPos.x);
   this.threeBody.position.setY(cpPos.y);
   this.threeBody.rotation.z = this.cpBody.a;
+  _.each(this.subThreeBodys, function(body) {
+    if (!body.localPosition) {
+      return;
+    }
+    var worldPosition = new THREE.Vector3();
+    worldPosition.addVectors(body.localPosition, this.threeBody.position);
+    // var worldRota = new THREE.Vector3();
+    body.position.add(this.threeBody.position);
+    // body.rotation.add(this.threeBody.rotation);
+  }, this);
+  // this.threeBody.rotation.z += 0.3;
   if (this.glowEffect) {
     window.glowEffect = this.glowEffect;
     this.glowEffect.position.copy(this.threeBody.position);

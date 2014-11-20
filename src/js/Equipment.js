@@ -33,7 +33,7 @@ Equipment.prototype.parseConfig = function(config) {
 Equipment.prototype.handleEquipClick = function(event, viewName) {
   if (_.isObject(this.owner) &&
       (viewName == "CharItems" || viewName == "CharUsingEquips" ||
-       viewName == "HotKeys")) {
+       viewName == "CharHotKeys")) {
     if (_.indexOf(this.owner.usingEquips, this) == -1) {
       this.owner.equipBySlot(this);
     } else {

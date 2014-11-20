@@ -27,10 +27,10 @@ var CharInfo = React.createClass({
     },
     render: function() {
         var display = (this.props.show ? 'block' : 'none');
-        var style = {'position': 'fixed',
-                     'margin-top': '10%',
-                     'margin-left': '10%',
-                     'display': display};
+        var style = {position: 'fixed',
+                     marginTop: '10%',
+                     marginLeft: '10%',
+                     display: display};
         var header = (
             <div className="handle-draggable">
                 <span className="handle-draggable">
@@ -50,7 +50,7 @@ var CharInfo = React.createClass({
                        zIndex={50}>
                 <Panel header={header} style={style}  className="noselect">
                     <TabbedArea defaultActiveKey={1} centerBlock>
-                        <TabPane key={1} tab="基本資訊">
+                        <TabPane eventKey={1} tab="基本資訊">
                             <h4>Name:</h4>
                             <p>{ char.name }</p>
                             <h4>Level:</h4>
@@ -58,13 +58,13 @@ var CharInfo = React.createClass({
                             <h4>Dzeny:</h4>
                             <p>{ char.dzeny }</p>
                         </TabPane>
-                        <TabPane key={2} tab="主屬性">
+                        <TabPane eventKey={2} tab="主屬性">
                             <p>Str: {char.str}</p>
                             <p>Vit: {char.vit}</p>
                             <p>Wis: {char.wis}</p>
                             <p>spi: {char.spi}</p>
                         </TabPane>
-                        <TabPane key={3} tab="副屬性">
+                        <TabPane eventKey={3} tab="副屬性">
                             <p>def: {char.def}</p>
                             <p>mdef: {char.mdef}</p>
                             <p>atk: {char.atk}</p>

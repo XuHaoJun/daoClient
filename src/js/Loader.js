@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var $ = require('jquery/dist/jquery');
-var THREE = require('three');
+var THREE = require('n3d-threejs');
 var React = require('react');
 var View = require('./View');
 var IDBStore = require('idb-wrapper');
@@ -26,7 +26,7 @@ Loader.prototype.run = function(onComplete) {
     return;
   }
   this.world.views.loading =
-    React.renderComponent(View.Loading(null),
+    React.render(View.Loading(null),
                           document.body);
   this.isLoading = true;
   var url =  'assets/json/ClientAssetsList.json';
@@ -123,7 +123,7 @@ Loader.prototype.handleComplete = function() {
   React.unmountComponentAtNode(document.body);
   this.world.views.loading = null;
   this.world.views.login =
-    React.renderComponent(View.Router({world: this.world}),
+    React.render(View.Router({world: this.world}),
                           document.body);
   var geometry = new THREE.BoxGeometry( 64, 64, 64, 2, 2, 2 );
   var material = new THREE.MeshPhongMaterial( {color: 0x00ffff, transparent: true} );
@@ -163,14 +163,11 @@ Loader.prototype.handleComplete = function() {
 
   var loader = new THREE.JSONLoader(); // init the loader util
   // init loading
-  loader.load('./assets/3dmodel/shark.js', function (geometry) {
+  loader.load('./assets/3dmodel/duch.js', function (geometry) {
     console.log(geometry);
-    // create a new material
     var material = new THREE.MeshLambertMaterial({
-      map: THREE.ImageUtils.loadTexture('assets/3dmodel/shark.png')  // specify and load the texture
+      map: THREE.ImageUtils.loadTexture('./assets/texture/duch.png')  // specify and load the texture
     });
-    // var material = new THREE.MeshPhongMaterial( {color: 0x00ffff, transparent: true} );
-    // create a mesh with models geometry and material
     var mesh = new THREE.Mesh(
       geometry,
       material
@@ -181,10 +178,12 @@ Loader.prototype.handleComplete = function() {
     mesh.scale.x = 30;
     mesh.scale.y = 30;
     mesh.scale.z = 30;
-
     this.world.assets.mesh[0] = mesh;
     this.emit('complete');
   }.bind(this));
+  // loader.load('./assets/3dmodel/BeetleGolem_v3.js', function (geometry) {
+  //   console.log(geometry);
+  // }.bind(this));
 };
 
 function blob2DOM(blob, tagName) {

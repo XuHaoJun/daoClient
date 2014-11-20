@@ -20,11 +20,6 @@ var SkillHotKey = React.createClass({
         event.preventDefault();
         var char = this.props.world.account.usingChar;
         var baseId = char.draggingSkillBaseId;
-        if (char.hotKeys.skill[this.props.index] == null) {
-            char.hotKeys.skill[this.props.index] = {skillBaseId: baseId};
-        } else {
-            char.hotKeys.skill[this.props.index].skillBaseId = baseId;
-        }
         if (this.props.index == 0) {
             char.setLeftSkillHotKey(baseId);
         } else {
@@ -32,6 +27,9 @@ var SkillHotKey = React.createClass({
         }
     },
     handleSkillDragStart: function(event) {
+        var char = this.props.world.account.usingChar;
+        char.draggingSkillHotKeyIndex = this.props.index;
+        event.dataTransfer.setData("text/html", "workaround fix drag on firefox");
     },
     render: function() {
         if (this.props.hotKey === null || this.props.hotKey.skillBaseId <= 0) {
@@ -44,10 +42,13 @@ var SkillHotKey = React.createClass({
             );
         } else {
             return (
-                <Skill baseId={this.props.hotKey.skillBaseId}
-                       world={this.props.world}
-                       onDragOver={function(e) {e.preventDefault();}}
-                       />
+                <div onDragStart={this.handleSkillDragStart}
+                     onDrop={this.handleEmptyDrop}
+                     onDragOver={function(e) {e.preventDefault();}} >
+                    <Skill baseId={this.props.hotKey.skillBaseId}
+                           viewName="CharHotKeys"
+                           world={this.props.world} />
+                </div>
             );
         }
     }
@@ -59,8 +60,6 @@ var NormalHotKey = React.createClass({
         var char = this.props.world.account.usingChar;
         var item = char.draggingItem;
         if (item.slotIndex != -1) {
-            char.hotKeys.normal[this.props.index].itemBaseId = item.baseId;
-            char.hotKeys.normal[this.props.index].slotIndex = item.slotIndex;
             char.setNormalHotKey(this.props.index, item.baseId, item.slotIndex);
         }
         char.draggingItem = null;
@@ -73,6 +72,11 @@ var NormalHotKey = React.createClass({
                  >
             </div>
         );
+    },
+    handleNormalDragStart: function(event) {
+        var char = this.props.world.account.usingChar;
+        char.draggingNormalHotKeyIndex = this.props.index;
+        event.dataTransfer.setData("text/html", "workaround fix drag on firefox");
     },
     render: function() {
         if (this.props.hotKey === null || this.props.hotKey.itemBaseId <= 0) {
@@ -91,13 +95,15 @@ var NormalHotKey = React.createClass({
                 return this.renderEmpty();
             }
             return (
-                <Item item={item}
-                      className="dao-hotKey-item"
-                      updateId={item.updateId}
-                      viewName="HotKeys"
-                      onDrop={this.handleDrop}
-                      onDragOver={function(e) {e.preventDefault();}}
-                      />
+                <div onDragStart={this.handleNormalDragStart}
+                     onDrop={this.handleDrop}
+                     onDragOver={function(e) {e.preventDefault();}} >
+                    <Item item={item}
+                          className="dao-hotKey-item"
+                          updateId={item.updateId}
+                          viewName="CharHotKeys"
+                          />
+                </div>
             );
         }
     }
@@ -137,7 +143,7 @@ var HotKeys = React.createClass({
         if (item == null) {
             return;
         }
-        item.emit("click", event, "HotKeys");
+        item.emit("click", event, "CharHotKeys");
     },
     componentDidMount: function() {
         $(document).on("keydown", this.handleTriggerNormalHotKey);

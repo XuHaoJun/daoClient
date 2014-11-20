@@ -12,85 +12,85 @@ var App = require('./App');
 Backbone.$ = $;
 
 var Router = module.exports = React.createClass({
-  getInitialState: function () {
-    return {
-      page: null,
+    getInitialState: function () {
+        return {
+            page: null,
 
-      loginError: null,
-      successRegiste: null
-    };
-  },
+            loginError: null,
+            successRegister: null
+        };
+    },
 
-  componentWillUnmount: function () {
-    Backbone.history.stop();
-  },
+    componentWillUnmount: function () {
+        Backbone.history.stop();
+    },
 
-  componentDidMount: function() {
-    var routes = {
-      "login": this.routeLogin,
-      "doc": this.routeDoc,
-      "about": this.routeAbout,
-      "home": this.routeHome,
-    }
-    var BackboneRouter = Backbone.Router.extend({
-      routes: routes
-    });
-    var router = new BackboneRouter();
-    Backbone.history.start();
-    var name = window.location.hash.substring(1, window.location.hash.length);
-    if (window.location.hash && _.indexOf(_.keys(routes), name) != -1) {
-      router.navigate(name, {trigger: true});
-    } else {
-      router.navigate("login", {trigger: true});
-    }
-  },
+    componentDidMount: function() {
+        var routes = {
+            "login": this.routeLogin,
+            "doc": this.routeDoc,
+            "about": this.routeAbout,
+            "home": this.routeHome,
+        }
+        var BackboneRouter = Backbone.Router.extend({
+            routes: routes
+        });
+        var router = new BackboneRouter();
+        Backbone.history.start();
+        var name = window.location.hash.substring(1, window.location.hash.length);
+        if (window.location.hash && _.indexOf(_.keys(routes), name) != -1) {
+            router.navigate(name, {trigger: true});
+        } else {
+            router.navigate("login", {trigger: true});
+        }
+    },
 
-  routeHome: function() {
-    this.setState({page: (
-      <App>
-        <Home />
-      </App>
-    )});
-  },
+    routeHome: function() {
+        this.setState({page: (
+            <App navActiveKey="home" >
+                <Home />
+            </App>
+        )});
+    },
 
-  routeDoc: function() {
-    this.setState({page: (
-      <App>
-        <DaoDocument />
-      </App>
-    )});
-  },
+    routeDoc: function() {
+        this.setState({page: (
+            <App navActiveKey="doc" >
+                <DaoDocument />
+            </App>
+        )});
+    },
 
-  handleSuccessRegisterAccount: function(msg) {
-    this.state.successRegister = msg;
-    this.routeLogin();
-  },
-  handleErrorLoginAccount: function(err) {
-    this.state.loginError = err;
-    this.routeLogin();
-  },
-  routeLogin: function() {
-    this.setState({page: (
-      <App>
-        <Login world={this.props.world}
-               err={this.state.loginError}
-               success={this.state.successRegister} />
-      </App>
-    )}, function() {
-      this.state.loginError = null;
-      this.state.successRegister = null;
-    });
-  },
+    handleSuccessRegisterAccount: function(msg) {
+        this.state.successRegister = msg;
+        this.routeLogin();
+    },
+    handleErrorLoginAccount: function(err) {
+        this.state.loginError = err;
+        this.routeLogin();
+    },
+    routeLogin: function() {
+        this.setState({page: (
+            <App navActiveKey="login" >
+                <Login world={this.props.world}
+                       err={this.state.loginError}
+                       success={this.state.successRegister} />
+            </App>
+        )}, function() {
+            this.state.loginError = null;
+            this.state.successRegister = null;
+        });
+    },
 
-  routeAbout: function() {
-    this.setState({page: (
-      <App>
-        <About />
-      </App>
-    )});
-  },
+    routeAbout: function() {
+        this.setState({page: (
+            <App navActiveKey="about" >
+                <About />
+            </App>
+        )});
+    },
 
-  render: function() {
-    return this.state.page;
-  },
+    render: function() {
+        return this.state.page;
+    },
 });

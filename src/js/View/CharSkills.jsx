@@ -46,10 +46,10 @@ var CharSkills = React.createClass({
             </div>
         );
         var display = (this.props.show ? 'block' : 'none');
-        var style = {'position': 'fixed',
-                     'margin-top': '7%',
-                     'margin-left': '30%',
-                     'display': display};
+        var style = {position: 'fixed',
+                     marginTop: '7%',
+                     marginLeft: '30%',
+                     display: display};
         return (
             <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                        zIndex={50}>

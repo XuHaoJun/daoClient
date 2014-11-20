@@ -6,7 +6,7 @@ require('browsernizr/test/draganddrop');
 require('browsernizr/test/requestanimationframe');
 require('browsernizr/test/blob');
 require('browsernizr/test/json');
-var THREE = require('three');
+var THREE = require('n3d-threejs');
 var Modernizr = require('browsernizr');
 var isNode = require('detect-node');
 var _ = require('lodash');
@@ -24,8 +24,8 @@ var World = module.exports = function (config) {
   this.isGaming = false;
   this.account = null;
   this.serverList = {
-    main: (location.hostname + ":"  + location.port),
-    default: (location.hostname + ":"  + location.port)
+    main: (location.hostname + ":"  + (parseInt(location.port)+1)),
+    default: (location.hostname + ":"  + (parseInt(location.port)+1))
   };
   if (isNode) {
     this.serverList.main = "127.0.0.1:3000";
@@ -63,7 +63,7 @@ World.prototype.browserDependCheck =  function() {
     var checkResult= _.zipObject(checks, modernizrChecks);
     this.initViews();
     React.unmountComponentAtNode(document.body);
-    React.renderComponent(View.BrowserDependCheck({checkResult: checkResult}),
+    React.render(View.BrowserDependCheck({checkResult: checkResult}),
                           document.body);
   }
   return isPassed;
@@ -134,7 +134,7 @@ World.prototype.handleDisconnect = function() {
   this.initViews();
   window.location.hash = "#login";
   this.views.login =
-    React.renderComponent(View.Router({world: this}),
+    React.render(View.Router({world: this}),
                           document.body);
   this.isGaming = false;
 };
@@ -156,7 +156,7 @@ World.prototype.handleSuccessLoginAcccount = function(accountConfig) {
     React.unmountComponentAtNode(document.body);
     this.views.login = null;
     this.views.selectChar = React
-      .renderComponent(View.SelectChar({world: this}),
+      .render(View.SelectChar({world: this}),
                        document.body);
     this.emit('handleSuccessLoginAcccount', accountConfig);
   }
@@ -179,9 +179,8 @@ World.prototype.handleRunScene = function(sceneName) {
   if (_.isObject(this.views.selectChar)) {
     React.unmountComponentAtNode(document.body);
     this.views.selectChar = null;
-    this.views.game = React
-      .renderComponent(View.Game({world: this}),
-                       document.body);
+    this.views.game = React.render(View.Game({world: this}),
+                                   document.body);
   }
   this.scenes[sceneName].run();
   this.isGaming = true;

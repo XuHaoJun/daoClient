@@ -20,7 +20,7 @@ var MiniTargetInfo = React.createClass({
       <div className='center-block' style={{'background-color': 'gray'}}>
         <ProgressBar bsStyle='success' now={hpNow}
                      label={this.props.miniTarget.name}
-                     style={{'margin-bottom': '0px', 'margin-top': '0px'}}>
+                     style={{marginBottom: '0px', 'margin-top': '0px'}}>
         </ProgressBar>
       </div>
     );

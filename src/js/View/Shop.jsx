@@ -33,10 +33,10 @@ var Shop = React.createClass({
     char.sellItemToOpeningShop(item.baseId, item.slotIndex);
   },
   render: function() {
-    var style = {'position': 'fixed',
-                 'margin-top': '10%',
-                 'margin-left': '40%',
-                 'max-width': '30%'};
+    var style = {position: 'fixed',
+                 marginTop: '10%',
+                 marginLeft: '40%',
+                 maxWidth: '30%'};
     var header = (
       <div className="handle-draggable">
         <span className="handle-draggable">
@@ -68,7 +68,7 @@ var Shop = React.createClass({
           </Colm>
           <Colm md={4}>
             <strong className="text-center center-block"
-                    style={{'font-size': '24px'}}>
+                    style={{fontSize: '24px'}}>
               {item.buyPrice}
             </strong>
           </Colm>

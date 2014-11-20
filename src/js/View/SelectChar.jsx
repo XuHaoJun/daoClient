@@ -67,7 +67,7 @@ var SelectChar = React.createClass({
               </Button>
             </form>
             <Button type='submit' bsStyle='success' onClick={this.handleCreateChar}
-                    style={{'margin-top': '60px'}} bsSize='medium'>
+                    style={{marginTop: '60px'}} bsSize='medium'>
               Create Character
             </Button>
           </Colm>

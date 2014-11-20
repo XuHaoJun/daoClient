@@ -1,7 +1,7 @@
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var $ = require('jquery/dist/jquery');
 var _ = require('lodash');
-var THREE = require('three');
+var THREE = require('n3d-threejs');
 var cp = require('chipmunk');
 var SceneObject = require('./SceneObject.js');
 var parseClient = require('./util/parseClient.js');
@@ -203,7 +203,7 @@ Scene.prototype.add = function(sb) {
     document.body.appendChild(sb.domLabel);
   }
   this.emit("add", sb);
-  sb.emit("sceneAdd", sb);
+  sb.emit("sceneAdd", this);
 };
 
 Scene.prototype.remove = function(sb) {
@@ -256,6 +256,8 @@ Scene.prototype.handleAddMob = function(mobConfig) {
 Scene.prototype.handleAddFireBall = function(config)  {
   var fireBall = this.world.create.FireBall(config);
   this.add(fireBall);
+  var shoot = this.world.assets.audio["fireballShoot"].clone();
+  shoot.setVolume(12).stop().setTime(0).play();
 };
 
 Scene.prototype.handleRemoveById = function(id, sceneName) {
@@ -360,7 +362,6 @@ Scene.prototype.render = function(time) {
         !this.camera.lastPosition.equals(this.camera.position)) {
       this.focusObj.onCameraPositionChange(this.camera);
     }
-    this.camera.lastPosition.copy(this.camera.position);
   }
   this.cpSpace.step(delta);
   _.each(this.sceneObjects, function(sb) {
@@ -369,8 +370,9 @@ Scene.prototype.render = function(time) {
     }
     sb.syncCpAndThree();
   });
+  this.renderer.render(this.threeScene, this.camera);
   _.each(this.inSceneItems, function(item) {
     item.updateDomLabel(item.screenXY(this.camera));
   }, this);
-  this.renderer.render(this.threeScene, this.camera);
+  this.camera.lastPosition.copy(this.camera.position);
 };

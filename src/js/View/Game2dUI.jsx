@@ -81,7 +81,7 @@ var Game2dUI = React.createClass({
         return (
             <div>
                 <div className="nav" role="navigation">
-                    <div className="navbar-inner" style={{'margin-top': '5px'}}>
+                    <div className="navbar-inner" style={{marginTop: '5px'}}>
                         <Grid fluid>
                             <Row>
                                 <Colm md={4} sm={4}>

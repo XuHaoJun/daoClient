@@ -124,7 +124,7 @@ var Game = React.createClass({
                     </Row>
                 </Grid>
                 <div className="navbar navbar-fixed-bottom"
-                     style={{'margin-left': '10px', 'max-width': '20%'}}>
+                     style={{marginLeft: '10px', maxWidth: '20%'}}>
                     <ChatBox
                     messages={this.state.chatMessages}
                     char={this.props.world.account.usingChar} />
