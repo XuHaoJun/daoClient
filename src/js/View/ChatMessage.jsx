@@ -18,9 +18,10 @@ var ChatMessage = React.createClass({
     },
     render: function() {
         var talker = (_.isEmpty(this.props.talker) ? '' :  this.props.talker + ": ");
+        var chatType = (_.isEmpty(this.props.chatType) ? '' : "[" + this.props.chatType + "] " );
         return (
             <h4 style={{fontWeight: 'bolder'}}>
-                { "[" + this.props.chatType + "] " + talker + this.props.content }
+                { chatType + talker + this.props.content }
             </h4>
         );
     }

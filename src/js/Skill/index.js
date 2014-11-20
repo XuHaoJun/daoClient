@@ -1,3 +1,4 @@
 module.exports = {
-  FireBall: require('./FireBall')
+  FireBall: require('./FireBall'),
+  FireBallSkill: require('./FireBallSkill')
 };

@@ -8,6 +8,7 @@ var Bio = require('./Bio.js');
 var Mob = require('./Mob.js');
 var Npc = require('./Npc.js');
 var Account = require('./Account.js');
+var FireBallSkill = require('./Skill/FireBallSkill.js');
 
 var Char = module.exports = function (account, config) {
   Bio.call(this, account.world);
@@ -28,6 +29,7 @@ var Char = module.exports = function (account, config) {
   this.lastMiniTarget = null;
   this.lastRequestId = null;
   this.dzeny = 0;
+  this.fireBallSkill = new FireBallSkill();
   this.buttons = {canvas:
                   {mouse: {isDowning: false,
                            isUping: false,
@@ -218,19 +220,23 @@ Char.prototype.useSkillByBaseId = function(sid) {
   if (sid <= 0) {
     return;
   }
+  switch (sid) {
+  case 1:
+    if (this.fireBallSkill.afterUseDuration <
+        this.fireBallSkill.delayDuration) {
+      return;
+    } else {
+      this.fireBallSkill.afterUseDuration = 0;
+    }
+    break;
+  }
+  Bio.prototype.shutDownMove.call(this);
   var clientCall = {
     receiver: "Char",
     method:  "UseSkillByBaseId",
     params: [sid]
   };
   this.world.conn.sendJSON(clientCall);
-  switch (sid) {
-  case 1:
-    // this.world.assets.audio["fireballShoot"].stop();
-    // this.world.assets.audio["fireballShoot"].setTime(0);
-    // this.world.assets.audio["fireballShoot"].play();
-    break;
-  }
 };
 
 Char.prototype.useFireBall = function() {
@@ -560,15 +566,11 @@ Char.prototype.handleCanvasMousemove = function(event) {
       this.shutDownMove();
       return;
     } else if (firstBio instanceof Mob) {
-      if (this.hotKeys.skill[0]) {
+      if (this.hotKeys.skill[0].skillBaseId > 0) {
         this.useSkillByBaseId(this.hotKeys.skill[0].skillBaseId);
       }
     } else if (this.buttons.document.key.shift) {
-      if (this.buttons.canvas.mouse.leftDowning) {
-        this.useSkillByBaseId(this.hotKeys.skill[0].skillBaseId);
-      } else if(this.buttons.canvas.mouse.rightDowning) {
-        this.useSkillByBaseId(this.hotKeys.skill[1].skillBaseId);
-      }
+      return;
     } else if (_.isObject(foundGround) && (firstBio instanceof Npc) == false) {
       this.move(foundGround.point.x, foundGround.point.y);
     }
@@ -702,4 +704,16 @@ Char.prototype.destroy = function() {
   _.each(this.documentEvents, function(event, eventName) {
     doc.off(eventName, event);
   });
+};
+
+Char.prototype.afterUpdate = function(delta) {
+  Bio.prototype.afterUpdate.call(this, delta);
+  if (this.buttons.canvas.mouse.leftDowning &&
+      this.buttons.document.key.shift) {
+    this.useSkillByBaseId(this.hotKeys.skill[0].skillBaseId);
+  } else if(this.buttons.canvas.mouse.rightDowning &&
+            this.buttons.document.key.shift) {
+    this.useSkillByBaseId(this.hotKeys.skill[1].skillBaseId);
+  }
+  this.fireBallSkill.afterUseDuration += delta;
 };
