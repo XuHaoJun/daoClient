@@ -265,7 +265,12 @@ Scene.prototype.handleRemoveById = function(id, sceneName) {
   if (sceneName != this.name) {
     return;
   }
-  this.remove(this.sceneObjects[id]);
+  var sb = this.sceneObjects[id];
+  if (sb) {
+    this.remove(sb);
+  } else {
+    console.log("warning not found scene object id", id, sceneName);
+  }
 };
 
 Scene.prototype.attachCanvas = function(threeCanvas) {

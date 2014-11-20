@@ -25,10 +25,12 @@ var World = module.exports = function (config) {
   this.account = null;
   this.serverList = {
     main: (location.hostname + ":"  + (parseInt(location.port)+1)),
-    default: (location.hostname + ":"  + (parseInt(location.port)+1))
+    default: (location.hostname + ":"  + (parseInt(location.port)+1)),
+    assets: (location.hostname + ":"  + location.port)
   };
   if (isNode) {
-    this.serverList.main = "127.0.0.1:3000";
+    this.serverList.main = "127.0.0.1:3001";
+    this.serverList.assets = "127.0.0.1:3000";
   }
   this.create = new ObjectCreator(this);
   this.initConn();

@@ -31,7 +31,7 @@ Loader.prototype.run = function(onComplete) {
   this.isLoading = true;
   var url =  'assets/json/ClientAssetsList.json';
   if (isNode) {
-    url = "http://" + this.world.serverList.main + '/assets/json/ClientAssetsList.json';
+    url = "http://" + this.world.serverList.assets + '/assets/json/ClientAssetsList.json';
   }
   $.getJSON(url, function(syncList) {
     this.clientAssetsList = syncList;
@@ -68,7 +68,7 @@ Loader.prototype.handleReadyAssetsStore = function() {
           var xhr = new XMLHttpRequest();
           var blob;
           if (isNode) {
-            asset.url = "http://" + world.serverList.main + "/" + asset.url;
+            asset.url = "http://" + world.serverList.assets + "/" + asset.url;
             console.log(asset.url);
           }
           xhr.open("GET", asset.url, true);
@@ -163,10 +163,22 @@ Loader.prototype.handleComplete = function() {
 
   var loader = new THREE.JSONLoader(); // init the loader util
   // init loading
-  loader.load('./assets/3dmodel/duch.js', function (geometry) {
+  var url = "assets/3dmodel/duch.js";
+  if (isNode) {
+    url = "http://" + this.world.serverList.assets + "/" + url;
+  }
+  var texturePath = null;
+  if (isNode) {
+    texturePath = "http://" + this.world.serverList.assets + "/";
+  }
+  loader.load(url, function (geometry) {
     console.log(geometry);
+    var texturePath = 'assets/texture/duch.png';
+    if (isNode) {
+      texturePath = "http://" + this.world.serverList.assets + "/" + texturePath;
+    }
     var material = new THREE.MeshLambertMaterial({
-      map: THREE.ImageUtils.loadTexture('./assets/texture/duch.png')  // specify and load the texture
+      map: THREE.ImageUtils.loadTexture(texturePath)  // specify and load the texture
     });
     var mesh = new THREE.Mesh(
       geometry,
@@ -180,7 +192,7 @@ Loader.prototype.handleComplete = function() {
     mesh.scale.z = 30;
     this.world.assets.mesh[0] = mesh;
     this.emit('complete');
-  }.bind(this));
+  }.bind(this), texturePath);
   // loader.load('./assets/3dmodel/BeetleGolem_v3.js', function (geometry) {
   //   console.log(geometry);
   // }.bind(this));
