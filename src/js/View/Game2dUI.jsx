@@ -158,7 +158,7 @@ var Game2dUI = React.createClass({
                 <CharSkills show={this.state.showCharSkills}
                             shouldUpdate={this.state.updateCharSkills}
                             world={this.props.world}
-                            skillBaseIds={this.props.charSkillBaseIds}
+                            learnedSkills={this.props.charLearnedSkills}
                             closeButtonClick={this.handleToggleCharSkills} />
             </div>
         );

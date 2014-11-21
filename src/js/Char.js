@@ -20,7 +20,7 @@ var Char = module.exports = function (account, config) {
                 etcItem: new Array(30)};
   this.hotKeys = {normal: new Array(4),
                   skill: new Array(2)};
-  this.skillBaseIds = [];
+  this.learnedSkills = {};
   this.lastSceneName = '';
   this.lastX = 0;
   this.lastY = 0;
@@ -86,12 +86,12 @@ Char.prototype.parseConfig = function(config) {
       this.usingEquips = new UsingEquips(this.world, val) ;
       this.usingEquips.setAllOwner(this);
       break;
+    case "learnedSkills":
     case "lastSceneName":
     case "lastX":
     case "lastY":
     case "slotIndex":
     case "dzeny":
-    case "skillBaseIds":
     case "pickRadius":
     case "hotKeys":
       this[key] = val;
@@ -110,10 +110,10 @@ Char.prototype.handleUpdateConfig = function(config) {
   }
 };
 
-Char.prototype.handleSkillBaseIds = function(sids) {
-  this.skillBaseIds = sids;
+Char.prototype.handleLearnedSkills = function(config) {
+  this.learnedSkills = config;
   if (_.isObject(this.world.views.game)) {
-    this.world.views.game.handleCharSkillBaseIds(sids);
+    this.world.views.game.handleCharLearnedSkills(this.learnedSkills);
   }
 };
 
@@ -405,6 +405,9 @@ Char.prototype.unequipBySlot = function(eq) {
 };
 
 Char.prototype.setLeftSkillHotKey = function(sid) {
+  if (_.isString(sid)) {
+    sid = parseInt(sid);
+  }
   var clientCall = {
     receiver: "Char",
     method: "SetLeftSkillHotKey",
@@ -447,6 +450,9 @@ Char.prototype.setNormalHotKey = function(index, itemBaseId, slotIndex) {
 };
 
 Char.prototype.setRightSkillHotKey = function(sid) {
+  if (_.isString(sid)) {
+    sid = parseInt(sid);
+  }
   var clientCall = {
     receiver: "Char",
     method: "SetRightSkillHotKey",
@@ -479,6 +485,7 @@ Char.prototype.handleJoinScene = function(config) {
   if (this.scene) {
     this.scene.focusObj = this;
     this.run();
+    this.scene.updateInSceneItems();
   }
 };
 

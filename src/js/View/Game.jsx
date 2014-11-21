@@ -23,7 +23,7 @@ var Game = React.createClass({
                 shop: null,
                 char: this.props.world.account.usingChar,
                 charItems: this.props.world.account.usingChar.items,
-                charSkillBaseIds: this.props.world.account.usingChar.skillBaseIds,
+                charLearnedSkills: this.props.world.account.usingChar.learnedSkills,
                 charUsingEquips: this.props.world.account.usingChar.usingEquips
         };
     },
@@ -41,8 +41,8 @@ var Game = React.createClass({
         this.setState({char: char,
                        updateGame2dUI: true});
     },
-    handleCharSkillBaseIds: function(sids) {
-        this.setState({charSkillBaseIds: sids,
+    handleCharLearnedSkills: function(sids) {
+        this.setState({charLearnedSkills: sids,
                        updateGame2dUI: true});
     },
     handleCharItems: function(charItems) {
@@ -117,7 +117,7 @@ var Game = React.createClass({
                                       world={this.props.world}
                                       char={this.state.char}
                                       charItems={this.state.charItems}
-                                      charSkillBaseIds={this.state.charSkillBaseIds}
+                                      charLearnedSkills={this.state.charLearnedSkills}
                                       charUsingEquips={this.props.world.account.usingChar.usingEquips}
                                       miniTarget={this.state.miniTarget} />
                         </Colm>

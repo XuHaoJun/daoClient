@@ -16,17 +16,17 @@ var App = module.exports = React.createClass({
     render: function() {
         return (
             <div>
+                <Navbar>
+                    <Nav activeKey={this.props.navActiveKey}>
+                        <NavItem eventKey="home" href="#home">Dao</NavItem>
+                        <NavItem eventKey="login" href="#login">Login</NavItem>
+                        <NavItem eventKey="doc" href="#doc">Document</NavItem>
+                        <NavItem eventKey="about" href="#about">About</NavItem>
+                    </Nav>
+                </Navbar>
                 <Grid fluid>
-                    <Navbar>
-                        <Nav activeKey={this.props.navActiveKey}>
-                            <NavItem eventKey="home" href="#home">Dao</NavItem>
-                            <NavItem eventKey="login" href="#login">Login</NavItem>
-                            <NavItem eventKey="doc" href="#doc">Document</NavItem>
-                            <NavItem eventKey="about" href="#about">About</NavItem>
-                        </Nav>
-                    </Navbar>
+                    {this.props.children}
                 </Grid>
-                {this.props.children}
             </div>
         );
     }

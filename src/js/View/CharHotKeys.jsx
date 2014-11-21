@@ -9,13 +9,6 @@ var Skill = require('./Skill.js');
 var Item = require('./Item.js');
 
 var SkillHotKey = React.createClass({
-    shouldComponentUpdate: function(nextProps, nextState) {
-        if (!_.isEqual(this.props, nextProps) ||
-            !_.isEqual(this.state, nextState) ) {
-                return true;
-        }
-        return false;
-    },
     handleEmptyDrop: function(event) {
         event.preventDefault();
         var char = this.props.world.account.usingChar;
@@ -41,11 +34,14 @@ var SkillHotKey = React.createClass({
                 </div>
             );
         } else {
+            var char = this.props.world.account.usingChar;
+            var level = char.learnedSkills[this.props.hotKey.skillBaseId];
             return (
                 <div onDragStart={this.handleSkillDragStart}
                      onDrop={this.handleEmptyDrop}
                      onDragOver={function(e) {e.preventDefault();}} >
                     <Skill baseId={this.props.hotKey.skillBaseId}
+                           level={level}
                            viewName="CharHotKeys"
                            world={this.props.world} />
                 </div>

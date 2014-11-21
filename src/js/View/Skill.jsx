@@ -18,6 +18,7 @@ var Skill = React.createClass({
     getDefaultProps: function() {
         return {
             onDrop: function() {},
+            level: 1,
             viewName: ""
         };
     },
@@ -37,8 +38,12 @@ var Skill = React.createClass({
         var iconSrc = world.assets.skillIcon[skillBaseId]["src"];
         var name = skillName[skillBaseId];
         var skillDesc = skillDescription[skillBaseId];
+        var skillLevel = this.props.level.toString();
         var skillInfo = (
             <Popover title={name}>
+                <h4>Level:</h4>
+                { skillLevel }
+                <h4>Description:</h4>
                 { skillDesc }
             </Popover>
         );

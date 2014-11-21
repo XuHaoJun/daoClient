@@ -26,10 +26,11 @@ var CharSkills = React.createClass({
     },
     render: function() {
         var world = this.props.world;
-        var skillBaseIds = this.props.skillBaseIds;
-        var skills = _.map(skillBaseIds, function(sid) {
+        var learnedSkills = this.props.learnedSkills;
+        var skills = _.map(learnedSkills, function(level, id) {
             return (
-                <Skill key={sid} baseId={sid} world={world}/>
+                <Skill key={id} baseId={id}
+                       level={level} world={world}/>
             );
         }, this);
         var header = (
