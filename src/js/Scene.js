@@ -33,6 +33,7 @@ var Scene = module.exports = function (world, config) {
   // this.staticCpBodys = [];
   this.canvas = world.threeCanvas;
   this.sceneObjects = {};
+  this.animateCallBack = this.animate.bind(this);
   // TODO addDefaultLight just for test will remove in the future
   this.addDefaultLight();
   if (_.isObject(config)) {
@@ -184,11 +185,14 @@ Scene.prototype.setPlaneGround = function(image) {
 };
 
 Scene.prototype.add = function(sb) {
-  if (sb.scene == this) {
+  if (sb.scene == this || sb.cpBody == null) {
+    console.warn("you can't add this scene object into scene", sb);
     return;
   }
   sb.scene = this;
-  this.threeScene.add(sb.threeBody);
+  if (sb.threeBody) {
+    this.threeScene.add(sb.threeBody);
+  }
   this.cpSpace.addBody(sb.cpBody);
   _.each(sb.cpBody.shapes, function(shape) {
     this.cpSpace.addShape(shape);
@@ -199,7 +203,7 @@ Scene.prototype.add = function(sb) {
   }
   if (sb instanceof Item) {
     this.inSceneItems.push(sb);
-    sb.domLabel = sb.genDomLabel(sb.screenXY(this.camera));
+    sb.domLabel = sb.genDomLabel();
     document.body.appendChild(sb.domLabel);
   }
   this.emit("add", sb);
@@ -340,25 +344,25 @@ Scene.prototype.resumeRender = function() {
 };
 
 Scene.prototype.animate = function(time) {
-  this.threeStats.begin();
   if (this.isRendering === false) {
     return;
   }
+  this.requestId = requestAnimationFrame(this.animateCallBack);
+  this.threeStats.begin();
   this.render(time);
   this.threeStats.end();
-  this.requestId = requestAnimationFrame(this.animate.bind(this));
+};
+
+Scene.prototype.updateInSceneItemLabels = function() {
+  _.each(this.inSceneItems, function(item) {
+    item.updateDomLabel(this.camera);
+  }, this);
 };
 
 Scene.prototype.render = function(time) {
   var delta = this.clock.getDelta();
-  // console.log(delta);
-  if (_.isObject(this.focusObj)) {
-    var position;
-    if (this.focusObj instanceof THREE.Mesh) {
-      position = this.focusObj.position;
-    } else if (this.focusObj instanceof SceneObject) {
-      position = this.focusObj.threeBody.position;
-    }
+  if (this.focusObj) {
+    var position = this.focusObj.threeBody.position;
     this.camera.position.setX(position.x);
     this.camera.position.setY(position.y - 64*4);
     this.camera.lookAt(position);
@@ -376,8 +380,6 @@ Scene.prototype.render = function(time) {
     sb.syncCpAndThree();
   });
   this.renderer.render(this.threeScene, this.camera);
-  _.each(this.inSceneItems, function(item) {
-    item.updateDomLabel(item.screenXY(this.camera));
-  }, this);
+  this.updateInSceneItemLabels();
   this.camera.lastPosition.copy(this.camera.position);
 };

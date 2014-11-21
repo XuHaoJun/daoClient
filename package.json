@@ -32,6 +32,7 @@
     "n3d-threejs": "*",
     "threex.windowresize": "git+http://github.com/XuHaoJun/threex.windowresize.git#master",
     "backbone": "*",
+    "webworkify": "*",
     "detect-node": "*"
   },
   "devDependencies": {

@@ -2,6 +2,8 @@ var _ = require('lodash');
 var $ = require('jquery/dist/jquery');
 var parseClient = require('./util/parseClient.js');
 var SceneObject = require('./SceneObject.js');
+var work = require('webworkify');
+var screenXYWorker = work(require('./ScreenXYWorker.js'));
 
 var Item = module.exports = function (world, config) {
   SceneObject.call(this);
@@ -13,13 +15,19 @@ var Item = module.exports = function (world, config) {
   this.bodyViewId = 0;
   this.buyPrice = 0;
   this.sellPrice = 0;
-  this.icon = null;
   this.owner = null;
   this.domLabel = null;
   this.slotIndex = -1;
   this.updateId = 0;
+  this.icon = null;
   this.on("click", this.handleShopClick);
   this.on("click", this.handleSellClick);
+  screenXYWorker.addEventListener('message', function(event) {
+    if (this.domLabel && this.id == event.data.id) {
+      this.domLabel.style.left = event.data.x+'px';
+      this.domLabel.style.top = event.data.y+'px';
+    }
+  }.bind(this));
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
@@ -81,12 +89,10 @@ Item.prototype.handleUpdateConfig = function(config) {
   }, this);
 };
 
-Item.prototype.genDomLabel = function(pos) {
+Item.prototype.genDomLabel = function() {
   var element   = document.createElement('div');
   element.className = "dao-item-label";
   element.innerHTML = this.name;
-  element.style.left = pos.x+'px';
-  element.style.top = pos.y+'px';
   $(element).on('click', function(event) {
     event.preventDefault();
     var char = this.world.account.usingChar;
@@ -95,7 +101,14 @@ Item.prototype.genDomLabel = function(pos) {
   return element;
 };
 
-Item.prototype.updateDomLabel = function(pos) {
-  this.domLabel.style.left = pos.x+'px';
-  this.domLabel.style.top = pos.y+'px';
+Item.prototype.updateDomLabel = function(camera) {
+  var width = window.innerWidth, height = window.innerHeight;
+  screenXYWorker.postMessage({
+    id: this.id,
+    width: width,
+    height: height,
+    camera: {projectionMatrix: camera.projectionMatrix,
+             matrixWorld: camera.matrixWorld},
+    matrixWorld: this.threeBody.matrixWorld
+  });
 };
