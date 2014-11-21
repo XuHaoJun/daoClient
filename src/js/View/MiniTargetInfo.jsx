@@ -17,10 +17,10 @@ var MiniTargetInfo = React.createClass({
       hpNow = hp / maxHp * 100;
     }
     return (
-      <div className='center-block' style={{'background-color': 'gray'}}>
+      <div className='center-block' style={{backgroundColor: 'gray'}}>
         <ProgressBar bsStyle='success' now={hpNow}
                      label={this.props.miniTarget.name}
-                     style={{marginBottom: '0px', 'margin-top': '0px'}}>
+                     style={{marginBottom: '0px', marginTop: '0px'}}>
         </ProgressBar>
       </div>
     );
