@@ -2,6 +2,7 @@ var _ = require('lodash');
 var $ = require('jquery/dist/jquery');
 var parseClient = require('./util/parseClient.js');
 var SceneObject = require('./SceneObject.js');
+var TextSprite = require('./TextSprite.js');
 var work = require('webworkify');
 var screenXYWorker = work(require('./ScreenXYWorker.js'));
 
@@ -17,6 +18,7 @@ var Item = module.exports = function (world, config) {
   this.sellPrice = 0;
   this.owner = null;
   this.domLabel = null;
+  this.spriteLabel = null;
   this.slotIndex = -1;
   this.updateId = 0;
   this.icon = null;
@@ -87,6 +89,35 @@ Item.prototype.handleUpdateConfig = function(config) {
   _.each(config, function(val, key) {
     this[key] = val;
   }, this);
+};
+
+Item.prototype.genSpriteLabel = function() {
+  var text = new TextSprite(this.name, {fontsize: 30,
+                                        fontface: "Georgia",
+                                        borderColor: {r:0, g:0, b:255, a:0.8} });
+  text.threeBody.scale.set(180, 80, 1.0);
+  text.threeBody.userData = this;
+  text.on("click", function(event) {
+    event.preventDefault();
+    var char = this.world.account.usingChar;
+    char.tryPickItem(this);
+  }.bind(this));
+  text.on("mouseenter", function(event) {
+    console.log("wiiw");
+    text.setBackgroundColor({r:99, g:99, b:99, a:1.0});
+  });
+  text.on("mouseleave", function(event) {
+    console.log("kiki");
+    text.setBackgroundColor({r:0, g:0, b:255, a:0.8});
+  });
+  return text;
+};
+
+Item.prototype.updateSpriteLabel = function() {
+  if (this.spriteLabel) {
+    var position = this.threeBody.position;
+    this.spriteLabel.threeBody.position.set(position.x, position.y, position.z + 10);
+  }
 };
 
 Item.prototype.genDomLabel = function() {

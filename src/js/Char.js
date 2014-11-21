@@ -8,6 +8,7 @@ var Bio = require('./Bio.js');
 var Mob = require('./Mob.js');
 var Npc = require('./Npc.js');
 var Account = require('./Account.js');
+var Item = require('./Item.js');
 var FireBallSkill = require('./Skill/FireBallSkill.js');
 
 var Char = module.exports = function (account, config) {
@@ -28,6 +29,7 @@ var Char = module.exports = function (account, config) {
   this.lastClientY = 0;
   this.lastMiniTarget = null;
   this.lastRequestId = null;
+  this.lastItemSpriteLabel = null;
   this.dzeny = 0;
   this.fireBallSkill = new FireBallSkill();
   this.buttons = {canvas:
@@ -485,7 +487,7 @@ Char.prototype.handleJoinScene = function(config) {
   if (this.scene) {
     this.scene.focusObj = this;
     this.run();
-    this.scene.updateInSceneItems();
+    this.scene.updateInSceneItemLabels();
   }
 };
 
@@ -563,6 +565,19 @@ Char.prototype.handleCanvasMousemove = function(event) {
     this.lastClientY = event.clientY;
     this.world.views.game.handleMiniTarget(firstBio, false);
   }
+  var firstItemSpriteLabel = _.find(objects, function(obj) {
+    var mesh = obj.object;
+    return ((mesh.userData instanceof Item) && mesh.userData.spriteLabel);
+  });
+  firstItemSpriteLabel = (_.isUndefined(firstItemSpriteLabel) ?
+                          null : firstItemSpriteLabel.object.userData.spriteLabel);
+  if (firstItemSpriteLabel != null && this.lastItemSpriteLabel == null) {
+    firstItemSpriteLabel.emit("mouseenter");
+  }
+  if(this.lastItemSpriteLabel != null && this.lastItemSpriteLabel != firstItemSpriteLabel) {
+    this.lastItemSpriteLabel.emit("mouseleave");
+  }
+  this.lastItemSpriteLabel = firstItemSpriteLabel;
   if (this.buttons.canvas.mouse.isDowning &&
       this.buttons.canvas.mouse.isHovering) {
     var foundGround = _.find(objects, function(obj) {
@@ -691,12 +706,20 @@ Char.prototype.handleCanvasClick = function(event) {
   vector.pickingRay(this.scene.camera);
   raycaster.set(this.scene.camera.position, vector);
   var objects = raycaster.intersectObjects( this.scene.threeScene.children, false );
+  var itemSpriteLabelCount = 0;
   _.each(objects, function(obj) {
     var mesh = obj.object;
     if (mesh.userData instanceof Bio) {
       var bio = mesh.userData;
       event.char = this;
       bio.emit("click", event);
+    } else if (mesh.userData instanceof Item) {
+      var item = mesh.userData;
+      event.char = this;
+      if (item.spriteLabel && itemSpriteLabelCount == 0) {
+        item.spriteLabel.emit("click", event);
+        itemSpriteLabelCount++;
+      }
     }
   }.bind(this));
 };

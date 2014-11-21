@@ -203,8 +203,11 @@ Scene.prototype.add = function(sb) {
   }
   if (sb instanceof Item) {
     this.inSceneItems.push(sb);
-    sb.domLabel = sb.genDomLabel();
-    document.body.appendChild(sb.domLabel);
+    // sb.domLabel = sb.genDomLabel();
+    // document.body.appendChild(sb.domLabel);
+    sb.spriteLabel = sb.genSpriteLabel();
+    this.threeScene.add(sb.spriteLabel.threeBody);
+    sb.updateSpriteLabel();
   }
   this.emit("add", sb);
   sb.emit("sceneAdd", this);
@@ -230,6 +233,9 @@ Scene.prototype.remove = function(sb) {
     });
     if (sb.domLabel) {
       $(sb.domLabel).remove();
+    }
+    if (sb.spriteLabel) {
+      this.threeScene.remove(sb.spriteLabel.threeBody);
     }
   }
   this.emit("remove", sb);
@@ -355,7 +361,8 @@ Scene.prototype.animate = function(time) {
 
 Scene.prototype.updateInSceneItemLabels = function() {
   _.each(this.inSceneItems, function(item) {
-    item.updateDomLabel(this.camera);
+    // item.updateDomLabel(this.camera);
+    item.updateSpriteLabel();
   }, this);
 };
 
