@@ -8,29 +8,43 @@ var Modal = BS.Modal;
 var Button = BS.Button;
 
 var VideoConfigModal = React.createClass({
-    shouldComponentUpdate: function(nextProps, nextState) {
-        if (!_.isEqual(this.state, nextState)) {
-            return true;
-        }
-        return false;
-    },
-    handleShadowEnableToggle: function(event) {
-        this.props.world.account.usingChar.scene.renderer.shadowMapEnabled =
-        !this.props.world.account.usingChar.scene.renderer.shadowMapEnabled;
+    getInitialState: function() {
+        return {
+            shadowEnableCheck: this.props.world.renderer.shadowMapEnabled,
+            devicePixelRatioValue: this.props.world.renderer.devicePixelRatio
+        };
     },
     componentWillUnmount: function () {
         this.props.world.account.usingChar.handleCanvasMouseenter();
     },
+    handleShadowEnableToggle: function(event) {
+        this.props.world.renderer.shadowMapEnabled = !this.props.world.renderer.shadowMapEnabled;
+        this.setState({shadowEnableCheck:
+                      this.props.world.renderer.shadowMapEnabled});
+    },
+    handleDevicePixelRatioChange: function(event) {
+        var ratio = parseFloat(this.refs.devicePixelRatioRange.getValue().trim());
+        this.props.world.renderer.devicePixelRatio = ratio;
+        this.props.world.account.usingChar.scene.threeResize.trigger();
+        this.setState({devicePixelRatioValue: ratio});
+    },
     render: function() {
-        var checked = this.props.world.account.usingChar.scene.renderer.shadowMapEnabled;
-        checked = (checked ? true : false);
-        return this.transferPropsTo(
-            <Modal title="Video Configuraiton">
+        return (
+            <Modal title="Video Configuraiton"
+                   onRequestHide={this.props.onRequestHide}>
                 <div className="modal-body">
                     <Input type="checkbox" readOnly
                            label="ShadowEnable"
-                           checked={checked}
+                           checked={this.state.shadowEnableCheck}
                            onChange={this.handleShadowEnableToggle}/>
+                    <Input type="range"
+                           ref="devicePixelRatioRange"
+                           min={0} max={1}
+                           step={0.1}
+                           value={this.state.devicePixelRatioVale}
+                           defaultValue={this.props.world.renderer.devicePixelRatio}
+                           onChange={this.handleDevicePixelRatioChange}
+                           label={"devicePixelRatio (" + this.state.devicePixelRatioValue +")"} />
                 </div>
                 <div className="modal-footer">
                     <Button onClick={this.props.onRequestHide}>Cancle</Button>
