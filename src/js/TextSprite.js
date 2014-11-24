@@ -7,6 +7,26 @@ var EventEmitter2 = require('eventemitter2').EventEmitter2;
 
 var TextSprite = module.exports = function (message, parameters) {
   EventEmitter2.call(this);
+  this.message = message;
+  this.parameters = parameters;
+  var  spriteMaterial = newSpriteMaterial(message, parameters);
+
+  var sprite = new THREE.Sprite( spriteMaterial );
+  // sprite.scale.set(100,50,1.0);
+
+  this.threeBody = sprite;
+};
+
+TextSprite.prototype = Object.create(EventEmitter2.prototype);
+
+TextSprite.prototype.setBackgroundColor = function(backgroundColor) {
+  this.parameters["backgroundColor"] = backgroundColor;
+  newSpriteMaterial(this.message, this.parameters);
+  var  spriteMaterial = newSpriteMaterial(this.message, this.parameters);
+  this.threeBody.material = spriteMaterial;
+};
+
+function newSpriteMaterial(message, parameters) {
 
   if ( parameters === undefined ) parameters = {};
 
@@ -60,20 +80,8 @@ var TextSprite = module.exports = function (message, parameters) {
   texture.needsUpdate = true;
   var spriteMaterial = new THREE.SpriteMaterial(
     { map: texture } );
-  var sprite = new THREE.Sprite( spriteMaterial );
-  // sprite.scale.set(100,50,1.0);
-
-  this.threeBody = sprite;
-  this.context = context;
-  this.canvas = canvas;
-};
-
-TextSprite.prototype = Object.create(EventEmitter2.prototype);
-
-TextSprite.prototype.setBackgroundColor = function(backgroundColor) {
-  this.context.fillStyle = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
-    + backgroundColor.b + "," + backgroundColor.a + ")";
-};
+  return spriteMaterial;
+}
 
 // function for drawing rounded rectangles
 function roundRect(ctx, x, y, w, h, r)

@@ -103,12 +103,10 @@ Item.prototype.genSpriteLabel = function() {
     char.tryPickItem(this);
   }.bind(this));
   text.on("mouseenter", function(event) {
-    console.log("wiiw");
     text.setBackgroundColor({r:99, g:99, b:99, a:1.0});
   });
   text.on("mouseleave", function(event) {
-    console.log("kiki");
-    text.setBackgroundColor({r:0, g:0, b:255, a:0.8});
+    text.setBackgroundColor({ r:255, g:255, b:255, a:1.0 });
   });
   return text;
 };
