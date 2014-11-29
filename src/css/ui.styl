@@ -140,11 +140,15 @@ body
   user-select none
 
 .dao-shop
-  .dao-shopItem
-    border 1px solid black
-    &:hover
-      outline 2px solid black
-      cursor pointer
+  .dao-shopItems
+    height 30%
+    max-height 30%
+    overflow auto
+    .dao-shopItem
+      border 1px solid black
+      &:hover
+        outline 4px solid blue
+        cursor pointer
 
 .dao-skill
   border 1px solid blue
@@ -162,11 +166,11 @@ body
     border 1px solid black
   .dao-equipment, .dao-useSelfItem
     &:hover
-      outline 2px solid black
+      outline 2px solid blue
       cursor pointer
   .dao-etcItem
     &:hover
-      outline 2px solid black
+      outline 2px solid blue
 
 .dao-item
   position relative
