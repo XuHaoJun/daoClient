@@ -19,7 +19,7 @@ var App = module.exports = React.createClass({
                 <Navbar>
                     <Nav activeKey={this.props.navActiveKey}>
                         <NavItem eventKey="home" href="#home">Dao</NavItem>
-                        <NavItem eventKey="login" href="#login">Login</NavItem>
+                        <NavItem eventKey="login" href="#login">LoginGame</NavItem>
                         <NavItem eventKey="doc" href="#doc">Document</NavItem>
                         <NavItem eventKey="about" href="#about">About</NavItem>
                     </Nav>

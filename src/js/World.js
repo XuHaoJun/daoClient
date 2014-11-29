@@ -112,11 +112,11 @@ World.prototype.loginAccount = function(username, password) {
   this.conn.sendJSON(clientCall);
 };
 
-World.prototype.registerAccount = function(username, password) {
+World.prototype.registerAccount = function(username, password, email) {
   var clientCall = {
     receiver: "World",
     method: "RegisterAccount",
-    params: [username, password]
+    params: [username, password, email]
   };
   this.conn.sendJSON(clientCall);
 };

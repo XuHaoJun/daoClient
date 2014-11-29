@@ -28,6 +28,7 @@ var Router = module.exports = React.createClass({
     componentDidMount: function() {
         var routes = {
             "login": this.routeLogin,
+            "loginFacebook": this.routeLoginFacebook,
             "doc": this.routeDoc,
             "about": this.routeAbout,
             "home": this.routeHome,
@@ -79,6 +80,16 @@ var Router = module.exports = React.createClass({
         )}, function() {
             this.state.loginError = null;
             this.state.successRegister = null;
+        });
+    },
+
+    routeLoginFacebook: function() {
+        var world = this.props.world;
+        $.getJSON("account/newByFacebook", function() {
+            $.getJSON("account/loginGameByFacebook", function(data) {
+                console.log(data);
+                world.loginAccount(data.username, data.password);
+            });
         });
     },
 
