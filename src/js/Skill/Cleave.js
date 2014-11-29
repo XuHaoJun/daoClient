@@ -2,7 +2,7 @@ var _ = require('lodash');
 var parseClient = require('../util/parseClient.js');
 var SceneObject = require('../SceneObject.js');
 
-var FireBall = module.exports = function (world, config) {
+var Cleave = module.exports = function (world, config) {
   SceneObject.call(this);
   this.world = world;
   this.level = 0;
@@ -11,9 +11,9 @@ var FireBall = module.exports = function (world, config) {
   }
 };
 
-FireBall.prototype = Object.create(SceneObject.prototype);
+Cleave.prototype = Object.create(SceneObject.prototype);
 
-FireBall.prototype.parseConfig = function(config) {
+Cleave.prototype.parseConfig = function(config) {
   _.each(config, function(val, key) {
     switch (key) {
     case "id":

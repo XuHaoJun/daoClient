@@ -5,6 +5,9 @@ var React = require('react');
 var BS = require('react-bootstrap');
 var Panel = BS.Panel;
 var Draggable = require('react-draggable');
+var Grid = BS.Grid;
+var Row = BS.Row;
+var Colm = BS.Col;
 var Skill = require('./Skill');
 
 var CharSkills = React.createClass({
@@ -29,8 +32,11 @@ var CharSkills = React.createClass({
         var learnedSkills = this.props.learnedSkills;
         var skills = _.map(learnedSkills, function(level, id) {
             return (
-                <Skill key={id} baseId={id}
-                       level={level} world={world}/>
+                <Colm md={4} key={id}>
+                    <Skill className="center-block"
+                           baseId={id}
+                           level={level} world={world}/>
+                </Colm>
             );
         }, this);
         var header = (
@@ -47,15 +53,17 @@ var CharSkills = React.createClass({
             </div>
         );
         var display = (this.props.show ? 'block' : 'none');
-        var style = {position: 'fixed',
-                     marginTop: '7%',
-                     marginLeft: '30%',
-                     display: display};
+        var style = {display: display};
         return (
             <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                        zIndex={50}>
-                <Panel header={header} style={style} className="noselect">
-                    { skills }
+                <Panel header={header} style={style}
+                       className="noselect dao-charSkills">
+                    <Grid fluid>
+                        <Row>
+                            { skills }
+                        </Row>
+                    </Grid>
                 </Panel>
             </Draggable>
         );

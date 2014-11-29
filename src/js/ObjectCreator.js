@@ -10,6 +10,7 @@ var Equipment = require('./Equipment.js');
 var UseSelfItem = require('./UseSelfItem.js');
 var EtcItem = require('./EtcItem.js');
 var FireBall = require('./Skill/FireBall.js');
+var Cleave = require('./Skill/Cleave.js');
 
 var ObjectCreator = module.exports = function (world) {
   this.world = world;
@@ -34,6 +35,10 @@ ObjectCreator.prototype = {
 
   FireBall: function(config) {
     return new FireBall(this.world, config);
+  },
+
+  Cleave: function(config) {
+    return new Cleave(this.world, config);
   },
 
   Npc: function(config) {

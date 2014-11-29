@@ -36,7 +36,12 @@ function parseCpShapeClient(shape, body) {
                                    shape.radius,
                                    cp.v(shape.position.x,
                                         shape.position.y));
-    realShape.sensor = shape.sensor;
+    break;
+  case "box":
+  case "Box":
+    realShape = new cp.CircleShape(body,
+                                   shape.width,
+                                   shape.height);
     break;
   case "segment":
   case "Segment":
@@ -44,12 +49,12 @@ function parseCpShapeClient(shape, body) {
                                     cp.v(shape.a.x, shape.a.y),
                                     cp.v(shape.b.x, shape.b.y),
                                     shape.radius);
-    realShape.sensor = shape.sensor;
     break;
   default:
     console.log("unknown shape.");
     break;
   }
+  realShape.sensor = shape.sensor;
   if (_.isObject(realShape)) {
     realShape.group = shape.group;
     realShape.layers = shape.layer;

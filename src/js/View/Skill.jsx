@@ -7,7 +7,8 @@ var OverlayTrigger = BS.OverlayTrigger;
 var Popover = BS.Popover;
 
 var skillName = {
-    1: "火球術"
+    1: "火球術",
+    2: "橫劈"
 };
 
 var skillDescription = {
@@ -24,7 +25,7 @@ var Skill = React.createClass({
     },
     handleDoubleClick: function(event) {
         var char = this.props.world.account.usingChar;
-        char.useFireBall();
+        char.useSkillByBaseId(this.props.baseId);
     },
     handleDragStart: function(event) {
         var char = this.props.world.account.usingChar;

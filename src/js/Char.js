@@ -10,6 +10,7 @@ var Npc = require('./Npc.js');
 var Account = require('./Account.js');
 var Item = require('./Item.js');
 var FireBallSkill = require('./Skill/FireBallSkill.js');
+var CleaveSkill = require('./Skill/CleaveSkill.js');
 
 var Char = module.exports = function (account, config) {
   Bio.call(this, account.world);
@@ -32,6 +33,7 @@ var Char = module.exports = function (account, config) {
   this.lastItemSpriteLabel = null;
   this.dzeny = 0;
   this.fireBallSkill = new FireBallSkill();
+  this.cleaveSkill = new CleaveSkill();
   this.buttons = {canvas:
                   {mouse: {isDowning: false,
                            isUping: false,
@@ -224,15 +226,18 @@ Char.prototype.useSkillByBaseId = function(sid) {
   }
   switch (sid) {
   case 1:
-    if (this.fireBallSkill.afterUseDuration <
-        this.fireBallSkill.delayDuration) {
+    if (!this.fireBallSkill.checkDelayDuration()) {
       return;
-    } else {
-      this.fireBallSkill.afterUseDuration = 0;
     }
+    Bio.prototype.shutDownMove.call(this);
+    break;
+  case 2:
+    if (!this.cleaveSkill.checkDelayDuration()) {
+      return;
+    }
+    Bio.prototype.shutDownMove.call(this);
     break;
   }
-  Bio.prototype.shutDownMove.call(this);
   var clientCall = {
     receiver: "Char",
     method:  "UseSkillByBaseId",
@@ -746,4 +751,5 @@ Char.prototype.afterUpdate = function(delta) {
     this.useSkillByBaseId(this.hotKeys.skill[1].skillBaseId);
   }
   this.fireBallSkill.afterUseDuration += delta;
+  this.cleaveSkill.afterUseDuration += delta;
 };

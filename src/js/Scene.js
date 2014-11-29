@@ -263,6 +263,14 @@ Scene.prototype.handleAddMob = function(mobConfig) {
   this.add(mob);
 };
 
+Scene.prototype.handleAddCleave = function(config)  {
+  console.log("handleAddCleave");
+  var cleave = this.world.create.Cleave(config);
+  this.add(cleave);
+  var shoot = this.world.assets.audio["cleaveShoot"].clone();
+  shoot.stop().setTime(0).play();
+};
+
 Scene.prototype.handleAddFireBall = function(config)  {
   var fireBall = this.world.create.FireBall(config);
   this.add(fireBall);

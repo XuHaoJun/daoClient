@@ -1,9 +1,9 @@
-var FireBallSkill = module.exports = function () {
+var CleaveSkill = module.exports = function () {
   this.afterUseDuration = 0;
-  this.delayDuration = 1;
+  this.delayDuration = 0.6;
 };
 
-FireBallSkill.prototype.checkDelayDuration = function() {
+CleaveSkill.prototype.checkDelayDuration = function() {
   if (this.afterUseDuration < this.delayDuration) {
     return false;
   } else {

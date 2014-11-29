@@ -160,6 +160,13 @@ Loader.prototype.handleComplete = function() {
   cube.receiveShadow = false;
   cube.position.z = 8;
   this.world.assets.mesh[10002] = cube;
+  geometry = new THREE.BoxGeometry( 170, 55, 18);
+  material = new THREE.MeshBasicMaterial( {color: 0xff0000 } );
+  cube = new THREE.Mesh( geometry, material );
+  cube.castShadow = true;
+  cube.receiveShadow = false;
+  cube.position.z = 8;
+  this.world.assets.mesh[10003] = cube;
 
   var loader = new THREE.JSONLoader(); // init the loader util
   // init loading

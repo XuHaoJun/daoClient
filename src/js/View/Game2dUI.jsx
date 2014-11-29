@@ -116,6 +116,9 @@ var Game2dUI = React.createClass({
                                                     bsStyle='default' bsSize='medium'>
                                                 技能
                                             </Button>
+                                            <Button bsStyle='default' bsSize='medium'>
+                                                任務
+                                            </Button>
                                         </ButtonGroup>
                                         <ButtonGroup>
                                             <DropdownButton title={<Glyphicon glyph="align-justify" />}>
