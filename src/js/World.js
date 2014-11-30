@@ -117,6 +117,21 @@ World.prototype.loginAccount = function(username, password) {
   this.lastLoginPassword = password;
 };
 
+World.prototype.handleLoginAccountBySessionToken = function(username, token) {
+  var clientCall = {
+    receiver: "World",
+    method: "LoginAccountBySessionToken",
+    params: [username, token]
+  };
+  this.conn.sendJSON(clientCall);
+};
+
+World.prototype.loginAccountBySession = function() {
+  $.getJSON("account/loginGamebySession", function(data) {
+    this.conn.parse(data);
+  }.bind(this));
+};
+
 World.prototype.loginAccountGameByAjax = function(username, password) {
   var form = {username: username, password: password};
   $.post("account/loginGame", form, function(data) {

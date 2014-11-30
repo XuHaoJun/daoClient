@@ -27,6 +27,16 @@ var Login = React.createClass({
             directlyWeb: false
         };
     },
+
+    componentWillUpdate: function(nextProps, nextState) {
+        if (this.props.err != null) {
+            nextProps.err = null;
+        }
+        if (this.props.success != null) {
+            nextProps.success = null;
+        }
+    },
+
     handleLoginAccount: function(e) {
         e.preventDefault();
         var username = this.refs.username.getDOMNode().value.trim();
@@ -55,14 +65,10 @@ var Login = React.createClass({
         this.setState({directlyGame: false, directlyWeb: true});
     },
 
-    componentWillUpdate: function(nextProps, nextState) {
-        if (this.props.err != null) {
-            nextProps.err = null;
-        }
-        if (this.props.success != null) {
-            nextProps.success = null;
-        }
+    handleLoginGameBySession: function() {
+        this.props.world.loginAccountBySession();
     },
+
     render: function() {
         if (this.props.err || this.props.success) {
             this.state.alertVisible = true;
@@ -133,6 +139,9 @@ var Login = React.createClass({
                             <ModalTrigger modal={<RegisterAccountModal world={this.props.world} />} >
                                 <Button bsStyle='success'>Register</Button>
                             </ModalTrigger>
+                            <Button bsStyle='success' onClick={this.handleLoginGameBySession}>
+                                LoginGameBySession(Test)
+                            </Button>
                         </ButtonToolbar>
                     </Colm>
                 </Row>
