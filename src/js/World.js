@@ -12,6 +12,7 @@ var isNode = require('detect-node');
 var _ = require('lodash');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var React = require('react');
+var $ = require('jquery/dist/jquery');
 var View = require('./View');
 var ObjectCreator = require('./ObjectCreator.js');
 
@@ -23,6 +24,8 @@ var World = module.exports = function (config) {
                   mesh: {}, itemIcon: {}, skillIcon: {}};
   this.isGaming = false;
   this.account = null;
+  this.lastUsername = "";
+  this.lastPassword = "";
   this.serverList = {
     main: (location.hostname + ":"  + (parseInt(location.port)+1)),
     default: (location.hostname + ":"  + (parseInt(location.port)+1)),
@@ -110,6 +113,59 @@ World.prototype.loginAccount = function(username, password) {
     params: [username, password]
   };
   this.conn.sendJSON(clientCall);
+  this.lastLoginUsername = username;
+  this.lastLoginPassword = password;
+};
+
+World.prototype.loginAccountGameByAjax = function(username, password) {
+  var form = {username: username, password: password};
+  $.post("account/loginGame", form, function(data) {
+    this.conn.parse(data);
+  }.bind(this), "json");
+};
+
+World.prototype.loginAccountWebByAjax = function(username, password) {
+  var form = {username: username, password: password};
+  $.post("account/loginWeb", form, function(data) {
+    console.log(data);
+    var tmp = this.lastUsername;
+    this.lastUsername = data.username || '';
+    if (this.lastUsername != tmp) {
+      this.views.login.handleForceUpdate();
+    }
+  }.bind(this), "json");
+};
+
+
+World.prototype.handleWebAccountInfo = function(data) {
+  console.log(data);
+};
+
+World.prototype.getWebAccountInfo = function(callback) {
+  $.getJSON("account", function(data) {
+    this.conn.parse(data);
+    if (callback) {
+      callback(data.params[0]);
+    }
+  }.bind(this));
+};
+
+World.prototype.logoutWebAccountByAjax = function() {
+  $.getJSON("account/logout", function(data) {
+    console.log(data);
+    this.lastUsername = '';
+    this.views.login.handleForceUpdate();
+  }.bind(this));
+};
+
+World.prototype.checkIsWebLogined = function() {
+  $.getJSON("account/isLogined", function(data) {
+    var tmp = this.lastUsername;
+    this.lastUsername = data.username || '';
+    if (this.lastUsername != tmp) {
+      this.views.login.handleForceUpdate();
+    }
+  }.bind(this));
 };
 
 World.prototype.registerAccount = function(username, password, email) {
@@ -119,6 +175,13 @@ World.prototype.registerAccount = function(username, password, email) {
     params: [username, password, email]
   };
   this.conn.sendJSON(clientCall);
+};
+
+World.prototype.registerAccountByAjax = function(username, password, email) {
+  var form = {username: username, password: password, email: email};
+  $.post("account", form, function(data) {
+    this.conn.parse(data);
+  }.bind(this), "json");
 };
 
 World.prototype.handleDisconnect = function() {
@@ -190,4 +253,5 @@ World.prototype.handleRunScene = function(sceneName) {
 
 World.prototype.handleDestroyScene = function(name) {
   this.scenes[name].destroy();
+  delete(this.scenes, name);
 };

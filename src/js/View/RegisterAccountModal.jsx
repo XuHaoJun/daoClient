@@ -35,7 +35,7 @@ var RegisterAccountModal = React.createClass({
     handleRegisterAccount: function(e) {
         e.preventDefault();
         if (this.canRegister()) {
-            this.props.world.registerAccount(
+            this.props.world.registerAccountByAjax(
                 this.state.username,
                 this.state.password,
                 this.state.email);
@@ -133,7 +133,7 @@ var RegisterAccountModal = React.createClass({
                                bsStyle={this.handlePasswordConfirmValidationState()}
                                labelClassName="col-xs-4" wrapperClassName="col-xs-8"
                                hasFeedback required />
-                        <Input ref='email' label='Email' type='text'
+                        <Input ref='email' label='Email Address' type='text'
                                value={this.state.email}
                                onChange={this.handleEmailChange}
                                bsStyle={this.handleEmailValidationState()}
@@ -142,7 +142,7 @@ var RegisterAccountModal = React.createClass({
                     </div>
                     <div className="modal-footer">
                         <Button bsStyle='success' type='submit'>
-                            Register
+                            Submit
                         </Button>
                     </div>
                 </form>

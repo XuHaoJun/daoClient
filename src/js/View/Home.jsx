@@ -9,7 +9,7 @@ var Home = module.exports = React.createClass({
     return (
       <div className="container">
         <Jumbotron>
-          <h1>Test Page</h1>
+          <h1>Home Page</h1>
         </Jumbotron>
       </div>
     );
