@@ -5,20 +5,20 @@ require('mousestop');
 require('bootstrap/dist/js/bootstrap');
 
 module.exports = {
-  ChatBox: require('./ChatBox'),
-  Game2dUI: require('./Game2dUI'),
-  Game: require('./Game'),
-  Loading: require('./Loading'),
-  Login: require('./Login'),
-  MiniTargetInfo: require('./MiniTargetInfo'),
-  RegisterAccountModal: require('./RegisterAccountModal'),
-  SelectChar: require('./SelectChar'),
-  SoundConfigModal: require('./SoundConfigModal'),
-  Item: require('./Item'),
-  CharItems: require('./CharItems'),
-  CharInfo: require('./CharInfo'),
-  Shop: require('./Shop'),
-  Router: require('./Router'),
-  VideoConfigModal: require('./VideoConfigModal'),
-  BrowserDependCheck: require('./BrowserDependCheck')
+    App: require('./App.js'),
+    ChatBox: require('./ChatBox'),
+    Game2dUI: require('./Game2dUI'),
+    Game: require('./Game'),
+    Loading: require('./Loading'),
+    Login: require('./Login'),
+    MiniTargetInfo: require('./MiniTargetInfo'),
+    RegisterAccountModal: require('./RegisterAccountModal'),
+    SelectChar: require('./SelectChar'),
+    SoundConfigModal: require('./SoundConfigModal'),
+    Item: require('./Item'),
+    CharItems: require('./CharItems'),
+    CharInfo: require('./CharInfo'),
+    Shop: require('./Shop'),
+    VideoConfigModal: require('./VideoConfigModal'),
+    BrowserDependCheck: require('./BrowserDependCheck')
 };

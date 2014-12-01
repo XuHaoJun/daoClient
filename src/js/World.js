@@ -139,7 +139,7 @@ World.prototype.handleSetLastUsername = function(username) {
   var tmp = this.lastUsername;
   this.lastUsername = username || '';
   if (this.lastUsername != tmp) {
-    this.views.login.navigate("login", {trigger: true});
+    this.views.app.navigate("login", {trigger: true});
   }
 };
 
@@ -167,7 +167,7 @@ World.prototype.logoutWebAccountByAjax = function() {
     console.log(data);
   }.bind(this));
   this.lastUsername = '';
-  this.views.login.navigate("login", {trigger: true});
+  this.views.app.navigate("login", {trigger: true});
 };
 
 World.prototype.checkIsWebLogined = function() {
@@ -175,7 +175,7 @@ World.prototype.checkIsWebLogined = function() {
     var tmp = this.lastUsername;
     this.lastUsername = data.username || '';
     if (this.lastUsername != tmp) {
-      this.views.login.handleForceUpdate();
+      this.views.app.handleForceUpdate();
     }
   }.bind(this));
 };
@@ -208,15 +208,14 @@ World.prototype.handleDisconnect = function() {
   React.unmountComponentAtNode(document.body);
   this.initViews();
   window.location.hash = "#login";
-  this.views.login =
-    React.render(View.Router({world: this}),
-                          document.body);
+  this.views.app = React.render(View.App({world: this}),
+                                document.body);
   this.isGaming = false;
 };
 
 // following method for server call
 World.prototype.handleErrorRegisterAccount = function(err) {
-  if (_.isObject(this.views.login)) {
+  if (_.isObject(this.views.app)) {
   }
 };
 
@@ -226,27 +225,27 @@ World.prototype.handleAddScene = function(sceneConfig) {
 };
 
 World.prototype.handleSuccessLoginAcccount = function(accountConfig) {
-  if (_.isObject(this.views.login)) {
+  if (_.isObject(this.views.app)) {
     this.account = this.create.Account(accountConfig);
     React.unmountComponentAtNode(document.body);
-    this.views.login = null;
+    this.views.app = null;
     this.views.selectChar = React
       .render(View.SelectChar({world: this}),
-                       document.body);
+              document.body);
     this.emit('handleSuccessLoginAcccount', accountConfig);
   }
 };
 
 World.prototype.handleSuccessRegisterAccount = function(succesMsg) {
-  if (_.isObject(this.views.login)) {
-    this.views.login.handleSuccessRegisterAccount(succesMsg);
+  if (_.isObject(this.views.app)) {
+    this.views.app.handleSuccessRegisterAccount(succesMsg);
   }
 };
 
 World.prototype.handleErrorLoginAccount = function(err) {
   this.lastErrors.errorLoginAccount = err;
-  if (_.isObject(this.views.login)) {
-    this.views.login.handleErrorLoginAccount(err);
+  if (_.isObject(this.views.app)) {
+    this.views.app.handleErrorLoginAccount(err);
   }
 };
 
