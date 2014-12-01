@@ -10,6 +10,8 @@ var Input = BS.Input;
 var Button = BS.Button;
 var ButtonToolbar = BS.ButtonToolbar;
 var ModalTrigger = BS.ModalTrigger;
+var Tooltip = BS.Tooltip;
+var OverlayTrigger = BS.OverlayTrigger;
 var RegisterAccountModal = require('./RegisterAccountModal.js');
 
 var Login = React.createClass({
@@ -47,9 +49,9 @@ var Login = React.createClass({
         this.refs.username.getDOMNode().value = '';
         this.refs.password.getDOMNode().value = '';
         if (this.state.directlyGame) {
-            this.props.world.loginAccountGameByAjax(username, password);
+            this.props.world.loginAccountGame(username, password);
         } else if(this.state.directlyWeb) {
-            this.props.world.loginAccountWebByAjax(username, password);
+            this.props.world.loginAccountWeb(username, password);
         }
     },
 
@@ -120,7 +122,7 @@ var Login = React.createClass({
                        checked={this.state.directlyWeb} />
             );
         }
-        var fbRouteName = "oauth2login?next=#loginFacebook/";
+        var fbRouteName = "oauth2login?next=#loginByFacebook/";
         if (this.state.directlyGame) {
             fbRouteName += "Game";
         } else {
@@ -141,13 +143,17 @@ var Login = React.createClass({
                                        type='password' className='form-control' required />
                                 <Row>
                                     <Colm md={6}>
-                                        <Input type='radio' value="Game" label="Game"
-                                               onClick={this.hanldeGameRadioButton}
-                                               readOnly
-                                               checked={this.state.directlyGame} />
+                                        <OverlayTrigger placement="top" overlay={<Tooltip>將會直接登入遊戲中。</Tooltip>} >
+                                                      <Input type='radio' value="Game" label="Game"
+                                                             onClick={this.hanldeGameRadioButton}
+                                                             readOnly
+                                                             checked={this.state.directlyGame} />
+                                        </OverlayTrigger>
                                     </Colm>
                                     <Colm md={6}>
-                                        { webRadioButton }
+                                        <OverlayTrigger placement="top" overlay={<Tooltip>只有登入至網頁。</Tooltip>} >
+                                                        { webRadioButton }
+                                        </OverlayTrigger>
                                     </Colm>
                                 </Row>
                                 <Button bsStyle='primary' bsSize='large' block type='submit'>
@@ -156,18 +162,24 @@ var Login = React.createClass({
                             </form>
                             <a href={fbRouteName}>
                                 <img src="assets/icon/web/fbLogin.png"
-                                     style={{maxWidth: "54px", maxHeight: "54px", marginLeft: "10px"}} />
+                                     className="dao-oauth2Icon" />
                             </a>
+                            <img src="assets/icon/web/googleLogin.png"
+                                 className="dao-oauth2Icon" />
+                            <img src="assets/icon/web/gamerLogin.png"
+                                 className="dao-oauth2Icon" />
                         </div>
                     </Colm>
                 </Row>
-                <Row>
-                    <Colm sm={6} md={4} mdOffset={4}>
-                        <ButtonToolbar>
-                            <ModalTrigger modal={<RegisterAccountModal world={this.props.world} />} >
-                                <Button bsStyle='success'>Register</Button>
-                            </ModalTrigger>
-                        </ButtonToolbar>
+                <Row style={{marginTop: "20px"}}>
+                    <Colm md={4}>
+                    </Colm>
+                    <Colm md={4}>
+                        <ModalTrigger modal={<RegisterAccountModal world={this.props.world} />} >
+                            <Button className="center-block" bsStyle='success'>
+                                Quick Register
+                            </Button>
+                        </ModalTrigger>
                     </Colm>
                 </Row>
             </Grid>

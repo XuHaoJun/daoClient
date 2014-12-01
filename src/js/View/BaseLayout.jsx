@@ -40,7 +40,7 @@ var BaseLayout = module.exports = React.createClass({
 
     handleAccountLogout: function(e) {
         e.preventDefault();
-        this.props.world.logoutWebAccountByAjax();
+        this.props.world.logoutWebAccount();
     },
 
     loginedNavs: function() {

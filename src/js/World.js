@@ -130,7 +130,7 @@ World.prototype.loginAccountBySession = function() {
   $.getJSON("account/loginGamebySession", this.parse.bind(this));
 };
 
-World.prototype.loginAccountGameByAjax = function(username, password) {
+World.prototype.loginAccountGame = function(username, password) {
   var form = {username: username, password: password};
   $.post("account/loginGame", form, this.parse.bind(this), "json");
 };
@@ -143,7 +143,7 @@ World.prototype.handleSetLastUsername = function(username) {
   }
 };
 
-World.prototype.loginAccountWebByAjax = function(username, password) {
+World.prototype.loginAccountWeb = function(username, password) {
   var form = {username: username, password: password};
   $.post("account/loginWeb", form, this.parse.bind(this), "json");
 };
@@ -162,7 +162,7 @@ World.prototype.getWebAccountInfo = function(callback) {
   }.bind(this));
 };
 
-World.prototype.logoutWebAccountByAjax = function() {
+World.prototype.logoutWebAccount = function() {
   $.getJSON("account/logout", function(data) {
     console.log(data);
   }.bind(this));

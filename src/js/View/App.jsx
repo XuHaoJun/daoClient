@@ -30,7 +30,7 @@ var App = module.exports = React.createClass({
     componentDidMount: function() {
         var routes = {
             "login": this.routeLogin,
-            "loginFacebook/:lType": this.routeLoginFacebook,
+            "loginByFacebook/:lType": this.routeLoginFacebook,
             "loginWeb": this.routeLoginWeb,
             "doc": this.routeDoc,
             "about": this.routeAbout,
@@ -119,7 +119,7 @@ var App = module.exports = React.createClass({
         }
         this.setState({page: (
             <BaseLayout world={this.props.world}
-                 navActiveKey="">
+                        navActiveKey="">
                 <AccountProfile world={this.props.world}
                                 navActiveKey={page} />
             </BaseLayout>
@@ -132,17 +132,8 @@ var App = module.exports = React.createClass({
 
     routeLoginFacebook: function(ltype) {
         var world = this.props.world;
-        $.getJSON("account/newByFacebook", function() {
-            if (ltype == "Game") {
-                $.getJSON("account/loginGameByFacebook", function(data) {
-                    console.log(data);
-                    world.loginAccount(data.username, data.password);
-                });
-            } else if (ltype == "Web") {
-                $.getJSON("account/loginWebByFacebook", function(data) {
-                    world.parse(data);
-                });
-            }
+        $.getJSON("account/newByFacebook", function(data) {
+            $.getJSON("account/loginByFacebook/"+ltype, world.parse.bind(world));
         });
     },
 
