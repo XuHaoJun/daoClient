@@ -30,7 +30,7 @@ var Router = module.exports = React.createClass({
     componentDidMount: function() {
         var routes = {
             "login": this.routeLogin,
-            "loginFacebook": this.routeLoginFacebook,
+            "loginFacebook/:lType": this.routeLoginFacebook,
             "loginWeb": this.routeLoginWeb,
             "doc": this.routeDoc,
             "about": this.routeAbout,
@@ -123,13 +123,19 @@ var Router = module.exports = React.createClass({
         this.forceUpdate();
     },
 
-    routeLoginFacebook: function() {
+    routeLoginFacebook: function(ltype) {
         var world = this.props.world;
         $.getJSON("account/newByFacebook", function() {
-            $.getJSON("account/loginGameByFacebook", function(data) {
-                console.log(data);
-                world.loginAccount(data.username, data.password);
-            });
+            if (ltype == "Game") {
+                $.getJSON("account/loginGameByFacebook", function(data) {
+                    console.log(data);
+                    world.loginAccount(data.username, data.password);
+                });
+            } else if (ltype == "Web") {
+                $.getJSON("account/loginWebByFacebook", function(data) {
+                    world.handleLoginAccountWebByAjax(data);
+                });
+            }
         });
     },
 

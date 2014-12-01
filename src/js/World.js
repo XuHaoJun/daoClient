@@ -69,7 +69,7 @@ World.prototype.browserDependCheck =  function() {
     this.initViews();
     React.unmountComponentAtNode(document.body);
     React.render(View.BrowserDependCheck({checkResult: checkResult}),
-                          document.body);
+                 document.body);
   }
   return isPassed;
 };
@@ -80,7 +80,7 @@ World.prototype.initConn = function() {
 
 World.prototype.initViews = function() {
   this.views = {
-    selectChar: null, game: null,
+    app: null, selectChar: null, game: null,
     login: null, loading: null
   };
 };
@@ -139,15 +139,20 @@ World.prototype.loginAccountGameByAjax = function(username, password) {
   }.bind(this), "json");
 };
 
+World.prototype.handleLoginAccountWebByAjax = function(data) {
+  console.log(data);
+  var tmp = this.lastUsername;
+  this.lastUsername = data.username || '';
+  if (this.lastUsername != tmp) {
+    window.location = "#login";
+    this.views.login.handleForceUpdate();
+  }
+};
+
 World.prototype.loginAccountWebByAjax = function(username, password) {
   var form = {username: username, password: password};
   $.post("account/loginWeb", form, function(data) {
-    console.log(data);
-    var tmp = this.lastUsername;
-    this.lastUsername = data.username || '';
-    if (this.lastUsername != tmp) {
-      this.views.login.handleForceUpdate();
-    }
+    this.handleLoginAccountWebByAjax(data);
   }.bind(this), "json");
 };
 
@@ -169,6 +174,7 @@ World.prototype.logoutWebAccountByAjax = function() {
   $.getJSON("account/logout", function(data) {
     console.log(data);
     this.lastUsername = '';
+    window.location = "#login";
     this.views.login.handleForceUpdate();
   }.bind(this));
 };

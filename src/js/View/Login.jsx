@@ -69,7 +69,29 @@ var Login = React.createClass({
         this.props.world.loginAccountBySession();
     },
 
+    renderOnlyLoginBySession: function() {
+        var wellStyles = {maxWidth: 400, margin: '35% auto 10px'};
+        return (
+            <Grid fluid>
+                <Row>
+                    <Colm sm={6} md={4} mdOffset={4}>
+                        <div className="well" style={wellStyles}>
+                            <Button bsStyle='success'
+                                    bsSize='large' block
+                                    onClick={this.handleLoginGameBySession}>
+                                Login To Game
+                            </Button>
+                        </div>
+                    </Colm>
+                </Row>
+            </Grid>
+        );
+    },
+
     render: function() {
+        if (this.props.world.lastUsername != '') {
+            return this.renderOnlyLoginBySession();
+        }
         if (this.props.err || this.props.success) {
             this.state.alertVisible = true;
         }
@@ -97,6 +119,12 @@ var Login = React.createClass({
                        onClick={this.hanldeWebRadioButton}
                        checked={this.state.directlyWeb} />
             );
+        }
+        var fbRouteName = "oauth2login?next=#loginFacebook/";
+        if (this.state.directlyGame) {
+            fbRouteName += "Game";
+        } else {
+            fbRouteName += "Web";
         }
         return (
             <Grid fluid>
@@ -126,7 +154,7 @@ var Login = React.createClass({
                                     Login
                                 </Button>
                             </form>
-                            <a href="oauth2login?next=#loginFacebook">
+                            <a href={fbRouteName}>
                                 <img src="assets/icon/web/fbLogin.png"
                                      style={{maxWidth: "54px", maxHeight: "54px", marginLeft: "10px"}} />
                             </a>
@@ -139,9 +167,6 @@ var Login = React.createClass({
                             <ModalTrigger modal={<RegisterAccountModal world={this.props.world} />} >
                                 <Button bsStyle='success'>Register</Button>
                             </ModalTrigger>
-                            <Button bsStyle='success' onClick={this.handleLoginGameBySession}>
-                                LoginGameBySession(Test)
-                            </Button>
                         </ButtonToolbar>
                     </Colm>
                 </Row>
