@@ -127,33 +127,25 @@ World.prototype.handleLoginAccountBySessionToken = function(username, token) {
 };
 
 World.prototype.loginAccountBySession = function() {
-  $.getJSON("account/loginGamebySession", function(data) {
-    this.conn.parse(data);
-  }.bind(this));
+  $.getJSON("account/loginGamebySession", this.parse.bind(this));
 };
 
 World.prototype.loginAccountGameByAjax = function(username, password) {
   var form = {username: username, password: password};
-  $.post("account/loginGame", form, function(data) {
-    this.conn.parse(data);
-  }.bind(this), "json");
+  $.post("account/loginGame", form, this.parse.bind(this), "json");
 };
 
-World.prototype.handleLoginAccountWebByAjax = function(data) {
-  console.log(data);
+World.prototype.handleSetLastUsername = function(username) {
   var tmp = this.lastUsername;
-  this.lastUsername = data.username || '';
+  this.lastUsername = username || '';
   if (this.lastUsername != tmp) {
-    window.location = "#login";
-    this.views.login.handleForceUpdate();
+    this.views.login.navigate("login", {trigger: true});
   }
 };
 
 World.prototype.loginAccountWebByAjax = function(username, password) {
   var form = {username: username, password: password};
-  $.post("account/loginWeb", form, function(data) {
-    this.handleLoginAccountWebByAjax(data);
-  }.bind(this), "json");
+  $.post("account/loginWeb", form, this.parse.bind(this), "json");
 };
 
 
@@ -163,7 +155,7 @@ World.prototype.handleWebAccountInfo = function(data) {
 
 World.prototype.getWebAccountInfo = function(callback) {
   $.getJSON("account", function(data) {
-    this.conn.parse(data);
+    this.parse(data);
     if (callback) {
       callback(data.params[0]);
     }
@@ -173,10 +165,9 @@ World.prototype.getWebAccountInfo = function(callback) {
 World.prototype.logoutWebAccountByAjax = function() {
   $.getJSON("account/logout", function(data) {
     console.log(data);
-    this.lastUsername = '';
-    window.location = "#login";
-    this.views.login.handleForceUpdate();
   }.bind(this));
+  this.lastUsername = '';
+  this.views.login.navigate("login", {trigger: true});
 };
 
 World.prototype.checkIsWebLogined = function() {
@@ -200,9 +191,7 @@ World.prototype.registerAccount = function(username, password, email) {
 
 World.prototype.registerAccountByAjax = function(username, password, email) {
   var form = {username: username, password: password, email: email};
-  $.post("account", form, function(data) {
-    this.conn.parse(data);
-  }.bind(this), "json");
+  $.post("account", form, this.parse.bind(this), "json");
 };
 
 World.prototype.handleDisconnect = function() {
@@ -268,11 +257,68 @@ World.prototype.handleRunScene = function(sceneName) {
     this.views.game = React.render(View.Game({world: this}),
                                    document.body);
   }
-  this.scenes[sceneName].run();
+  this.currentScene = this.scenes[sceneName];
+  this.currentScene.run();
   this.isGaming = true;
 };
 
 World.prototype.handleDestroyScene = function(name) {
-  this.scenes[name].destroy();
+  var scene = this.scenes[name];
   delete(this.scenes, name);
+  if (scene == this.currentScene) {
+    this.currentScene = null;
+  }
+  scene.destroy();
+};
+
+function LowerCaseFirstLetter(string) {
+  return string.charAt(0).toLowerCase() + string.slice(1);
+}
+
+World.prototype.parse = function(data) {
+  var world = this;
+  var account = (world? world.account : null);
+  var char = (account? account.usingChar : null);
+  var scene = (char? char.scene : null);
+  var receivers = {world: world,
+                   account: account,
+                   char: char,
+                   scene: scene};
+  var bio;
+  if (!_.isString(data.receiver) ||
+      !_.isString(data.method)) {
+    return null;
+  }
+  data.receiver = LowerCaseFirstLetter(data.receiver);
+  var receiver;
+  if (data.receiver == "bio") {
+    if (_.isObject(scene)) {
+      bio = scene.sceneObjects[data.params[0]];
+      receiver = bio;
+      data.params.shift();
+      // console.log(data);
+      // console.log(bio);
+    }
+  } else {
+    receiver = receivers[data.receiver];
+  }
+  if (_.isNull(receiver) || _.isUndefined(receiver)) {
+    return null;
+  }
+  var method = receiver[data.method];
+  if (_.isUndefined(method) ||
+      _.isNull(method) ||
+      !_.isFunction(method)) {
+    return null;
+  }
+  if (_.isUndefined(data.params) ||
+      _.isNull(data.params) ||
+      (_.isArray(data.params) && data.params.length === 0)) {
+    method.apply(receiver);
+  } else if (_.isArray(data.params)){
+    method.apply(receiver, data.params);
+  }
+  return {receiver: receiver,
+          method: method,
+          params: data.params};
 };

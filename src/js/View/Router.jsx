@@ -53,6 +53,13 @@ var Router = module.exports = React.createClass({
         this.state.router = router;
     },
 
+    navigate: function(name, opts) {
+        this.state.router.navigate(name, opts);
+        if (name == this.currentRouteName()) {
+            this.forceUpdate();
+        }
+    },
+
     currentRouteName: function() {
         var name = window.location.hash.substring(1, window.location.hash.length);
         return name;

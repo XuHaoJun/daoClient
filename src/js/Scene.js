@@ -313,11 +313,7 @@ Scene.prototype.attachCanvas = function(threeCanvas) {
   this.threeResize = new THREEx.WindowResize(this.renderer, this.camera);
 };
 
-Scene.prototype.run = function() {
-  if (this.isRendering && this.requestId) {
-    return;
-  }
-  this.isRendering = true;
+Scene.prototype.initThreeStats = function() {
   this.threeStats = new ThreeStats();
   this.threeStats.setMode(0);
   this.threeStats.domElement.style.position = 'absolute';
@@ -329,9 +325,22 @@ Scene.prototype.run = function() {
     event.preventDefault();
   };
   $('body').prepend(this.threeStats.domElement);
+};
+
+Scene.prototype.run = function() {
+  if (this.isRendering && this.requestId) {
+    return;
+  }
+  this.isRendering = true;
+  this.initThreeStats();
   $('body').prepend(this.canvas);
   this.attachCanvas(this.canvas);
   this.animate();
+};
+
+Scene.prototype.destroyThreeStats = function() {
+  $('#threeStats').remove();
+  this.threeStats = null;
 };
 
 Scene.prototype.destroy = function() {
@@ -342,7 +351,7 @@ Scene.prototype.destroy = function() {
     this.requestId = null;
     this.renderer.clear();
     $('#threeCanvas').remove();
-    $('#threeStats').remove();
+    this.destroyThreeStats();
     _.each(this.inSceneItems, function(item) {
       $(item.domLabel).remove();
     });
@@ -362,9 +371,13 @@ Scene.prototype.animate = function(time) {
     return;
   }
   this.requestId = requestAnimationFrame(this.animateCallBack);
-  this.threeStats.begin();
+  if (this.threeStats) {
+    this.threeStats.begin();
+  }
   this.render(time);
-  this.threeStats.end();
+  if (this.threeStats) {
+    this.threeStats.end();
+  }
 };
 
 Scene.prototype.updateInSceneItemLabels = function() {

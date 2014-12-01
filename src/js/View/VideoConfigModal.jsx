@@ -9,8 +9,14 @@ var Button = BS.Button;
 
 var VideoConfigModal = React.createClass({
     getInitialState: function() {
+        var fpsBoxEnableCheck = true;
+        if (this.props.world.currentScene &&
+            this.props.world.currentScene.threeStats) {
+                fpsBoxEnableCheck = true;
+        }
         return {
             shadowEnableCheck: this.props.world.renderer.shadowMapEnabled,
+            fpsBoxEnableCheck: fpsBoxEnableCheck,
             devicePixelRatioValue: this.props.world.renderer.devicePixelRatio
         };
     },
@@ -21,6 +27,14 @@ var VideoConfigModal = React.createClass({
         this.props.world.renderer.shadowMapEnabled = !this.props.world.renderer.shadowMapEnabled;
         this.setState({shadowEnableCheck:
                       this.props.world.renderer.shadowMapEnabled});
+    },
+    handleFpsBoxEnableToggle: function(event) {
+        if (this.state.fpsBoxEnableCheck) {
+            this.props.world.currentScene.destroyThreeStats();
+        } else {
+            this.props.world.currentScene.initThreeStats();
+        }
+        this.setState({fpsBoxEnableCheck: !this.state.fpsBoxEnableCheck});
     },
     handleDevicePixelRatioChange: function(event) {
         var ratio = parseFloat(this.refs.devicePixelRatioRange.getValue().trim());
@@ -33,6 +47,10 @@ var VideoConfigModal = React.createClass({
             <Modal title="Video Configuraiton"
                    onRequestHide={this.props.onRequestHide}>
                 <div className="modal-body">
+                    <Input type="checkbox" readOnly
+                           label="Fps Box Enable"
+                           checked={this.state.fpsBoxEnableCheck}
+                           onChange={this.handleFpsBoxEnableToggle}/>
                     <Input type="checkbox" readOnly
                            label="ShadowEnable"
                            checked={this.state.shadowEnableCheck}

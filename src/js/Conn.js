@@ -55,50 +55,5 @@ Conn.prototype.sendText = function(text) {
 };
 
 Conn.prototype.parse = function(data) {
-  // console.log(data);
-  var world = this.world;
-  var account = (world? world.account : null);
-  var char = (account? account.usingChar : null);
-  var scene = (char? char.scene : null);
-  var receivers = {world: world,
-                   account: account,
-                   char: char,
-                   scene: scene};
-  var bio;
-  if (!_.isString(data.receiver) ||
-      !_.isString(data.method)) {
-    return;
-  }
-  function LowerCaseFirstLetter(string) {
-    return string.charAt(0).toLowerCase() + string.slice(1);
-  }
-  data.receiver = LowerCaseFirstLetter(data.receiver);
-  var receiver;
-  if (data.receiver == "bio") {
-    if (_.isObject(scene)) {
-      bio = scene.sceneObjects[data.params[0]];
-      receiver = bio;
-      data.params.shift();
-      // console.log(data);
-      // console.log(bio);
-    }
-  } else {
-    receiver = receivers[data.receiver];
-  }
-  if (_.isNull(receiver) || _.isUndefined(receiver)) {
-    return;
-  }
-  var method = receiver[data.method];
-  if (_.isUndefined(method) ||
-      _.isNull(method) ||
-      !_.isFunction(method)) {
-    return;
-  }
-  if (_.isUndefined(data.params) ||
-      _.isNull(data.params) ||
-      (_.isArray(data.params) && data.params.length === 0)) {
-    method.apply(receiver);
-  } else if (_.isArray(data.params)){
-    method.apply(receiver, data.params);
-  }
+  this.world.parse(data);
 };
