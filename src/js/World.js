@@ -117,13 +117,14 @@ World.prototype.loginAccount = function(username, password) {
   this.lastLoginPassword = password;
 };
 
-World.prototype.handleLoginAccountBySessionToken = function(username, token) {
+World.prototype.loginAccountBySessionToken = function(username, token) {
   var clientCall = {
     receiver: "World",
     method: "LoginAccountBySessionToken",
     params: [username, token]
   };
   this.conn.sendJSON(clientCall);
+  this.lastLoginUsername = username;
 };
 
 World.prototype.loginAccountBySession = function() {
