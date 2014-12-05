@@ -41,11 +41,7 @@ var World = module.exports = function (config) {
   this.initViews();
   this.initThreeCanvas();
   this.loader = this.create.Loader();
-  this.loader.once('complete', function() {
-    this.conn.once('onopen', function() {
-      this.emit("connOnopen");
-    }.bind(this));
-    this.conn.run();
+  this.loader.on('complete', function() {
     this.emit("loadComplete");
   }.bind(this));
 };
@@ -107,24 +103,30 @@ World.prototype.initThreeCanvas = function() {
 // following method for send to server
 
 World.prototype.loginAccount = function(username, password) {
-  var clientCall = {
-    receiver: "World",
-    method: "LoginAccount",
-    params: [username, password]
-  };
-  this.conn.sendJSON(clientCall);
-  this.lastLoginUsername = username;
-  this.lastLoginPassword = password;
+  this.conn.run();
+  this.conn.once("open", function() {
+    var clientCall = {
+      receiver: "World",
+      method: "LoginAccount",
+      params: [username, password]
+    };
+    this.conn.sendJSON(clientCall);
+    this.lastLoginUsername = username;
+    this.lastLoginPassword = password;
+  }.bind(this));
 };
 
 World.prototype.loginAccountBySessionToken = function(username, token) {
-  var clientCall = {
-    receiver: "World",
-    method: "LoginAccountBySessionToken",
-    params: [username, token]
-  };
-  this.conn.sendJSON(clientCall);
-  this.lastLoginUsername = username;
+  this.conn.run();
+  this.conn.once("open", function() {
+    var clientCall = {
+      receiver: "World",
+      method: "LoginAccountBySessionToken",
+      params: [username, token]
+    };
+    this.conn.sendJSON(clientCall);
+    this.lastLoginUsername = username;
+  }.bind(this));
 };
 
 World.prototype.loginAccountBySession = function() {
@@ -203,7 +205,6 @@ World.prototype.handleDisconnect = function() {
     this.account.usingChar.scene.destroy();
   }
   this.initConn();
-  this.conn.run();
   this.initLastErrors();
   this.scenes = {};
   React.unmountComponentAtNode(document.body);

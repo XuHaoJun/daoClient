@@ -73,10 +73,31 @@ var Login = React.createClass({
 
     renderOnlyLoginBySession: function() {
         var wellStyles = {maxWidth: 400, margin: '35% auto 10px'};
+        if (this.props.err || this.props.success) {
+            this.state.alertVisible = true;
+        }
+        var errAlert = null;
+        var successAlert = null;
+        if (this.props.err && this.state.alertVisible) {
+            errAlert = (
+                <Alert bsStyle="danger" onDismiss={ this.handleAlertDismiss }>
+                    { this.props.err }
+                </Alert>
+            );
+        }
+        if (this.props.success && this.state.alertVisible) {
+            successAlert = (
+                <Alert bsStyle="success" onDismiss={ this.handleAlertDismiss }>
+                    { this.props.success }
+                </Alert>
+            );
+        }
         return (
             <Grid fluid>
                 <Row>
                     <Colm sm={6} md={4} mdOffset={4}>
+                        { errAlert }
+                        { successAlert }
                         <div className="well" style={wellStyles}>
                             <Button bsStyle='success'
                                     bsSize='large' block

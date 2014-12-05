@@ -27,7 +27,7 @@ Conn.prototype.run = function() {
   };
   this.sock.onopen = function() {
     console.log('successfully connect to dao server');
-    this.emit('onopen');
+    this.emit('open', this);
   }.bind(this);
   this.sock.onmessage = function(r) {
     this.handleOnmessage(r);
