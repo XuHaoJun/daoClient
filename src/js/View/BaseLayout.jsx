@@ -9,7 +9,6 @@ var NavItem = BS.NavItem;
 var DropdownButton = BS.DropdownButton;
 var ButtonToolbar = BS.ButtonToolbar;
 var MenuItem = BS.MenuItem;
-var Grid = BS.Grid;
 
 var BaseLayout = module.exports = React.createClass({
     getDefaultProps: function() {
@@ -87,9 +86,7 @@ var BaseLayout = module.exports = React.createClass({
                 <Navbar brand={brand}>
                     { navs }
                 </Navbar>
-                <Grid fluid>
-                    {this.props.children}
-                </Grid>
+                {this.props.children}
             </div>
         );
     }
