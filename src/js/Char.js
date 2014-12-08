@@ -65,10 +65,12 @@ var Char = module.exports = function (account, config) {
     "drop": this.handleCanvasDrop.bind(this),
     "click": this.handleCanvasClick.bind(this)
   };
+  this.canvasEvents.contextmenu = this.canvasEvents.click;
   this.documentEvents = {
     "keydown": this.handleDocumentKeydown.bind(this),
     "keyup": this.handleDocumentKeyup.bind(this)
   };
+  this.on("click", this.handleClick);
   if (_.isObject(config)) {
     this.parseConfig(config);
   }
@@ -633,6 +635,7 @@ Char.prototype.onCameraPositionChange = function(camera) {
 
 Char.prototype.handleCanvasMousedown = function(event) {
   event.preventDefault();
+  this.world.views.game.handleCharContextmenu(null);
   this.lastClientX = event.clientX;
   this.lastClientY = event.clientY;
   this.buttons.canvas.mouse.isUping = false;
@@ -752,4 +755,29 @@ Char.prototype.afterUpdate = function(delta) {
   }
   this.fireBallSkill.afterUseDuration += delta;
   this.cleaveSkill.afterUseDuration += delta;
+};
+
+Char.prototype.handleClick = function(event) {
+  // if (event.char == this) {
+  //   return;
+  // }
+  if (event.which == 3) {
+    this.world.views.game.handleCharContextmenu(event.char,
+                                                this,
+                                                {x: event.clientX, y: event.clientY});
+  }
+};
+
+Char.prototype.createParty = function(name) {
+  var clientCall = {
+    receiver: "Char",
+    method:  "CreateParty",
+    params: [name]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.handleCreateParty = function(party) {
+  this.party = party;
+  this.world.views.game.handleCharParty(party);
 };

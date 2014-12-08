@@ -17,6 +17,8 @@ var Bio = module.exports = function (world, config) {
     lastTargetPos: null,
     lastAngle: null
   };
+  // party
+  this.party = null;
   //
   this.level = 0;
   // main attribue
@@ -64,6 +66,7 @@ Bio.prototype.parseConfig = function(config) {
     case "matk":
     case "maxHp":
     case "maxMp":
+    case "party":
       this[key] = val;
       break;
     case "hp":
@@ -208,7 +211,6 @@ Bio.prototype.afterUpdate = function(delta) {
 // recevie from server data
 
 Bio.prototype.handleMoveStateChange = function(config) {
-  console.log(config);
   if ((config.running == true &&
        this.moveState.running == false) ||
       (config.running == true &&
@@ -227,4 +229,8 @@ Bio.prototype.handleMoveStateChange = function(config) {
 
 Bio.prototype.isDied = function() {
   return this.hp <= 0;
+};
+
+Bio.prototype.handlePartyCreate = function(party) {
+  this.party = party;
 };

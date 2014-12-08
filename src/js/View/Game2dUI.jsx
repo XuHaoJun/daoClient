@@ -16,6 +16,7 @@ var MenuItem = BS.MenuItem;
 var ModalTrigger = BS.ModalTrigger;
 var CharItems = require("./CharItems.js");
 var CharSkills = require("./CharSkills.js");
+var CharParty = require("./CharParty.js");
 var CharInfo = require("./CharInfo.js");
 var CharUsingEquips = require("./CharUsingEquips.js");
 var CharHotKeys = require("./CharHotKeys.js");
@@ -33,6 +34,7 @@ var Game2dUI = React.createClass({
                 showCharUsingEquips: false,
                 showCharInfo: false,
                 showCharSkills: false,
+                showCharParty: false,
                 updateCharItems: true,
                 updateCharSkills: true,
                 updateCharUsingEquips: true,
@@ -69,6 +71,9 @@ var Game2dUI = React.createClass({
     },
     handleToggleCharSkills: function() {
         this.setState({showCharSkills: !this.state.showCharSkills});
+    },
+    handleToggleCharParty: function() {
+        this.setState({showCharParty: !this.state.showCharParty});
     },
     handleToggleCharUsingEquips: function() {
         this.setState({showCharUsingEquips: !this.state.showCharUsingEquips});
@@ -116,9 +121,18 @@ var Game2dUI = React.createClass({
                                                     bsStyle='default' bsSize='medium'>
                                                 技能
                                             </Button>
-                                            <Button bsStyle='default' bsSize='medium'>
-                                                任務
-                                            </Button>
+                                            <DropdownButton title={"更多"}>
+                                                <MenuItem key="1">
+                                                    任務
+                                                </MenuItem>
+                                                <MenuItem key="2"
+                                                          onClick={this.handleToggleCharParty}>
+                                                    隊伍
+                                                </MenuItem>
+                                                <MenuItem key="3">
+                                                    好友
+                                                </MenuItem>
+                                            </DropdownButton>
                                         </ButtonGroup>
                                         <ButtonGroup>
                                             <DropdownButton title={<Glyphicon glyph="align-justify" />}>
@@ -163,6 +177,11 @@ var Game2dUI = React.createClass({
                             world={this.props.world}
                             learnedSkills={this.props.charLearnedSkills}
                             closeButtonClick={this.handleToggleCharSkills} />
+                <CharParty show={this.state.showCharParty}
+                           world={this.props.world}
+                           char={this.props.char}
+                           party={this.props.charParty}
+                           closeButtonClick={this.handleToggleCharParty} />
             </div>
         );
     }

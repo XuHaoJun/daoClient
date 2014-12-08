@@ -12,6 +12,7 @@ var ChatBox = require('./ChatBox');
 var NpcTalkBox = require('./NpcTalkBox');
 var Shop = require('./Shop');
 var ItemLabel = require('./ItemLabel');
+var CharContextmenu = require('./CharContextmenu.js');
 
 var Game = React.createClass({
     getInitialState: function() {
@@ -21,7 +22,9 @@ var Game = React.createClass({
                 npcTalkBox: null,
                 updateGame2dUI: false,
                 shop: null,
+                charContextmenu: null,
                 char: this.props.world.account.usingChar,
+                charParty: this.props.world.account.usingChar.party,
                 charItems: this.props.world.account.usingChar.items,
                 charLearnedSkills: this.props.world.account.usingChar.learnedSkills,
                 charUsingEquips: this.props.world.account.usingChar.usingEquips
@@ -41,6 +44,10 @@ var Game = React.createClass({
         this.setState({char: char,
                        updateGame2dUI: true});
     },
+    handleCharParty: function(party) {
+        this.setState({charParty: party,
+                       updateGame2dUI: true});
+    },
     handleCharLearnedSkills: function(sids) {
         this.setState({charLearnedSkills: sids,
                        updateGame2dUI: true});
@@ -52,6 +59,21 @@ var Game = React.createClass({
     handleCharUsingEquips: function(charUsingEquips) {
         this.setState({charUsingEquips: charUsingEquips,
                        updateGame2dUI: true});
+    },
+    handleCharContextmenu: function(char, target, pos) {
+        var charContextmenu = null;
+        if (char && target && pos) {
+            charContextmenu = (<CharContextmenu char={char}
+                                                target={target}
+                                                position={pos}
+                                                />);
+        }
+        if (charContextmenu == null &&
+            this.state.charContextmenu == null) {
+                return;
+        }
+        this.setState({charContextmenu: charContextmenu,
+                       updateGame2dUI: false});
     },
     // TODO
     // rename to handleNewChatMessage
@@ -116,6 +138,7 @@ var Game = React.createClass({
                             <Game2dUI shouldUpdate={this.state.updateGame2dUI}
                                       world={this.props.world}
                                       char={this.state.char}
+                                      charParty={this.state.charParty}
                                       charItems={this.state.charItems}
                                       charLearnedSkills={this.state.charLearnedSkills}
                                       charUsingEquips={this.props.world.account.usingChar.usingEquips}
@@ -132,6 +155,7 @@ var Game = React.createClass({
                 {this.state.npcTalkBox}
                 {this.state.shop}
                 {this.state.inSceneItemLabels}
+                {this.state.charContextmenu}
             </div>
         );
     }

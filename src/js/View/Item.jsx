@@ -59,7 +59,8 @@ var Item = React.createClass({
     },
     render: function() {
         var item = this.props.item;
-        var iconSrc = item.icon["src"];
+        var world = item.world;
+        var iconSrc = world.assets.itemIcon[item.iconViewId]["src"];
         var itemBonus = null
         if (_.isObject(item.bonusInfo)) {
             itemBonus = _.map(item.bonusInfo, function(bVal, bKey) {

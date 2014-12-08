@@ -64,9 +64,6 @@ Item.prototype.parseConfig = function(config) {
     this.syncRotation();
     this.syncCpAndThree();
   }
-  if (_.isNumber(config.iconViewId)) {
-    this.icon = this.world.assets.itemIcon[this.iconViewId];
-  }
 };
 
 Item.prototype.handleShopClick = function(event, viewName) {
