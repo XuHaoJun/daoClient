@@ -132,8 +132,9 @@ var App = module.exports = React.createClass({
 
     routeLoginFacebook: function(ltype) {
         var world = this.props.world;
-        $.getJSON("account/newByFacebook", function(data) {
-            $.getJSON("account/loginByFacebook/"+ltype, world.parse.bind(world));
+        $.getJSON("account/newByFacebook?next=#loginByFacebook/" + ltype, function(data) {
+            console.log(data);
+            $.getJSON("account/loginByFacebook/"+ltype+"?next=#loginByFacebook/"+ltype, world.parse.bind(world));
         });
     },
 
