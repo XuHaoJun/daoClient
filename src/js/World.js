@@ -18,6 +18,7 @@ var ObjectCreator = require('./ObjectCreator.js');
 
 var World = module.exports = function (config) {
   EventEmitter2.call(this);
+  this.version = "0.0.1";
   this.scenes = {};
   this.assets  = {image: {}, audio: {},
                   geometry: {}, texture: {},
@@ -275,6 +276,17 @@ World.prototype.handleDestroyScene = function(name) {
 function LowerCaseFirstLetter(string) {
   return string.charAt(0).toLowerCase() + string.slice(1);
 }
+
+World.prototype.handleSyncClient = function(data) {
+  var version = data.version;
+  if (this.version != version) {
+    location.reload(true);
+  }
+};
+
+World.prototype.syncClient = function() {
+  $.getJSON("clientVersion", this.parse.bind(this));
+};
 
 World.prototype.parse = function(data) {
   var world = this;
