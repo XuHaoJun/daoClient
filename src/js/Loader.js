@@ -26,8 +26,8 @@ Loader.prototype.run = function(onComplete) {
     return;
   }
   this.world.views.loading =
-    React.render(View.Loading(null),
-                          document.body);
+    React.render(React.createElement(View.Loading, null),
+                 document.body);
   this.isLoading = true;
   var url =  'assets/json/ClientAssetsList.json';
   if (isNode) {
@@ -120,10 +120,11 @@ Loader.prototype.handleComplete = function() {
     return;
   }
   this.hasLoaded = true;
-  React.unmountComponentAtNode(document.body);
   this.world.views.loading = null;
+  React.unmountComponentAtNode(document.body);
   this.world.views.app =
-    React.render(View.App({world: this.world}), document.body);
+    React.render(React.createElement(View.App, {world: this.world}),
+                 document.body);
   var geometry = new THREE.BoxGeometry( 64, 64, 64, 2, 2, 2 );
   var material = new THREE.MeshPhongMaterial( {color: 0x00ffff, transparent: true} );
   var cube = new THREE.Mesh( geometry, material );

@@ -65,8 +65,8 @@ World.prototype.browserDependCheck =  function() {
     var checkResult= _.zipObject(checks, modernizrChecks);
     this.initViews();
     React.unmountComponentAtNode(document.body);
-    React.render(View.BrowserDependCheck({checkResult: checkResult}),
-                 document.body);
+    React.render(React.createElement(View.BrowserDependCheck, {checkResult: checkResult}),
+                                     document.body);
   }
   return isPassed;
 };
@@ -211,7 +211,7 @@ World.prototype.handleDisconnect = function() {
   React.unmountComponentAtNode(document.body);
   this.initViews();
   window.location.hash = "#login";
-  this.views.app = React.render(View.App({world: this}),
+  this.views.app = React.render(React.createElement(View.App, {world: this}),
                                 document.body);
   this.isGaming = false;
 };
@@ -232,9 +232,8 @@ World.prototype.handleSuccessLoginAcccount = function(accountConfig) {
     this.account = this.create.Account(accountConfig);
     React.unmountComponentAtNode(document.body);
     this.views.app = null;
-    this.views.selectChar = React
-      .render(View.SelectChar({world: this}),
-              document.body);
+    this.views.selectChar = React.render(React.createElement(View.SelectChar, {world: this}),
+                                         document.body);
     this.emit('handleSuccessLoginAcccount', accountConfig);
   }
 };
@@ -256,7 +255,7 @@ World.prototype.handleRunScene = function(sceneName) {
   if (_.isObject(this.views.selectChar)) {
     React.unmountComponentAtNode(document.body);
     this.views.selectChar = null;
-    this.views.game = React.render(View.Game({world: this}),
+    this.views.game = React.render(React.createElement(View.Game, {world: this}),
                                    document.body);
   }
   this.currentScene = this.scenes[sceneName];
