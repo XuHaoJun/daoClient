@@ -231,6 +231,10 @@ Bio.prototype.isDied = function() {
   return this.hp <= 0;
 };
 
+Bio.prototype.handlePartyCreateBasic = function(party) {
+  this.party = party;
+};
+
 Bio.prototype.handlePartyCreate = function(party) {
   this.party = party;
 };

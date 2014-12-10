@@ -17,16 +17,25 @@ var CharContextmenu = module.exports = React.createClass({
     componentWillUnmount: function() {
         $(this.refs.contextmenu.getDOMNode()).off("mouseenter");
     },
+    handleJoinParty: function(event) {
+        event.preventDefault();
+        var target = this.props.target;
+        var char = this.props.char;
+        char.joinPartyByCharName(target.name);
+    },
     render: function() {
         var target = this.props.target;
         var char = this.props.char;
         var invitePartyButton = null;
-        if (char.party !== null) {
+        if (char.party !== null && target.party == null) {
             invitePartyButton = (<Button bsSize="small">邀請隊伍</Button>);
         }
         var joinPartyButton = null;
-        if (target.party !== null) {
-            joinPartyButton = (<Button bsSize="small">加入隊伍</Button>);
+        if (target.party !== null && char.party == null) {
+            joinPartyButton = (
+                <Button bsSize="small" onClick={this.handleJoinParty}>
+                    加入隊伍
+                </Button>);
         }
         var style = {
             position: "absolute",
@@ -46,3 +55,5 @@ var CharContextmenu = module.exports = React.createClass({
         );
     }
 });
+
+/* <Button bsStyle="primary" bsSize="small" >{target.name}</Button> */

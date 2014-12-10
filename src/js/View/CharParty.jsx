@@ -10,9 +10,6 @@ var Input = BS.Input;
 var Panel = BS.Panel;
 
 var CreatePartyForm = React.createClass({
-    componentDidMount: function() {
-        $(this.refs.partyNameInput.getInputDOMNode()).focus();
-    },
     handleCreatParty: function(e) {
         e.preventDefault();
         var partyName = this.refs.partyNameInput.getValue();
@@ -35,16 +32,19 @@ var CreatePartyForm = React.createClass({
 });
 
 var PartyInfo = React.createClass({
+    handleLeaveParty: function() {
+        this.props.char.leaveParty();
+    },
     render: function() {
         var party = this.props.party;
-        var membersList = _.map(party.memberNames,  function(name, i) {
+        var membersList = _.map(party.memberInfos,  function(memberInfo, i) {
             return (
-                <p key={i}>{name}</p>
+                <p key={i}>{memberInfo.name} {memberInfo.level}</p>
             );
         });
         return (
             <div>
-                <Button>離開隊伍</Button>
+                <Button onClick={this.handleLeaveParty}>離開隊伍</Button>
                 <h3>隊伍名稱：</h3>
                 <p>{party.name}</p>
                 <h3>隊員：</h3>
@@ -63,10 +63,7 @@ var CharParty = module.exports = React.createClass({
     shouldComponentUpdate: function(nextProps, nextState) {
         if ((!nextProps.show && !this.props.show) ||
             (nextProps.party === null &&
-             this.props.party === null && this.props.show == nextProps.show) ||
-            (nextProps.party && this.props.party &&
-             nextProps.party.uuid == this.props.party.uuid &&
-             this.props.show == nextProps.show)) {
+             this.props.party === null && this.props.show == nextProps.show)) {
                  return false;
         }
         return true;
@@ -96,7 +93,7 @@ var CharParty = module.exports = React.createClass({
         }
         var partyInfo = null;
         if (_.isObject(this.props.party)) {
-            partyInfo = (<PartyInfo party={this.props.party} />);
+            partyInfo = (<PartyInfo party={this.props.party} char={this.props.char} />);
         }
         return (
             <Draggable handle=".handle-draggable,.panel-heading,.panel-title"

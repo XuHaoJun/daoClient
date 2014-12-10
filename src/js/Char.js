@@ -22,6 +22,7 @@ var Char = module.exports = function (account, config) {
                 etcItem: new Array(30)};
   this.hotKeys = {normal: new Array(4),
                   skill: new Array(2)};
+  this.quests = null;
   this.learnedSkills = {};
   this.lastSceneName = '';
   this.lastX = 0;
@@ -44,6 +45,9 @@ var Char = module.exports = function (account, config) {
                   },
                   document: {
                     key: {shift: false}
+                  },
+                  charContextmenu: {
+                    activing: false
                   }
                  };
   this.dragStartViewName = "";
@@ -598,9 +602,11 @@ Char.prototype.handleCanvasMousemove = function(event) {
       if (this.hotKeys.skill[0].skillBaseId > 0) {
         this.useSkillByBaseId(this.hotKeys.skill[0].skillBaseId);
       }
-    } else if (this.buttons.document.key.shift) {
-      return;
-    } else if (_.isObject(foundGround) && (firstBio instanceof Npc) == false) {
+    } else if ((_.isObject(foundGround)) &&
+               (firstBio instanceof Npc) == false &&
+               ((firstBio instanceof Char) == false &&
+                (this.buttons.canvas.mouse.rightDowning == false)) &&
+               (this.buttons.document.key.shift == false)) {
       this.move(foundGround.point.x, foundGround.point.y);
     }
   }
@@ -636,6 +642,7 @@ Char.prototype.onCameraPositionChange = function(camera) {
 Char.prototype.handleCanvasMousedown = function(event) {
   event.preventDefault();
   this.world.views.game.handleCharContextmenu(null);
+  this.buttons.charContextmenu.activing = false;
   this.lastClientX = event.clientX;
   this.lastClientY = event.clientY;
   this.buttons.canvas.mouse.isUping = false;
@@ -758,13 +765,14 @@ Char.prototype.afterUpdate = function(delta) {
 };
 
 Char.prototype.handleClick = function(event) {
-  // if (event.char == this) {
-  //   return;
-  // }
   if (event.which == 3) {
+    if (event.char == this) {
+      return;
+    }
     this.world.views.game.handleCharContextmenu(event.char,
                                                 this,
                                                 {x: event.clientX, y: event.clientY});
+    this.buttons.charContextmenu.activing = true;
   }
 };
 
@@ -777,7 +785,57 @@ Char.prototype.createParty = function(name) {
   this.world.conn.sendJSON(clientCall);
 };
 
-Char.prototype.handleCreateParty = function(party) {
+Char.prototype.leaveParty = function() {
+  var clientCall = {
+    receiver: "Char",
+    method:  "LeaveParty",
+    params: []
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.joinPartyByCharName = function(name) {
+  var clientCall = {
+    receiver: "Char",
+    method:  "JoinPartyByCharName",
+    params: [name]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
+Char.prototype.handlePartyCreate = function(party) {
   this.party = party;
+  console.log("handlePartyCreate", this.party.memberInfos);
   this.world.views.game.handleCharParty(party);
+};
+
+Char.prototype.handlePartyRemove = function(memberInfo) {
+  console.log("memberInfo", memberInfo);
+  console.log("handlePartyRemove", this.party);
+  var name = memberInfo.name;
+  if (this.party == null) {
+    return;
+  }
+  if (this.name == name) {
+    this.party = null;
+    this.world.views.game.handleCharParty(null);
+    return;
+  }
+  _.remove(this.party.memberInfos, function(memberInfo) {
+      return memberInfo.name == name;
+  });
+  this.world.views.game.handleCharParty(this.party);
+};
+
+Char.prototype.handlePartyAdd = function(memberInfo) {
+  if (this.party == null) {
+    return;
+  }
+  var i = _.findIndex(this.party.memberInfos, function(m) {
+    return m.name == memberInfo.name;
+  });
+  if (i == -1) {
+    this.party.memberInfos.push(memberInfo);
+    this.world.views.game.handleCharParty(this.party);
+  }
 };
