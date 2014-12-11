@@ -20,9 +20,11 @@ var World = module.exports = function (config) {
   EventEmitter2.call(this);
   this.version = "0.0.1";
   this.scenes = {};
-  this.assets  = {image: {}, audio: {},
-                  geometry: {}, texture: {},
-                  mesh: {}, itemIcon: {}, skillIcon: {}};
+  this.assets = {image: {}, audio: {},
+                 geometry: {}, texture: {},
+                 mesh: {}, itemIcon: {}, skillIcon: {},
+                 mobNames: {}, quests: {}};
+  this.locale = {language: "chinese"};
   this.isGaming = false;
   this.account = null;
   this.lastUsername = "";

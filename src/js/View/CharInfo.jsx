@@ -48,7 +48,8 @@ var CharInfo = React.createClass({
         return (
             <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                        zIndex={50}>
-                <Panel header={header} style={style}  className="noselect">
+                <Panel header={header} style={style}
+                       className="noselect dao-dragPanel">
                     <TabbedArea defaultActiveKey={1} centerBlock>
                         <TabPane eventKey={1} tab="基本資訊">
                             <h4>Name:</h4>

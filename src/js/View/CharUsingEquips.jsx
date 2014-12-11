@@ -75,7 +75,8 @@ var CharUsingEquips = React.createClass({
         return (
             <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                        zIndex={50}>
-                <Panel header={header} style={style} className="noselect dao-charUsingEquips">
+                <Panel header={header} style={style}
+                       className="noselect dao-charUsingEquips dao-dragPanel">
                     <Grid fluid className="using-equips">
                         <Row>
                             <Colm md={4}>

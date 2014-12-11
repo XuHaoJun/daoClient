@@ -58,7 +58,8 @@ var CharItems = React.createClass({
         return (
             <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                        zIndex={50}>
-                <Panel header={header} style={style} className="noselect dao-charItems" >
+                <Panel header={header} style={style}
+                       className="noselect dao-charItems dao-dragPanel" >
                     <TabbedArea defaultActiveKey={1} centerBlock>
                         <TabPane eventKey={1} tab="消耗">
                             { useSelfItems }

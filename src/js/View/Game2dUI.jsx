@@ -20,10 +20,11 @@ var CharParty = require("./CharParty.js");
 var CharInfo = require("./CharInfo.js");
 var CharUsingEquips = require("./CharUsingEquips.js");
 var CharHotKeys = require("./CharHotKeys.js");
+var CharHpMpBar = require("./CharHpMpBar.js");
+var CharQuests = require("./CharQuests.js");
 var MiniTargetInfo = require("./MiniTargetInfo.js");
 var VideoConfigModal = require("./VideoConfigModal.js");
 var SoundConfigModal = require("./SoundConfigModal.js");
-var CharHpMpBar = require("./CharHpMpBar.js");
 
 // TODO
 // add mini target info to it.
@@ -35,6 +36,7 @@ var Game2dUI = React.createClass({
                 showCharInfo: false,
                 showCharSkills: false,
                 showCharParty: false,
+                showCharQuests: false,
                 updateCharItems: true,
                 updateCharSkills: true,
                 updateCharUsingEquips: true,
@@ -71,6 +73,9 @@ var Game2dUI = React.createClass({
     },
     handleToggleCharSkills: function() {
         this.setState({showCharSkills: !this.state.showCharSkills});
+    },
+    handleToggleCharQuests: function() {
+        this.setState({showCharQuests: !this.state.showCharQuests});
     },
     handleToggleCharParty: function() {
         this.setState({showCharParty: !this.state.showCharParty});
@@ -122,7 +127,8 @@ var Game2dUI = React.createClass({
                                                 技能
                                             </Button>
                                             <DropdownButton title={"更多"}>
-                                                <MenuItem key="1">
+                                                <MenuItem key="1"
+                                                          onClick={this.handleToggleCharQuests} >
                                                     任務
                                                 </MenuItem>
                                                 <MenuItem key="2"
@@ -182,6 +188,12 @@ var Game2dUI = React.createClass({
                            char={this.props.char}
                            party={this.props.charParty}
                            closeButtonClick={this.handleToggleCharParty} />
+                <CharQuests show={this.state.showCharQuests}
+                            world={this.props.world}
+                            char={this.props.char}
+                            quests={this.props.charQuests}
+                            updateId={this.props.charQuests ? this.props.charQuests.updateId : 0}
+                            closeButtonClick={this.handleToggleCharQuests} />
             </div>
         );
     }

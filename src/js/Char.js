@@ -104,6 +104,7 @@ Char.prototype.parseConfig = function(config) {
     case "dzeny":
     case "pickRadius":
     case "hotKeys":
+    case "quests":
       this[key] = val;
       break;
     }
@@ -822,7 +823,7 @@ Char.prototype.handlePartyRemove = function(memberInfo) {
     return;
   }
   _.remove(this.party.memberInfos, function(memberInfo) {
-      return memberInfo.name == name;
+    return memberInfo.name == name;
   });
   this.world.views.game.handleCharParty(this.party);
 };
@@ -838,4 +839,22 @@ Char.prototype.handlePartyAdd = function(memberInfo) {
     this.party.memberInfos.push(memberInfo);
     this.world.views.game.handleCharParty(this.party);
   }
+};
+
+Char.prototype.handleQuests = function(quests, isUpsert) {
+  if (this.quests == null || _.isUndefined(this.quests.updateId)) {
+    quests.updateId = 1;
+    this.quests = quests;
+  } else {
+    if (isUpsert) {
+      _.each(quests, function(quest) {
+        this.quests[quest.baseId] = quest;
+      }.bind(this));
+    } else {
+      quests.updateId = this.quests.updateId;
+      this.quests = quests;
+    }
+    this.quests.updateId += 1;
+  }
+  this.world.views.game.handleCharQuests(this.quests);
 };

@@ -29,11 +29,31 @@ Loader.prototype.run = function(onComplete) {
     React.render(React.createElement(View.Loading, null),
                  document.body);
   this.isLoading = true;
-  var url =  'assets/json/ClientAssetsList.json';
+  var url = 'assets/json/ClientAssetsList.json';
   if (isNode) {
-    url = "http://" + this.world.serverList.assets + '/assets/json/ClientAssetsList.json';
+    url = "http://" + this.world.serverList.assets + '/' + url;
+  }
+  var mobNamesUrl = 'assets/json/MobNames_CN.json';
+  if (isNode) {
+    mobNamesUrl = "http://" + this.world.serverList.assets + '/' + mobNamesUrl;
+  }
+  var questsUrl = 'assets/json/Quests_CN.json';
+  if (isNode) {
+    questsUrl = "http://" + this.world.serverList.assets + '/' + questsUrl;
   }
   $.getJSON(url, function(syncList) {
+    this.numTotalItem += 1;
+    $.getJSON(mobNamesUrl, function(names) {
+      this.world.assets.mobNames = names;
+      this.updateProgress();
+    }.bind(this));
+    //
+    this.numTotalItem += 1;
+    $.getJSON(questsUrl, function(quests) {
+      this.world.assets.quests = quests;
+      this.updateProgress();
+    }.bind(this));
+    //
     this.clientAssetsList = syncList;
     _.each(syncList, function(val) {
       this.numTotalItem += _.size(val);
@@ -47,7 +67,6 @@ Loader.prototype.run = function(onComplete) {
     });
   }.bind(this));
 };
-
 
 Loader.prototype.handleReadyAssetsStore = function() {
   console.log('indexeddb open!');

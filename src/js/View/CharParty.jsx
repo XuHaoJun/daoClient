@@ -98,7 +98,8 @@ var CharParty = module.exports = React.createClass({
         return (
             <Draggable handle=".handle-draggable,.panel-heading,.panel-title"
                        zIndex={50}>
-                <Panel header={header} style={style} className="noselect dao-charParty" >
+                <Panel header={header} style={style}
+                       className="noselect dao-charParty dao-dragPanel" >
                     { createPartyForm }
                     { partyInfo }
                 </Panel>

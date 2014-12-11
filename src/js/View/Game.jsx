@@ -16,6 +16,7 @@ var CharContextmenu = require('./CharContextmenu.js');
 
 var Game = React.createClass({
     getInitialState: function() {
+        var char = this.props.world.account.usingChar;
         return {chatMessages: [],
                 inSceneItemLabels: null,
                 miniTarget: null,
@@ -23,11 +24,12 @@ var Game = React.createClass({
                 updateGame2dUI: false,
                 shop: null,
                 charContextmenu: null,
-                char: this.props.world.account.usingChar,
-                charParty: this.props.world.account.usingChar.party,
-                charItems: this.props.world.account.usingChar.items,
-                charLearnedSkills: this.props.world.account.usingChar.learnedSkills,
-                charUsingEquips: this.props.world.account.usingChar.usingEquips
+                char: char,
+                charParty: char.party,
+                charItems: char.items,
+                charLearnedSkills: char.learnedSkills,
+                charUsingEquips: char.usingEquips,
+                charQuests: char.quests
         };
     },
     componentDidMount: function() {
@@ -46,6 +48,10 @@ var Game = React.createClass({
     },
     handleCharParty: function(party) {
         this.setState({charParty: party,
+                       updateGame2dUI: true});
+    },
+    handleCharQuests: function(quests) {
+        this.setState({charQuests: quests,
                        updateGame2dUI: true});
     },
     handleCharLearnedSkills: function(sids) {
@@ -141,7 +147,8 @@ var Game = React.createClass({
                                       charParty={this.state.charParty}
                                       charItems={this.state.charItems}
                                       charLearnedSkills={this.state.charLearnedSkills}
-                                      charUsingEquips={this.props.world.account.usingChar.usingEquips}
+                                      charUsingEquips={this.state.charUsingEquips}
+                                      charQuests={this.state.charQuests}
                                       miniTarget={this.state.miniTarget} />
                         </Colm>
                     </Row>
