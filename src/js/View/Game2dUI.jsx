@@ -191,8 +191,8 @@ var Game2dUI = React.createClass({
                 <CharQuests show={this.state.showCharQuests}
                             world={this.props.world}
                             char={this.props.char}
-                            quests={this.props.charQuests}
-                            updateId={this.props.charQuests ? this.props.charQuests.updateId : 0}
+                            quests={this.props.charQuests.quests}
+                            mtime={this.props.charQuests.mtime}
                             closeButtonClick={this.handleToggleCharQuests} />
             </div>
         );

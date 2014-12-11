@@ -22,7 +22,8 @@ var Char = module.exports = function (account, config) {
                 etcItem: new Array(30)};
   this.hotKeys = {normal: new Array(4),
                   skill: new Array(2)};
-  this.quests = null;
+  this.quests = {mtime: new Date(),
+                 quests: null};
   this.learnedSkills = {};
   this.lastSceneName = '';
   this.lastX = 0;
@@ -104,8 +105,10 @@ Char.prototype.parseConfig = function(config) {
     case "dzeny":
     case "pickRadius":
     case "hotKeys":
-    case "quests":
       this[key] = val;
+      break;
+    case "quests":
+      this.quests.quests = val;
       break;
     }
   }, this);
@@ -842,19 +845,17 @@ Char.prototype.handlePartyAdd = function(memberInfo) {
 };
 
 Char.prototype.handleQuests = function(quests, isUpsert) {
-  if (this.quests == null || _.isUndefined(this.quests.updateId)) {
-    quests.updateId = 1;
-    this.quests = quests;
+  if (this.quests == null || _.isUndefined(this.quests)) {
+    this.quests.quests = quests;
   } else {
     if (isUpsert) {
       _.each(quests, function(quest) {
-        this.quests[quest.baseId] = quest;
+        this.quests.quests[quest.baseId] = quest;
       }.bind(this));
     } else {
-      quests.updateId = this.quests.updateId;
-      this.quests = quests;
+      this.quests.quests = quests;
     }
-    this.quests.updateId += 1;
   }
+  this.quests.mtime = new Date();
   this.world.views.game.handleCharQuests(this.quests);
 };

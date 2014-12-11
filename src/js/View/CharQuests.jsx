@@ -31,12 +31,13 @@ var QuestItems = React.createClass({
         if (_.isEmpty(this.props.questItems)) {
             return null;
         }
-        var questItems = _.map(this.props.questItems, function(qItem) {
+        var questItems = _.map(this.props.questItems, function(qItem, i) {
             var name = this.props.names[qItem.baseId];
             if (_.isUndefined(name)) {
                 name = qItem.baseId;
             }
-            return (<QuestItem baseId={qItem.baseId}
+            return (<QuestItem key={i}
+                               baseId={qItem.baseId}
                                name={name}
                                currentCount={qItem.currentCount}
                                targetCount={qItem.targetCount} />);
@@ -91,15 +92,14 @@ var Quest = React.createClass({
 var CharQuests = module.exports = React.createClass({
     getDefaultProps: function() {
         return {
-            updateId: 0,
             show: false
         };
     },
 
     shouldComponentUpdate: function(nextProps, nextState) {
-        if (!nextProps.show && !this.props.show ||
-            (this.props.updateId == nextProps.updateId &&
-             nextProps.show == this.props.show)) {
+        if ((!nextProps.show && !this.props.show) ||
+            (this.props.show && nextProps.show &&
+             (this.props.mtime.getTime() == nextProps.mtime.getTime()))) {
                  return false;
         }
         return true;
@@ -112,7 +112,8 @@ var CharQuests = module.exports = React.createClass({
     renderQuestsContent: function() {
         var mobNames = this.props.world.assets.mobNames;
         return _.map(this.props.quests, function(q) {
-            return (<Quest baseId={q.baseId}
+            return (<Quest key={q.baseId}
+                           baseId={q.baseId}
                            assetsQuests={this.props.world.assets.quests}
                            targetItems={q.targetItems}
                            targetMobs={q.targetMobs}
@@ -152,7 +153,7 @@ var CharQuests = module.exports = React.createClass({
 
     render: function() {
         var content = null;
-        if (this.props.quests === null) {
+        if (this.props.quests === null || _.size(this.props.quests) == 0) {
             content = this.renderNoQuestsContent();
         } else {
             content = this.renderQuestsContent();
