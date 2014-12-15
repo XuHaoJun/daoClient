@@ -60,11 +60,19 @@ var Item = React.createClass({
     render: function() {
         var item = this.props.item;
         var world = item.world;
-        var iconSrc = world.assets.itemIcon[item.iconViewId]["src"];
-        var itemBonus = null
+        var iconSrc = world.assets.itemIcon[item.iconViewId].src;
+        var itemLevel = null;
+        if (_.isNumber(item.level)) {
+            itemLevel = (
+                <div>
+                    <strong>Level</strong> {item.level}
+                </div>
+            );
+        }
+        var itemBonus = null;
         if (_.isObject(item.bonusInfo)) {
             itemBonus = _.map(item.bonusInfo, function(bVal, bKey) {
-                if (_.isNull(bVal) || bVal == 0) {
+                if (_.isNull(bVal) || bVal === 0) {
                     return null;
                 } else {
                     var keyName = bKey.charAt(0).toUpperCase() + bKey.substr(1);
@@ -100,8 +108,9 @@ var Item = React.createClass({
         }
         var itemInfo = (
             <Popover title={item.name}>
-                { itemDesc }
+                { itemLevel }
                 { itemBonus }
+                { itemDesc }
                 { itemStackCount }
             </Popover>
         );

@@ -5,6 +5,7 @@ var Equipment = module.exports = function (world, config) {
   Item.call(this, world);
   this.equipLimit = null;
   this.bonusInfo = null;
+  this.level = 1;
   this.on("click", this.handleEquipClick);
   if (_.isObject(config)) {
     this.parseConfig(config);
@@ -22,6 +23,7 @@ Equipment.prototype.parseConfig = function(config) {
     case "equipLimit":
     case "equipViewId":
     case "bonusInfo":
+    case "level":
       this[key] = val;
       break;
     }
