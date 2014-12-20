@@ -1,10 +1,10 @@
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var EventEmitter = require('eventemitter3').EventEmitter;
 var React = require('react');
 var View = require('./View');
 var _ = require('lodash');
 
 var Account = module.exports = function (world, config) {
-  EventEmitter2.call(this);
+  EventEmitter.call(this);
   this.username = null;
   this.world = world;
   this.chars = [];
@@ -14,7 +14,7 @@ var Account = module.exports = function (world, config) {
   }
 };
 
-Account.prototype = Object.create(EventEmitter2.prototype);
+Account.prototype = Object.create(EventEmitter.prototype);
 
 Account.prototype.parseConfig = function(config) {
   _.each(config, function(val, key) {

@@ -433,6 +433,15 @@ Char.prototype.setLeftSkillHotKey = function(sid) {
   this.world.conn.sendJSON(clientCall);
 };
 
+Char.prototype.clearQuest = function(baseId) {
+  var clientCall = {
+    receiver: "Char",
+    method: "ClearQuest",
+    params: [baseId]
+  };
+  this.world.conn.sendJSON(clientCall);
+};
+
 Char.prototype.clearSkillHotKey = function(index) {
   var clientCall = {
     receiver: "Char",

@@ -5,11 +5,11 @@ var React = require('react');
 var View = require('./View');
 var IDBStore = require('idb-wrapper');
 var Buzz = require('node-buzz');
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var EventEmitter = require('eventemitter3').EventEmitter;
 var isNode = require('detect-node');
 
 var Loader = module.exports = function (world) {
-  EventEmitter2.call(this);
+  EventEmitter.call(this);
   this.world = world;
   this.isLoading = false;
   this.hasLoaded = false;
@@ -19,7 +19,7 @@ var Loader = module.exports = function (world) {
   this.assetsStore = null;
 };
 
-Loader.prototype = Object.create(EventEmitter2.prototype);
+Loader.prototype = Object.create(EventEmitter.prototype);
 
 Loader.prototype.run = function(onComplete) {
   if (this.hasLoaded) {
@@ -50,6 +50,7 @@ Loader.prototype.run = function(onComplete) {
     //
     this.numTotalItem += 1;
     $.getJSON(questsUrl, function(quests) {
+      console.log(quests);
       this.world.assets.quests = quests;
       this.updateProgress();
     }.bind(this));

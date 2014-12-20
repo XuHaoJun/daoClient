@@ -1,32 +1,29 @@
 var THREE = require('n3d-threejs');
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var EventEmitter = require('eventemitter3').EventEmitter;
 
 // from https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/Sprite-Text-Labels.html
 
 // http://jsfiddle.net/J5d7h/11/
 
 var TextSprite = module.exports = function (message, parameters) {
-  EventEmitter2.call(this);
+  EventEmitter.call(this);
+  this.canvas = null;
   this.message = message;
   this.parameters = parameters;
-  var  spriteMaterial = newSpriteMaterial(message, parameters);
-
-  var sprite = new THREE.Sprite( spriteMaterial );
-  // sprite.scale.set(100,50,1.0);
-
-  this.threeBody = sprite;
+  this.threeBody = this.initThreeBody(message, {});
 };
 
-TextSprite.prototype = Object.create(EventEmitter2.prototype);
+TextSprite.prototype = Object.create(EventEmitter.prototype);
 
 TextSprite.prototype.setBackgroundColor = function(backgroundColor) {
-  this.parameters["backgroundColor"] = backgroundColor;
-  newSpriteMaterial(this.message, this.parameters);
-  var  spriteMaterial = newSpriteMaterial(this.message, this.parameters);
-  this.threeBody.material = spriteMaterial;
+  // this.parameters["backgroundColor"] = backgroundColor;
+  // this.newSpriteMaterial(this.message, this.parameters);
+  // var  spriteMaterial = this.newSpriteMaterial(this.message, this.parameters);
+  // this.threeBody.material = spriteMaterial;
+  console.log("wiwi");
 };
 
-function newSpriteMaterial(message, parameters) {
+TextSprite.prototype.newSpriteMaterial = function(message, parameters) {
 
   if ( parameters === undefined ) parameters = {};
 
@@ -46,12 +43,7 @@ function newSpriteMaterial(message, parameters) {
         parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
 
   var canvas = document.createElement('canvas');
-  if (parameters["width"]) {
-    canvas.width = parameters["width"];
-  }
-  if (parameters["height"]) {
-    canvas.height = parameters["height"];
-  }
+  this.canvas = canvas;
   var context = canvas.getContext('2d');
   context.font = "Bold " + fontsize + "px " + fontface;
   // context.textAlign = "center";
@@ -60,6 +52,16 @@ function newSpriteMaterial(message, parameters) {
   // get size data (height depends only on font size)
   var metrics = context.measureText( message );
   var textWidth = metrics.width;
+  if (parameters["width"]) {
+    canvas.width = parameters["width"];
+  } else {
+    canvas.width = textWidth + 3;
+  }
+  if (parameters["height"]) {
+    canvas.height = parameters["height"];
+  } else {
+    canvas.height = fontsize + 3;
+  }
 
   // background color
   context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
@@ -78,9 +80,12 @@ function newSpriteMaterial(message, parameters) {
   // canvas contents will be used for a texture
   var texture = new THREE.Texture(canvas);
   texture.needsUpdate = true;
-  var spriteMaterial = new THREE.SpriteMaterial(
-    { map: texture } );
-  return spriteMaterial;
+
+  // var spriteMaterial = new THREE.SpriteMaterial(
+  //   { map: texture } );
+  // var spriteMaterial = new THREE.MeshBasicMaterial(
+  //   { map: texture });
+  return texture;
 }
 
 // function for drawing rounded rectangles
@@ -100,3 +105,43 @@ function roundRect(ctx, x, y, w, h, r)
   ctx.fill();
   ctx.stroke();
 }
+
+TextSprite.prototype.threeMaterial = function(text, params) {
+  var font = "Arial",
+      size = 130,
+      color = "#676767";
+  var padding = 10;
+
+  font = "bold " + size + "px " + font;
+
+  var canvas = document.createElement('canvas');
+  this.canvas = canvas;
+  var context = canvas.getContext('2d');
+  context.font = font;
+
+  // get size data (height depends only on font size)
+  var metrics = context.measureText(text),
+      textWidth = metrics.width;
+
+  canvas.width = textWidth + 3;
+  canvas.height = size + 4;
+
+  context.font = font;
+  context.fillStyle = color;
+  context.fillText(text, 0, size + 4);
+  //context.style.border="3px solid blue";
+
+  // canvas contents will be used for a texture
+  var texture = new THREE.Texture(canvas);
+  texture.needsUpdate = true;
+  return new THREE.MeshBasicMaterial({map: texture});
+};
+
+TextSprite.prototype.initThreeBody = function(text, params) {
+  var material = this.threeMaterial(text, params);
+  var mesh = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(this.canvas.width, this.canvas.height),
+    material
+  );
+  return mesh;
+};

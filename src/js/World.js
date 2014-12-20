@@ -10,14 +10,14 @@ var THREE = require('n3d-threejs');
 var Modernizr = require('browsernizr');
 var isNode = require('detect-node');
 var _ = require('lodash');
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var EventEmitter = require('eventemitter3').EventEmitter;
 var React = require('react');
 var $ = require('jquery/dist/jquery');
 var View = require('./View');
 var ObjectCreator = require('./ObjectCreator.js');
 
 var World = module.exports = function (config) {
-  EventEmitter2.call(this);
+  EventEmitter.call(this);
   this.version = "0.0.1";
   this.scenes = {};
   this.assets = {image: {}, audio: {},
@@ -49,7 +49,7 @@ var World = module.exports = function (config) {
   }.bind(this));
 };
 
-World.prototype = Object.create(EventEmitter2.prototype);
+World.prototype = Object.create(EventEmitter.prototype);
 
 World.prototype.run = function() {
   if (this.browserDependCheck()) {

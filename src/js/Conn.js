@@ -1,16 +1,16 @@
 var _ = require('lodash');
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var EventEmitter = require('eventemitter3').EventEmitter;
 var React = require('react');
 var View = require('./View');
 
 var Conn = module.exports = function(world, wsurl) {
-  EventEmitter2.call(this);
+  EventEmitter.call(this);
   this.wsurl = wsurl;
   this.world = world;
   this.sock = null;
 };
 
-Conn.prototype = Object.create(EventEmitter2.prototype);
+Conn.prototype = Object.create(EventEmitter.prototype);
 
 Conn.prototype.run = function() {
   this.sock = new WebSocket(this.wsurl);

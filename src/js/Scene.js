@@ -1,4 +1,4 @@
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var EventEmitter = require('eventemitter3').EventEmitter;
 var $ = require('jquery/dist/jquery');
 var _ = require('lodash');
 var THREE = require('n3d-threejs');
@@ -12,6 +12,7 @@ var THREEx = {
 };
 
 var Scene = module.exports = function (world, config) {
+  EventEmitter.call(this);
   this.world = world;
   this.name = '';
   this.width = 0;
@@ -41,7 +42,7 @@ var Scene = module.exports = function (world, config) {
   }
 };
 
-Scene.prototype = Object.create(EventEmitter2.prototype);
+Scene.prototype = Object.create(EventEmitter.prototype);
 
 Scene.prototype.addDefaultLight = function() {
   var light;

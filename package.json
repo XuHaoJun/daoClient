@@ -19,7 +19,7 @@
     "bootstrap": "*",
     "browsernizr": "*",
     "chipmunk": "git+http://github.com/XuHaoJun/Chipmunk-js.git#master",
-    "eventemitter2": "*",
+    "eventemitter3": "*",
     "idb-wrapper": "*",
     "jquery": "*",
     "lodash": "*",

@@ -1,10 +1,10 @@
 var _ = require('lodash');
 var THREE = require('n3d-threejs');
 var cp = require('chipmunk');
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var EventEmitter = require('eventemitter3').EventEmitter;
 
 var SceneObject = module.exports = function () {
-  EventEmitter2.call(this);
+  EventEmitter.call(this);
   this.id = -1;
   this.scene = null;
   this.bodyViewId = 0;
@@ -14,7 +14,7 @@ var SceneObject = module.exports = function () {
   this.glowEffect = null;
 };
 
-SceneObject.prototype = Object.create(EventEmitter2.prototype);
+SceneObject.prototype = Object.create(EventEmitter.prototype);
 
 SceneObject.prototype.screenXY = function (camera) {
   var width = window.innerWidth, height = window.innerHeight;
