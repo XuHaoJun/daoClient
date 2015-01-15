@@ -25,7 +25,7 @@
     "lodash": "*",
     "mousestop": "git+http://github.com/websanova/mousestop.git#master",
     "node-buzz": "*",
-    "react": "*",
+    "react": "0.12.2",
     "react-bootstrap": "*",
     "react-draggable": "git+http://github.com/XuHaoJun/react-draggable.git#master",
     "three": "*",
