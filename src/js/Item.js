@@ -92,7 +92,8 @@ Item.prototype.genSpriteLabel = function() {
   var text = new TextSprite(this.name, {fontsize: 30,
                                         fontface: "Georgia",
                                         borderColor: {r:0, g:0, b:255, a:0.8} });
-  text.threeBody.scale.set(180, 80, 1.0);
+  text.threeBody.scale.normalize().multiplyScalar( 0.28 );
+  text.threeBody.rotation.x += Math.PI/4;
   text.threeBody.userData = this;
   text.on("click", function(event) {
     event.preventDefault();
@@ -111,7 +112,7 @@ Item.prototype.genSpriteLabel = function() {
 Item.prototype.updateSpriteLabel = function() {
   if (this.spriteLabel) {
     var position = this.threeBody.position;
-    this.spriteLabel.threeBody.position.set(position.x, position.y, position.z + 10);
+    this.spriteLabel.threeBody.position.set(position.x, position.y, position.z + 30);
   }
 };
 
